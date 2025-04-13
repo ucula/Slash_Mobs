@@ -10,12 +10,12 @@ class Game:
         pg.init()
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__screen.fill(Configs.get('WHITE'))
-        self.__clock = None
+        self.__clock = pg.time.Clock()
         self.__running = True
-        self.__player = Player()
-        self.__monster = Monsters()
-        self.__weapon = Weapons()
-        self.__ui = AllUI()
+        # self.__player = Player()
+        # self.__monster = Monsters()
+        # self.__weapon = Weapons()
+        # self.__ui = AllUI()
         self.__keys = {}
 
     def __game_reset(self):
@@ -28,7 +28,14 @@ class Game:
         pass
 
     def run(self):
-        pass
+        while self.__running:
+            self.__clock.tick(Configs.get('FPS'))
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.__running = False
+                    break
+        pg.quit
 
 if __name__ == '__main__':
     g1 = Game()
+    g1.run()

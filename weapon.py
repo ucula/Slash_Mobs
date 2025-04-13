@@ -10,7 +10,7 @@ class Weapons:
         return "\n".join(string)
 
 class Create_Weapon:
-    def __init__(self, name, price, damage):
+    def __init__(self, name, price, damage, durability):
         self.name = name
         self.price = price
         self.damage = damage
@@ -20,7 +20,7 @@ class Create_Weapon:
     def __repr__(self):
         return f"Price = {self.price}, Damage = {self.damage}"
 
-a = Create_Weapon("Sword", 100, 2)
-b = Create_Weapon("Mace", 200, 3)
+a = Create_Weapon("Sword", 100, 2, 20)
+b = Create_Weapon("Mace", 200, 3, 20)
 print(Weapons.weapon_data)
 print(Weapons.display_weapon())

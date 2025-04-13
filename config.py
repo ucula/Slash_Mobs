@@ -1,7 +1,8 @@
 class Configs:
     __CONFIGS = {
-        'WIN_SIZE_W': 800,
-        'WIN_SIZE_H': 600,
+        'FPS': 60,
+        'WIN_SIZE_W': 1000,
+        'WIN_SIZE_H': 800,
         'WHITE': (255, 255, 255),
 }
     @classmethod
