@@ -65,7 +65,7 @@ class Game:
             self.__auto_walk = True
 
         if self.__auto_walk:
-            self.__player.y -= 2
+            self.__player.y -= 3
             self.__player.speed = 0
             self.char_animate()
 
@@ -83,6 +83,35 @@ class Game:
                 self.__scene = "plain"
                 self.__enter_scene = True
                 # self.__screen.fill(Configs.get('WHITE'))
+        
+    def plain_scene(self):
+        # BG
+        plain_img = self.__ui.draw_plain_bg()
+        self.__screen.blit(plain_img, (0, 0))
+
+        # Walk in intro
+        if self.__enter_scene:
+            self.__player.x = 500
+            self.__player.y = 150
+            self.__enter_scene = False
+
+        # Check border
+        self.__player.check_lim_plain()
+
+        # Char animation
+        if self.__player.idle:
+            self.__player.animation_list.clear()
+        self.__player.draw_walk()
+        self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
+
+        # Walk
+        self.scene_keybind()
+
+        # Check scene change
+        if self.__player.y < 100:
+            self.__scene = "hall"
+            self.__enter_scene = True
+            # self.__screen.fill(Configs.get('WHITE'))
 
     def run(self):
         while self.__running:
@@ -97,33 +126,7 @@ class Game:
 
             # Plain scene
             if self.__scene == "plain":
-                # BG
-                plain_img = self.__ui.draw_plain_bg()
-                self.__screen.blit(plain_img, (0, 0))
-
-                # Walk in intro
-                if self.__enter_scene:
-                    self.__player.x = 500
-                    self.__player.y = 150
-                    self.__enter_scene = False
-
-                # Check border
-                self.__player.check_lim_plain()
-
-                # Char animation
-                if self.__player.idle:
-                    self.__player.animation_list.clear()
-                self.__player.draw_walk()
-                self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
-
-                # Walk
-                self.scene_keybind()
-
-                # Check scene change
-                if self.__player.y < 100:
-                    self.__scene = "hall"
-                    self.__enter_scene = True
-                    # self.__screen.fill(Configs.get('WHITE'))
+                self.plain_scene()
 
             pg.display.update()
         pg.quit
