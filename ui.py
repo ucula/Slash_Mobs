@@ -8,6 +8,10 @@ class AllUI:
         image = pg.image.load("final_prog2/assets/hall.jpg").convert()
         return image
     
+    def draw_plain_bg(self):
+        image = pg.image.load("final_prog2/assets/plain.jpg").convert()
+        return image
+    
     def draw_game_over(self):
         pass
 

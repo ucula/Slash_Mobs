@@ -25,7 +25,7 @@ class Player:
         self.cool_down = 250
         self.frame = 0
 
-        self.status = 'idle'
+        self.idle = True
     def level_up(self):
         pass
 
@@ -58,6 +58,30 @@ class Player:
 
     def skill2(self):
         pass
+
+    def check_lim_plain(self):
+        # Bottom rock border
+        if self.y > 400:
+            self.speed = 0
+            self.y -= 1
+
+        # Left rock border
+        elif (self.x < 330) and (50 <= self.y <= 180):
+            self.speed = 0
+            self.x += 1
+
+        # Under Left/Right rock border
+        elif (self.x < 330) and (185 <= self.y <= 188) or (self.x > 550) and (185 <= self.y <= 188):
+            self.speed = 0
+            self.y += 1
+
+        # Right rock border
+        elif (self.x > 550) and (50 <= self.y <= 180):
+            self.speed = 0
+            self.x -= 1
+
+        else:
+            self.speed = Configs.get('SPEED')
     
     def check_lim_hall(self):
         # Door/Under pot border
@@ -65,12 +89,12 @@ class Player:
             self.speed = 0
             self.y += 1
         
-        # Screen border 
+        # Left Screen border 
         elif self.x > 740:
             self.speed = 0
             self.x -= 1 
 
-        # Pot and right screen border
+        # Pot/Right screen border
         elif (self.x < 100 and 460 <= self.y <= 480) or (self.x < 0):
             self.speed = 0
             self.x += 1       
