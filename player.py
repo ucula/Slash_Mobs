@@ -19,17 +19,17 @@ class Player:
         self.y = 500
         self.speed = Configs.get('SPEED')
 
+        # for storing animation
         self.animation_down = []
         self.animation_up = []
         self.animation_left = []
         self.animation_right = []
 
+        # for animating
         self.animation_steps = 2
         self.last_up = pg.time.get_ticks()
         self.cool_down = 100
         self.frame = 0
-
-        self.idle = True
 
     def level_up(self):
         pass
@@ -64,6 +64,24 @@ class Player:
     def skill2(self):
         pass
 
+    def check_lim_shop(self):
+        # check top border
+        if self.y < 400 or (self.x > 404 and self.y < 476) or (self.y < 475 and 40 <= self.x <= 151):
+            self.speed = 0
+            self.y += 1
+
+        # check right borders
+        elif (self.x > 400 and 400 <= self.y <= 470) or (self.x > 500 and 470 <= self.y <= 700):
+            self.speed = 0
+            self.x -= 1
+        
+        elif (self.x < 160 and 400 <= self.y <= 470) or self.x < 40:
+            self.speed = 0
+            self.x += 1
+        
+        else:
+            self.speed = Configs.get("SPEED")
+
     def check_lim_plain(self):
         # Bottom rock border
         if self.y > 400:
@@ -76,7 +94,7 @@ class Player:
             self.x += 1
 
         # Under Left/Right rock border
-        elif (self.x < 330) and (185 <= self.y <= 188) or (self.x > 550) and (185 <= self.y <= 188):
+        elif (self.x < 330 and 185 <= self.y <= 188) or (self.x > 550 and 185 <= self.y <= 188):
             self.speed = 0
             self.y += 1
 
@@ -119,7 +137,6 @@ class Player:
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            print(i)
             self.animation_down.append(sprite_sheet.get_image1((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
     
     def draw_walk_left(self):
@@ -134,7 +151,6 @@ class Player:
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            print(i+1)
             self.animation_left.append(sprite_sheet.get_image2((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
 
     def draw_walk_up(self):
@@ -163,7 +179,6 @@ class Player:
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            print(i+3)
             self.animation_right.append(sprite_sheet.get_image4((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
 
     def draw_idle(self):

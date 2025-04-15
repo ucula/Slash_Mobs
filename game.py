@@ -20,12 +20,14 @@ class Game:
 
         self.__ui = AllUI()
         self.__running = True
+        self.__before = None
         self.__scene = 'hall'
         self.__enter_scene = False
         self.__auto_walk = False
         # self.__monster = Monsters()
-        # self.__weapon = Weapons()
+        # self.__weapon = Weapons()s
     
+    # If spam WASD at when start = Error bugs
     def char_animate(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
@@ -61,27 +63,16 @@ class Game:
             self.__player.x = 390
             self.__player.y = 600
             self.__enter_scene = False
-            self.__auto_walk = True
 
-        if self.__auto_walk:
-            self.__player.y -= Configs.get('SPEED')
-            self.__player.speed = 0
+        # Char animation
+        self.char_animate()
+        # Check border
+        self.__player.check_lim_hall()
+        # Check scene change
+        if self.__player.y > 600:
+            self.__scene = "plain"
+            self.__enter_scene = True
 
-            self.char_animate()
-            if self.__player.y < 500:
-                self.__player.speed = Configs.get('SPEED')
-                self.__auto_walk = False
-
-        else:
-            # Char animation
-            self.char_animate()
-            # Check border
-            self.__player.check_lim_hall()
-            # Check scene change
-            if self.__player.y > 600:
-                self.__scene = "plain"
-                self.__enter_scene = True
-        
     def plain_scene(self):
         # BG
         plain_img = self.__ui.draw_plain_bg()
@@ -92,27 +83,40 @@ class Game:
             self.__player.x = 500
             self.__player.y = 150
             self.__enter_scene = False
-            self.__auto_walk = True
+
+        # Check border
+        self.__player.check_lim_plain()
+        self.char_animate()
         
-        if self.__auto_walk:
-            self.__player.y += Configs.get('SPEED')
-            self.__player.speed = 0
-            
-            self.char_animate()
-            if self.__player.y > 200:
-                self.__player.speed = Configs.get('SPEED')
-                self.__auto_walk = False
+        # Check scene change
+        if self.__player.y < 100:
+            self.__scene = "hall"
+            self.__enter_scene = True
+
+        if self.__player.x > 750:
+            self.__scene = "shop"
+            self.__enter_scene = True
+    
+    def shop_scene(self):
+        # BG
+        shop_img = self.__ui.draw_shop_bg()
+        self.__screen.blit(shop_img, (0, 0))
+
+        # Walk in intro
+        if self.__enter_scene:
+            self.__player.x = 390
+            self.__player.y = 500
+            self.__enter_scene = False
+
+        # Check border
+        self.__player.check_lim_shop()
+        self.char_animate()
         
-        else:
-            # Check border
-            self.__player.check_lim_plain()
-            self.char_animate()
-            
-            # Check scene change
-            if self.__player.y < 100:
-                self.__scene = "hall"
-                self.__enter_scene = True
-        
+        # Check scene change
+        if self.__player.y > 600:
+            self.__scene = "plain"
+            self.__enter_scene = True
+
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
@@ -127,6 +131,10 @@ class Game:
             # Plain scene
             if self.__scene == "plain":
                 self.plain_scene()
+
+            # Shop scene
+            if self.__scene == "shop":
+                self.shop_scene()
 
             pg.display.update()
         pg.quit
