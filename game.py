@@ -28,7 +28,7 @@ class Game:
     def char_animate(self):
         if self.__player.idle:
             self.__player.animation_list.clear()
-        self.__player.draw_walk()
+        self.__player.draw_walk_down()
         self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
 
         keys = pg.key.get_pressed()
