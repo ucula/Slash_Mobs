@@ -5,6 +5,7 @@ from ui import AllUI
 from spritesheet import SpriteSheet
 from config import Configs
 import pygame as pg
+import time
 
 class Game:
     def __init__(self):
@@ -26,27 +27,29 @@ class Game:
         # self.__weapon = Weapons()
     
     def char_animate(self):
-        if self.__player.idle:
-            self.__player.animation_list.clear()
-        self.__player.draw_walk_down()
-        self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
-
         keys = pg.key.get_pressed()
-        if keys:
-            self.__player.idle = False
-            if keys[pg.K_w]:
-                self.__player.y -= self.__player.speed  
+        if keys[pg.K_w]:
+            self.__player.y -= self.__player.speed  
+            self.__player.draw_walk_up()
+            self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
 
-            elif keys[pg.K_s]:
-                self.__player.y += self.__player.speed
+        elif keys[pg.K_s]:
+            self.__player.y += self.__player.speed
+            self.__player.draw_walk_down()
+            self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
 
-            elif keys[pg.K_a]:
-                self.__player.x -= self.__player.speed
+        elif keys[pg.K_a]:
+            self.__player.x -= self.__player.speed
+            self.__player.draw_walk_left()
+            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
 
-            elif keys[pg.K_d]:
-                self.__player.x += self.__player.speed
+        elif keys[pg.K_d]:
+            self.__player.draw_walk_right()
+            self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
+            self.__player.x += self.__player.speed
         else:
-            self.__player.idle = True
+            img = self.__player.draw_idle()
+            self.__screen.blit(img , (self.__player.x, self.__player.y))
 
     def hall_scene(self):
         # BG

@@ -19,14 +19,18 @@ class Player:
         self.y = 500
         self.speed = Configs.get('SPEED')
 
-        self.animation_list = []
+        self.animation_down = []
+        self.animation_up = []
+        self.animation_left = []
+        self.animation_right = []
+
         self.animation_steps = 2
         self.last_up = pg.time.get_ticks()
-        self.cool_down = 250
+        self.cool_down = 100
         self.frame = 0
 
         self.idle = True
-        
+
     def level_up(self):
         pass
 
@@ -111,11 +115,12 @@ class Player:
         if current_time - self.last_up >= self.cool_down:
             self.frame += 1
             self.last_up = current_time
-            if self.frame >= len(self.animation_list):
+            if self.frame >= len(self.animation_down):
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            self.animation_list.append(sprite_sheet.get_image1((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
+            print(i)
+            self.animation_down.append(sprite_sheet.get_image1((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
     
     def draw_walk_left(self):
         sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
@@ -125,11 +130,12 @@ class Player:
         if current_time - self.last_up >= self.cool_down:
             self.frame += 1
             self.last_up = current_time
-            if self.frame >= len(self.animation_list):
+            if self.frame >= len(self.animation_left):
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            self.animation_list.append(sprite_sheet.get_image2((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
+            print(i+1)
+            self.animation_left.append(sprite_sheet.get_image2((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
 
     def draw_walk_up(self):
         sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
@@ -139,8 +145,31 @@ class Player:
         if current_time - self.last_up >= self.cool_down:
             self.frame += 1
             self.last_up = current_time
-            if self.frame >= len(self.animation_list):
+            if self.frame >= len(self.animation_up):
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            self.animation_list.append(sprite_sheet.get_image3((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
+            self.animation_up.append(sprite_sheet.get_image3((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
+
+    def draw_walk_right(self):
+        sprite_sheet_image = pg.image.load("final_prog2/assets/char2.png").convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        current_time = pg.time.get_ticks()
+        if current_time - self.last_up >= self.cool_down:
+            self.frame += 1
+            self.last_up = current_time
+            if self.frame >= len(self.animation_right):
+                self.frame = 0
+
+        for i in range(self.animation_steps):
+            print(i+3)
+            self.animation_right.append(sprite_sheet.get_image4((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
+
+    def draw_idle(self):
+        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        
+        return sprite_sheet.get_idle((0, 0), 0, 24, 24, 2.5, Configs.get('MAGENTA'))
+
+        
