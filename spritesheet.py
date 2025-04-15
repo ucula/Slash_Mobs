@@ -3,8 +3,8 @@ import pygame as pg
 class SpriteSheet:
     def __init__(self, image):
         self.sheet = image
-
-    def get_slime(self, cords: tuple, frame, width, height, scale, color):
+    
+    def get_monster(self, cords: tuple, frame, width, height, scale, color):
         image = pg.Surface((width, height)).convert_alpha()
         image.blit(self.sheet, cords, ((frame * width), 0, width, height))
 

@@ -9,20 +9,20 @@ import random
 
 class Game:
     def __init__(self):
-        # name = input("What is your name? : ")
         self.__player = Player("g")
-        self.__slime_lst = []
+        self.__mob_gacha = monster.Monster_TMP.monster
+        self.__mobs = None
         # self.__weapon = Weapons()
 
         pg.init()
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
-        self.__screen.fill(Configs.get('WHITE'))
         self.__clock = pg.time.Clock()
 
         self.__ui = AllUI()
         self.__running = True
 
+        self.max_range = 1
         self.__generate = True
         self.__before = None
         self.__scene = 'hall'
@@ -33,25 +33,29 @@ class Game:
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
             self.__player.y -= self.__player.speed  
-            self.__screen.blit(self.__player.draw_walk_up(), (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.draw_walk_up(), 
+                               (self.__player.x, self.__player.y))
             # self.__player.draw_walk_up()
             # self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
 
         elif keys[pg.K_s]:
             self.__player.y += self.__player.speed
-            self.__screen.blit(self.__player.draw_walk_down(), (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.draw_walk_down(), 
+                               (self.__player.x, self.__player.y))
             # self.__player.draw_walk_down()
             # self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
 
         elif keys[pg.K_a]:
             self.__player.x -= self.__player.speed
-            self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.draw_walk_left(), 
+                               (self.__player.x, self.__player.y))
             # self.__player.draw_walk_left()
             # self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
 
         elif keys[pg.K_d]:
             self.__player.x += self.__player.speed
-            self.__screen.blit(self.__player.draw_walk_right(), (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.draw_walk_right(), 
+                               (self.__player.x, self.__player.y))
             # self.__player.draw_walk_right()
             # self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
             
@@ -59,19 +63,39 @@ class Game:
             img = self.__player.draw_idle()
             self.__screen.blit(img , (self.__player.x, self.__player.y))
     
-    # Determine char pos when entering new map
+    # Set player pos when entering new map
     def start_point(self, x, y):
         if self.__enter_scene:
             self.__player.x = x
             self.__player.y = y
             self.__enter_scene = False
     
-    def create_slime(self):
-        if len(self.__slime_lst) == 0:
-            for _ in range(random.randint(1, 1)):
-                x = random.randint(100, 600)
-                y = random.randint(200, 300)
-                self.__slime_lst.append(monster.Slime(x, y))
+    # Generate random x, y coordinates according to scene
+    def gen_cords(self):
+        if self.__scene == "plain":
+            x = random.randint(100, 600)
+            y = random.randint(180, 250)
+        else:
+            pass
+
+        return x, y
+
+    # Return random mob to generate on that scene
+    def random_mob(self):
+        select = random.choice(self.__mob_gacha)
+        pos_x, pos_y = self.gen_cords()
+        if select == "slime":
+            tmp_mob = monster.Slime(pos_x, pos_y)
+        elif select == "goblin":
+            tmp_mob = monster.Goblin(pos_x, pos_y)
+        else:
+            pass
+
+        return tmp_mob
+
+    # Add random mobs to list
+    def create_mob(self):
+        self.__mobs = self.random_mob()
 
     # function for displaying hall bg
     def hall_scene(self):
@@ -91,7 +115,7 @@ class Game:
             self.__before = "hall"
 
     def plain_scene(self):
-        # BG
+        # Background
         plain_img = self.__ui.draw_plain_bg()
         self.__screen.blit(plain_img, (0, 0))
         if self.__before == "shop":
@@ -99,31 +123,30 @@ class Game:
         else:
             self.start_point(500, 150)
 
-        # Animation/Border checker
+        # Player's animation
         self.char_animate()
         self.__player.check_lim_plain()
 
-        # Slime 
+        # Create monsters and make themm appear on screen
         if self.__generate:
-            self.create_slime()
-            self.generate = False
-
-        for slime in self.__slime_lst:
-            slime_img = slime.draw_slime()
-            # slime.check_distance(self.__player)
-            self.__screen.blit(slime_img, (slime.x, slime.y))
-            # self.__screen.blit(slime.animation[slime.frame], (slime.x, slime.y))
+            self.create_mob()
+            self.__generate = False
+        self.__mobs.check_distance(self.__player)
+        img = self.__mobs.draw_mon()
+        self.__screen.blit(img, (self.__mobs.x, self.__mobs.y))
 
         # Check scene change
         if self.__player.y < 100:
             self.__scene = "hall"
             self.__enter_scene = True
-            self.__slime_lst.clear()
+            self.__mobs = None
+            self.__generate = True
 
         if self.__player.x > 750:
             self.__scene = "shop"
             self.__enter_scene = True
-            self.__slime_lst.clear()
+            self.__mobs = None
+            self.__generate = True
     
     def shop_scene(self):
         # BG
