@@ -1,4 +1,7 @@
 from ui import AllUI
+from config import Configs
+from spritesheet import SpriteSheet
+import pygame as pg
 
 class Player:
     def __init__(self, name: str):
@@ -11,26 +14,26 @@ class Player:
         self.evasion = 0.1
         self.skill1_status = False
         self.skill2_status = False
-    
-    def level_up(self):
-        self.level += 1
-        self.damage += 0.5
-        if self.level == 5:
-            self.skill1_status = True
-            print("Skill1 unlocked!")
 
-        if self.level == 10:
-            self.skill2_status = True
-            print("Skill2 unlocked!")
-        print("Level up!")
+        self.x = 400
+        self.y = 300
+        self.speed = 3
+
+        self.animation_list = []
+        self.animation_steps = 2
+        self.last_up = pg.time.get_ticks()
+        self.cool_down = 250
+        self.frame = 0
+
+        self.status = 'idle'
+    def level_up(self):
+        pass
 
     def reduce_hp(self, damage: int):
-        self.health -= damage
-        if self.health <= 0:
-            self.die()
+        pass
 
     def die(self):
-        self.ui.draw_game_over()
+        pass
 
     def attack(self, enemy):
         pass
@@ -55,3 +58,18 @@ class Player:
 
     def skill2(self):
         pass
+
+    def draw_walk(self):
+        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        current_time = pg.time.get_ticks()
+        if current_time - self.last_up >= self.cool_down:
+            self.frame += 1
+            self.last_up = current_time
+            if self.frame >= len(self.animation_list):
+                self.frame = 0
+
+        for i in range(self.animation_steps):
+            self.animation_list.append(sprite_sheet.get_image((0, 0), i, 24, 24, 2, Configs.get('MAGENTA')))
+    
