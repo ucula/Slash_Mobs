@@ -31,10 +31,6 @@ class Game:
         self.__player.draw_walk()
         self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
 
-        # Walk
-        self.scene_keybind()
-
-    def scene_keybind(self):
         keys = pg.key.get_pressed()
         if keys:
             self.__player.idle = False
@@ -65,10 +61,10 @@ class Game:
             self.__auto_walk = True
 
         if self.__auto_walk:
-            self.__player.y -= 3
+            self.__player.y -= Configs.get('SPEED')
             self.__player.speed = 0
-            self.char_animate()
 
+            self.char_animate()
             if self.__player.y < 500:
                 self.__player.speed = Configs.get('SPEED')
                 self.__auto_walk = False
@@ -82,7 +78,6 @@ class Game:
             if self.__player.y > 600:
                 self.__scene = "plain"
                 self.__enter_scene = True
-                # self.__screen.fill(Configs.get('WHITE'))
         
     def plain_scene(self):
         # BG
@@ -94,25 +89,27 @@ class Game:
             self.__player.x = 500
             self.__player.y = 150
             self.__enter_scene = False
-
-        # Check border
-        self.__player.check_lim_plain()
-
-        # Char animation
-        if self.__player.idle:
-            self.__player.animation_list.clear()
-        self.__player.draw_walk()
-        self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
-
-        # Walk
-        self.scene_keybind()
-
-        # Check scene change
-        if self.__player.y < 100:
-            self.__scene = "hall"
-            self.__enter_scene = True
-            # self.__screen.fill(Configs.get('WHITE'))
-
+            self.__auto_walk = True
+        
+        if self.__auto_walk:
+            self.__player.y += Configs.get('SPEED')
+            self.__player.speed = 0
+            
+            self.char_animate()
+            if self.__player.y > 200:
+                self.__player.speed = Configs.get('SPEED')
+                self.__auto_walk = False
+        
+        else:
+            # Check border
+            self.__player.check_lim_plain()
+            self.char_animate()
+            
+            # Check scene change
+            if self.__player.y < 100:
+                self.__scene = "hall"
+                self.__enter_scene = True
+        
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
