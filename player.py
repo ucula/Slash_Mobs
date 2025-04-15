@@ -15,9 +15,9 @@ class Player:
         self.skill1_status = False
         self.skill2_status = False
 
-        self.x = 400
-        self.y = 300
-        self.speed = 3
+        self.x = 390
+        self.y = 500
+        self.speed = Configs.get('SPEED')
 
         self.animation_list = []
         self.animation_steps = 2
@@ -58,7 +58,26 @@ class Player:
 
     def skill2(self):
         pass
+    
+    def check_lim_hall(self):
+        # Door/Under pot border
+        if (self.y < 460) or (self.x < 100 and 485 <= self.y <= 488):
+            self.speed = 0
+            self.y += 1
+        
+        # Screen border 
+        elif self.x > 740:
+            self.speed = 0
+            self.x -= 1 
 
+        # Pot and right screen border
+        elif (self.x < 100 and 460 <= self.y <= 480) or (self.x < 0):
+            self.speed = 0
+            self.x += 1       
+
+        else:
+            self.speed = Configs.get('SPEED')
+        
     def draw_walk(self):
         sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
@@ -71,5 +90,5 @@ class Player:
                 self.frame = 0
 
         for i in range(self.animation_steps):
-            self.animation_list.append(sprite_sheet.get_image((0, 0), i, 24, 24, 2, Configs.get('MAGENTA')))
+            self.animation_list.append(sprite_sheet.get_image((0, 0), i, 24, 24, 2.5, Configs.get('MAGENTA')))
     
