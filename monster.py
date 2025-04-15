@@ -1,24 +1,38 @@
 import random
+from spritesheet import SpriteSheet
+import pygame as pg
+from config import Configs
+import math
 
-class Monsters:
-    monster_data = {}
-
-    @classmethod
-    def display_monster(cls):
-        string = []
-        for i, (key, value) in enumerate(cls.monster_data.items()):
-            string.append(f"{i+1}. {key} with {value.health} hp and {value.damage} damage")
-
-        return "\n".join(string)
-        
-class Create_Monster:
-    def __init__(self, name, health=100, damage=1, evasion=0.1):
+class Monster_TMP:
+    def __init__(self, name, health, damage, level, evasion):
         self.name = name
         self.health = health
         self.damage = damage
-        self.level = 1
+        self.level = level
         self.evasion = evasion
-    
+
+        # Encounter
+        self.x_offset = 28
+        self.y_offset = 25 
+        self.encounter_dist = 25
+
+        # For animating
+        self.last_up = pg.time.get_ticks()
+        self.cool_down = 100
+        self.frame = 0
+
+    # Check if player is close. If so, show Fight UI
+    def check_distance(self, player):
+        a = player.x - (self.x + self.x_offset)
+        b = player.y - (self.y + self.y_offset)
+        distance = math.hypot(a, b)
+
+        if distance < self.encounter_dist:
+            # กันไว้ใส่ UI
+            # print("encounter")
+            pass
+        
     def reduce_hp(self, damage):
         self.health -= damage
         if self.health <= 0:
@@ -32,24 +46,43 @@ class Create_Monster:
 
     def dodge(self):
         pass
+
+class Slime(Monster_TMP):
+    def __init__(self, x=0, y=0, name='slime', health=10, damage=1, level=1, evasion=0.1):
+        self.x = x
+        self.y = y
+        self.animation = []
+        self.animation_steps = 3
+        super().__init__(name, health, damage, level, evasion)
+        
+    def draw_slime(self):
+        sprite_sheet_image = pg.image.load("final_prog2/assets/Slime1_Idle_body.png").convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        return sprite_sheet.get_slime((0, 0), 0, 128, 128, 1, Configs.get('BLACK'))
+
+        # current_time = pg.time.get_ticks()
+        # if current_time - self.last_up >= self.cool_down:
+        #     self.frame += 1
+        #     self.last_up = current_time
+        #     if self.frame >= len(self.animation):
+        #         self.frame = 0
+
+        # for i in range(self.animation_steps):
+        #     self.animation.append(sprite_sheet.get_slime((0, 0), i, 128, 128, 1, Configs.get('BLACK')))
+
     
-class Slime(Monsters):
+class Goblin(Monster_TMP):
     def __init__(self):
-        super().__init__(name="Slime", health=3, evasion=0)
-        Monsters.monster_data[self.name] = self
-    
-class Goblin(Monsters):
-    def __init__(self):
-        super().__init__(name="Goblin", health=10, evasion=0.1)
+        super().__init__(name="goblin", health=10, evasion=0.1)
         self.hunter_instinct_rate = 0.14
-        Monsters.monster_data[self.name] = self
     
     def hunter_instinct(self):
         self.damage *= 1.2
 
 class Hop_Goblin(Goblin):
     def __init__(self):
-        super().__init__(name="Hop Goblin", health=20, evasion=0.15)
+        super().__init__(name="hop_goblin", health=20, evasion=0.15)
         self.potion_rate = 0.15
 
     def potion(self):

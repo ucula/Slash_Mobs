@@ -19,8 +19,3 @@ class Create_Weapon:
 
     def __repr__(self):
         return f"Price = {self.price}, Damage = {self.damage}"
-
-a = Create_Weapon("Sword", 100, 2, 20)
-b = Create_Weapon("Mace", 200, 3, 20)
-print(Weapons.weapon_data)
-print(Weapons.display_weapon())
