@@ -20,10 +20,20 @@ class Game:
         self.__ui = AllUI()
         self.__running = True
         self.__scene = 'hall'
-        self.__intro = True
+        self.__enter_scene = False
+        self.__auto_walk = False
         # self.__monster = Monsters()
         # self.__weapon = Weapons()
     
+    def char_animate(self):
+        if self.__player.idle:
+            self.__player.animation_list.clear()
+        self.__player.draw_walk()
+        self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
+
+        # Walk
+        self.scene_keybind()
+
     def scene_keybind(self):
         keys = pg.key.get_pressed()
         if keys:
@@ -42,6 +52,38 @@ class Game:
         else:
             self.__player.idle = True
 
+    def hall_scene(self):
+        # BG
+        hall_img = self.__ui.draw_hall_bg()
+        self.__screen.blit(hall_img, (0, 0))
+
+        # Enter scene
+        if self.__enter_scene:
+            self.__player.x = 390
+            self.__player.y = 600
+            self.__enter_scene = False
+            self.__auto_walk = True
+
+        if self.__auto_walk:
+            self.__player.y -= 2
+            self.__player.speed = 0
+            self.char_animate()
+
+            if self.__player.y < 500:
+                self.__player.speed = Configs.get('SPEED')
+                self.__auto_walk = False
+
+        else:
+            # Char animation
+            self.char_animate()
+            # Check border
+            self.__player.check_lim_hall()
+            # Check scene change
+            if self.__player.y > 600:
+                self.__scene = "plain"
+                self.__enter_scene = True
+                # self.__screen.fill(Configs.get('WHITE'))
+
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
@@ -51,33 +93,7 @@ class Game:
             
             # Hall scene
             if self.__scene == 'hall':
-                # Check border
-                self.__player.check_lim_hall()
-
-                # BG
-                hall_img = self.__ui.draw_hall_bg()
-                self.__screen.blit(hall_img, (0, 0))
-
-                # Walk in intro
-                if self.__intro:
-                    self.__player.x = 390
-                    self.__player.y = 500
-                    self.__intro = False
-
-                # Char animation
-                if self.__player.idle:
-                    self.__player.animation_list.clear()
-                self.__player.draw_walk()
-                self.__screen.blit(self.__player.animation_list[self.__player.frame], (self.__player.x, self.__player.y))
-
-                # Walk
-                self.scene_keybind()
-
-                # Check scene change
-                if self.__player.y > 600:
-                    self.__scene = "plain"
-                    self.__intro = True
-                    # self.__screen.fill(Configs.get('WHITE'))
+                self.hall_scene()
 
             # Plain scene
             if self.__scene == "plain":
@@ -86,10 +102,10 @@ class Game:
                 self.__screen.blit(plain_img, (0, 0))
 
                 # Walk in intro
-                if self.__intro:
+                if self.__enter_scene:
                     self.__player.x = 500
                     self.__player.y = 150
-                    self.__intro = False
+                    self.__enter_scene = False
 
                 # Check border
                 self.__player.check_lim_plain()
@@ -106,7 +122,7 @@ class Game:
                 # Check scene change
                 if self.__player.y < 100:
                     self.__scene = "hall"
-                    self.__intro = True
+                    self.__enter_scene = True
                     # self.__screen.fill(Configs.get('WHITE'))
 
             pg.display.update()
