@@ -32,6 +32,10 @@ class Player:
         self.cool_down = 100
         self.frame = 0
 
+        self.borders = {"hall": self.check_lim_hall,
+                       "plain": self.check_lim_plain,
+                       "shop": self.check_lim_shop}
+
     def level_up(self):
         pass
 

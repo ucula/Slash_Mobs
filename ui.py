@@ -15,7 +15,7 @@ class AllUI:
     @prep_size.setter
     def prep_size(self, val):
         self.__prep_size = val
-        
+
     def draw_hall_bg(self):
         image = pg.image.load("final_prog2/assets/hall.jpg").convert()
         return image
@@ -28,7 +28,7 @@ class AllUI:
         image = pg.image.load("final_prog2/assets/shop.jpg").convert()
         return image
     
-    def draw_prepare_fight(self):
+    def draw_mob_info(self):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
         pg.draw.rect(self.__screen, Configs.get('GRAY'), (255, 185, self.prep_size-10, self.prep_size-10))
         if self.prep_size != 300:

@@ -10,12 +10,11 @@ import random
 class Game:
     def __init__(self):
         self.__mob_gacha = monster.Monster_TMP.monster
-        
+        self.__hostile_area = ["plain"]
         # [slime, goblin, hop]
-        self.__mob_rate = {"plain": [0.8, 0.15, 0.05]}
+        self.__mob_rate = {"plain": [0.5, 0.5, 0.5]}
         self.__mobs = None
         # self.__weapon = Weapons()
-        self.__combat = False
 
         pg.init()
         pg.display.set_caption("Slash Mobs!")
@@ -31,14 +30,15 @@ class Game:
                             "plain": self.plain_scene,
                             "shop": self.shop_scene
                             }
-        self.__max_range = 1
+        
         self.__generate = True
         self.__before = None
         self.__scene = 'hall'
         self.__enter_scene = False
         
     # Known bug
-    def char_animate(self):
+    def character_animate(self, scene):
+        self.__player.borders[scene]()
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
             self.__player.y -= self.__player.speed  
@@ -72,21 +72,58 @@ class Game:
             img = self.__player.draw_idle()
             self.__screen.blit(img , (self.__player.x, self.__player.y))
     
+    def check_scene_change(self, scene):
+        if scene == "hall":
+            if self.__player.y > 600:
+                self.__scene = "plain"
+                self.__before = "hall"
+                return True
+        elif scene == "plain":
+            if self.__player.y < 100:
+                self.__scene = "hall"
+                self.__before = "plain" 
+                return True     
+            if self.__player.x > 750:
+                self.__scene = "shop"
+                self.__before = "plain"
+                return True
+        elif scene == "shop":
+            if self.__player.y > 600:
+                self.__scene = "plain"
+                self.__before = "shop"
+                return True
+        else:
+            pass
+
+        if scene not in self.__hostile_area:
+            self.__generate = True
+            self.__mobs = None
+
     # Set player pos when entering new map
-    def start_point(self, x, y):
+    def start_point(self, scene, before):
         if self.__enter_scene:
-            self.__player.x = x
-            self.__player.y = y
-            self.__enter_scene = False
+            if scene == "hall":
+                self.__player.x = 390
+                self.__player.y = 550
+                print("coords set")
+            elif scene == "plain" and before == "hall":
+                self.__player.x = 500
+                self.__player.y = 150
+            elif scene == "plain" and before == "shop": 
+                self.__player.x = 750
+                self.__player.y = 300
+            elif scene == "shop":
+                self.__player.x = 350
+                self.__player.y = 550
+        self.__enter_scene = False
     
     # Generate random x, y coordinates according to scene
     def gen_cords(self):
         if self.__scene == "plain":
-            x = random.randint(100, 600)
-            y = random.randint(180, 250)
+            x = random.randint(80, 650)
+            y = random.randint(190, 250)
         else:
             pass
-
         return x, y
 
     # Return random mob to generate on that scene
@@ -95,108 +132,68 @@ class Game:
         select = tmp[0]
         pos_x, pos_y = self.gen_cords()
         if select == "slime":
-            tmp_mob = monster.Slime(self.__screen, pos_x, pos_y)
+            tmp_mob = monster.Slime(self.__screen, 28, 25, pos_x, pos_y)
         elif select == "goblin":
-            tmp_mob = monster.Goblin(self.__screen, pos_x, pos_y)
+            tmp_mob = monster.Goblin(self.__screen, 117, 133, pos_x, pos_y)
         elif select == "hop":
-            tmp_mob = monster.Dark_Goblin(self.__screen, pos_x, pos_y)
+            tmp_mob = monster.Dark_Goblin(self.__screen, 57, 72, pos_x, pos_y)
         else:
             pass
-
         return tmp_mob
 
-    # Add random mobs to list
+    # Create mob on and display on screen
     def create_mob(self):
-        self.__mobs = self.random_mob()
+        if self.__generate:
+            self.__mobs = self.random_mob()
+            self.__generate = False
+        self.__mobs.draw_mon()
+        self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
+        self.__mobs.check_distance(self.__player)
 
     # function for displaying hall bg
     def hall_scene(self):
         # BG
         hall_img = self.__ui.draw_hall_bg()
         self.__screen.blit(hall_img, (0, 0))
-        self.start_point(390, 550)
 
-        # Animation/Border checker
-        self.char_animate()
-        self.__player.check_lim_hall()
-
-        # Check scene change
-        if self.__player.y > 600:
-            self.__scene = "plain"
-            self.__enter_scene = True
-            self.__before = "hall"
+        self.start_point(self.__scene, self.__before)
+        self.character_animate(self.__scene)
+        if self.check_scene_change(self.__scene):
+            self.__enter_scene = True  
 
     def plain_scene(self):
-        # Background
+        # BG
         plain_img = self.__ui.draw_plain_bg()
         self.__screen.blit(plain_img, (0, 0))
-        if self.__before == "shop":
-            self.start_point(750, 300)
-        else:
-            self.start_point(500, 150)
 
-        # Player's animation
-        self.char_animate()
-        self.__player.check_lim_plain()
+        self.start_point(self.__scene, self.__before)
+        self.character_animate(self.__scene)
+        if self.check_scene_change(self.__scene):
+            self.__enter_scene = True  
 
-        # Create monsters and make themm appear on screen
-        if self.__generate:
-            self.create_mob()
-            self.__generate = False
-        
-        img = self.__mobs.draw_mon()
-        self.__screen.blit(img, (self.__mobs.x, self.__mobs.y))
-        self.__mobs.check_distance(self.__player)
-
-        # Check scene change
-        if self.__player.y < 100:
-            self.__scene = "hall"
-            self.__enter_scene = True
-            self.__mobs = None
-            self.__generate = True
-
-        if self.__player.x > 750:
-            self.__scene = "shop"
-            self.__enter_scene = True
-            self.__mobs = None
-            self.__generate = True
-    
     def shop_scene(self):
         # BG
         shop_img = self.__ui.draw_shop_bg()
         self.__screen.blit(shop_img, (0, 0))
-        self.start_point(350, 550)
 
-        # Animation/Border checker
-        self.char_animate()
-        self.__player.check_lim_shop()
-        
-        # Check scene change
-        if self.__player.y > 600:
-            self.__scene = "plain"
-            self.__enter_scene = True
-            self.__before = "shop"
+        self.start_point(self.__scene, self.__before)
+        self.character_animate(self.__scene)
+        if self.check_scene_change(self.__scene):
+            self.__enter_scene = True  
 
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
+            event = pg.event.get()
+            for e in event:
+                if e.type == pg.QUIT:
                     self.__running = False
+           
+            self.__scene_dct[self.__scene]()
+            if self.__scene in self.__hostile_area: 
+                self.create_mob()
             
-            # If player encounter check if want to fight
-            # if self.__mobs.ready:
-            #     print(self.__mobs.ready)
-            #     if event.type == pg.KEYDOWN and pg.K_SPACE:
-            #         self.__combat = True
-            #         self.__mobs.ready = False
-                
-            # if self.__combat:
-            #     self.__ui.draw_intro_battle()
-                
-            # else:
-            # Start scene
-            self.__scene_dct[self.__scene]() 
+
 
             pg.display.update()
         pg.quit
