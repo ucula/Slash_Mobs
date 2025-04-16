@@ -206,6 +206,14 @@ class Game:
         self.__screen.blit(shop_img, (0, 0))
         self.tmp_scene()    
 
+    """
+    TODO: 
+    1.Fix UI not disappear when animation is triggered (!!!!!!!!)
+    2.Add in Flee option
+    3.Add in Health bar on top left
+
+    """
+    
     # 3.Combat scene เเบบเละๆ
     def combat_scene(self):
         # BG
