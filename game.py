@@ -13,7 +13,7 @@ class Game:
         self.__mob_gacha = monster.Monster_TMP.monster
         self.__hostile_area = ["plain"]
         # [slime, goblin, hop]
-        self.__mob_rate = {"plain": [1, 0, 0]}
+        self.__mob_rate = {"plain": [0.8, 0.15, 0.05]}
         self.__mobs = None
         
         pg.init()
@@ -115,7 +115,6 @@ class Game:
             if scene == "hall":
                 self.__player.x = 390
                 self.__player.y = 550
-                print("coords set")
             elif scene == "plain" and before == "hall":
                 self.__player.x = 500
                 self.__player.y = 150
@@ -128,7 +127,6 @@ class Game:
             elif scene == "combat":
                 self.__player.x = 800
                 self.__player.y = 300
-                print(self.__player.x, self.__player.y)
         self.__enter_scene = False
     
     # Generate random x, y coordinates according to scene
@@ -297,7 +295,6 @@ class Game:
                 self.__scene = "combat"
                 # Do intro first
                 if self.__ui.intro_battle:
-                    print("intro")
                     self.__ui.draw_intro_battle()
 
                 # After intro add in elements
