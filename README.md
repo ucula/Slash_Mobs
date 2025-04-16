@@ -12,7 +12,7 @@
 ### Libraries:
 - pygame
 
-# How to play ?
+# How to play?
 - Walk around.
 - If you see any mobs, walk towards it .
 - Info messages will pop up asking you if you to fight this mob or not.
