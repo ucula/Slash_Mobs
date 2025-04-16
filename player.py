@@ -4,8 +4,8 @@ from spritesheet import SpriteSheet
 import pygame as pg
 
 class Player:
-    def __init__(self, name: str):
-        self.ui = AllUI()
+    def __init__(self, screen, name: str):
+        self.ui = AllUI(screen)
         self.name = name
         self.health = 100
         self.level = 1

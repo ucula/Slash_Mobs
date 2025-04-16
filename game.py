@@ -9,20 +9,29 @@ import random
 
 class Game:
     def __init__(self):
-        self.__player = Player("g")
         self.__mob_gacha = monster.Monster_TMP.monster
+        
+        # [slime, goblin, hop]
+        self.__mob_rate = {"plain": [0.8, 0.15, 0.05]}
         self.__mobs = None
         # self.__weapon = Weapons()
+        self.__combat = False
 
         pg.init()
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
 
-        self.__ui = AllUI()
+        self.__player = Player(screen=self.__screen, name="")
+        self.__ui = AllUI(self.__screen)
+
         self.__running = True
 
-        self.max_range = 1
+        self.__scene_dct = {"hall": self.hall_scene,
+                            "plain": self.plain_scene,
+                            "shop": self.shop_scene
+                            }
+        self.__max_range = 1
         self.__generate = True
         self.__before = None
         self.__scene = 'hall'
@@ -82,12 +91,15 @@ class Game:
 
     # Return random mob to generate on that scene
     def random_mob(self):
-        select = random.choice(self.__mob_gacha)
+        tmp = random.choices(self.__mob_gacha, self.__mob_rate[self.__scene])
+        select = tmp[0]
         pos_x, pos_y = self.gen_cords()
         if select == "slime":
-            tmp_mob = monster.Slime(pos_x, pos_y)
+            tmp_mob = monster.Slime(self.__screen, pos_x, pos_y)
         elif select == "goblin":
-            tmp_mob = monster.Goblin(pos_x, pos_y)
+            tmp_mob = monster.Goblin(self.__screen, pos_x, pos_y)
+        elif select == "hop":
+            tmp_mob = monster.Dark_Goblin(self.__screen, pos_x, pos_y)
         else:
             pass
 
@@ -131,9 +143,10 @@ class Game:
         if self.__generate:
             self.create_mob()
             self.__generate = False
-        self.__mobs.check_distance(self.__player)
+        
         img = self.__mobs.draw_mon()
         self.__screen.blit(img, (self.__mobs.x, self.__mobs.y))
+        self.__mobs.check_distance(self.__player)
 
         # Check scene change
         if self.__player.y < 100:
@@ -171,17 +184,19 @@ class Game:
                 if event.type == pg.QUIT:
                     self.__running = False
             
-            # Hall scene
-            if self.__scene == 'hall':
-                self.hall_scene()
-
-            # Plain scene
-            if self.__scene == "plain":
-                self.plain_scene()
-
-            # Shop scene
-            if self.__scene == "shop":
-                self.shop_scene()
+            # If player encounter check if want to fight
+            # if self.__mobs.ready:
+            #     print(self.__mobs.ready)
+            #     if event.type == pg.KEYDOWN and pg.K_SPACE:
+            #         self.__combat = True
+            #         self.__mobs.ready = False
+                
+            # if self.__combat:
+            #     self.__ui.draw_intro_battle()
+                
+            # else:
+            # Start scene
+            self.__scene_dct[self.__scene]() 
 
             pg.display.update()
         pg.quit
