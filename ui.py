@@ -37,15 +37,15 @@ class AllUI:
         self.__prep_size = val
 
     def draw_hall_bg(self):
-        image = pg.image.load("final_prog2/assets/hall.jpg").convert()
+        image = pg.image.load("final_prog2-0.5/assets/hall.jpg").convert()
         return image
     
     def draw_plain_bg(self):
-        image = pg.image.load("final_prog2/assets/plain.jpg").convert()
+        image = pg.image.load("final_prog2-0.5/assets/plain.jpg").convert()
         return image
     
     def draw_shop_bg(self):
-        image = pg.image.load("final_prog2/assets/shop.jpg").convert()
+        image = pg.image.load("final_prog2-0.5/assets/shop.jpg").convert()
         return image
     
     def draw_mob_info(self):

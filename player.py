@@ -131,7 +131,7 @@ class Player:
             self.speed = Configs.get('SPEED')
     
     def draw_walk_down(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("final_prog2-0.5/assets/char.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
 
         current_time = pg.time.get_ticks()
@@ -148,7 +148,7 @@ class Player:
         return sprite_sheet.get_image1((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
     
     def draw_walk_left(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("final_prog2-0.5/assets/char.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
 
         current_time = pg.time.get_ticks()
@@ -165,7 +165,7 @@ class Player:
         return sprite_sheet.get_image2((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
 
     def draw_walk_up(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("final_prog2-0.5/assets/char.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
 
         current_time = pg.time.get_ticks()
@@ -182,7 +182,7 @@ class Player:
         return sprite_sheet.get_image3((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
 
     def draw_walk_right(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/char2.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("final_prog2-0.5/assets/char2.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
 
         current_time = pg.time.get_ticks()
@@ -199,7 +199,7 @@ class Player:
         return sprite_sheet.get_image4((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
 
     def draw_idle(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/char.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("final_prog2-0.5/assets/char.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         
         return sprite_sheet.get_idle((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
