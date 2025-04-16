@@ -28,7 +28,7 @@ class Game:
         # for check combat status
         self.__ready = False
         # for check skill animation status
-        self.animate = None
+        self.__animate = None
         
         # for combat
         self.__player_turn = True
@@ -167,13 +167,6 @@ class Game:
         activate = self.__mobs.check_distance(self.__player)
         return activate
 
-    # Reduce repeatness in scenes function
-    def tmp_scene(self):
-        self.start_point(self.__scene, self.__before)
-        self.character_animate(self.__scene)
-        if self.check_scene_change(self.__scene):
-            self.__enter_scene = True 
-
     # Place mob on determined pos when enter combat scene
     def create_mob_incombat(self):
         if self.__mobs.name == "slime":
@@ -189,6 +182,13 @@ class Game:
             pass
         self.__mobs.draw_mon()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
+    
+    # Reduce repeatness in scenes function
+    def tmp_scene(self):
+        self.start_point(self.__scene, self.__before)
+        self.character_animate(self.__scene)
+        if self.check_scene_change(self.__scene):
+            self.__enter_scene = True 
     
     # Colelction of scenes
     def hall_scene(self):
@@ -208,9 +208,10 @@ class Game:
 
     """
     TODO: 
-    1.Fix UI not disappear when animation is triggered (!!!!!!!!)
-    2.Add in Flee option
-    3.Add in Health bar on top left
+    - Add Mob's turn 
+    - Add End battle 
+    - Add Flee option
+    - Add Health bar on top left
 
     """
     # 3.Combat scene เเบบเละๆ
@@ -221,9 +222,8 @@ class Game:
 
         # Animation intro 
         self.start_point(self.__scene, None)
-
         self.__ui.draw_enter_animation(self.__player)
-        if self.animate:
+        if self.__animate:
             self.__draw_gui = False
         else:
             self.__draw_gui = True
@@ -235,7 +235,6 @@ class Game:
             # ถึงเเล้วให้วาด GUI
             if self.__draw_gui:
                 self.__ui.draw_gui_combat()
-                # print("GUI ON!")
                 self.__action = True
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
 
@@ -251,6 +250,7 @@ class Game:
                 # Check for combat start
                 if self.__ready:
                     if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+                        self.__before = self.__scene
                         self.__combat = True
                         self.__enter_scene = True
                         self.__ready = False
@@ -261,29 +261,43 @@ class Game:
                     if e.type == pg.KEYDOWN:
                         if e.key == pg.K_z:
                             self.__select = "attack"
-                            self.__draw_gui = False
-                            print("GUI OFF!")
-                            print(self.__draw_gui)
-                            self.animate = True
+                            self.__animate = True
                             self.__action = False
+                        elif e.key == pg.K_r:
+                            self.__select = "run"
+                            self.__scene = self.__before
+                            self.__combat = False
 
             # Check animation
-            if self.animate:
-                print(self.__draw_gui)
+            if self.__animate:
                 # print("animating")
                 done = self.__action_dct[self.__select](self.__player)
+
                 self.__draw_gui = done
                 if self.__draw_gui:
-                    print("finish animating")
                     self.__ui.animate1 = True
-                    self.animate = False
+                    self.__animate = False
                     self.__action = True
+
+            # Normal scene
+            if not self.__combat:
+                self.__ready = False
+                self.__animate = None
+                self.__player_turn = True
+                self.__draw_gui = False
+                self.__action = False
+                self.__ui.intro_battle = True
+                self.__ui.intro_right = True
+                self.__ui.intro_left = True
+                self.__ui.intro_size = 0
+                self.__ui.combat_intro = True
 
             # 2. Combat scene
             if self.__combat:
                 self.__scene = "combat"
                 # Do intro first
                 if self.__ui.intro_battle:
+                    print("intro")
                     self.__ui.draw_intro_battle()
 
                 # After intro add in elements

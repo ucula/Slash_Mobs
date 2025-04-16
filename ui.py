@@ -95,7 +95,6 @@ class AllUI:
             player.x -= 10
             if player.x == 540:
                 self.combat_intro = False
-        return True
     
     def draw_game_over(self):
         pass
@@ -125,6 +124,10 @@ class AllUI:
     
         atk_text = self.__font.render("Attack (Z)", True, Configs.get("WHITE"))
         atk_rect = atk_text.get_rect(center=(100, 487.5))
+        self.__screen.blit(atk_text, atk_rect)
+
+        atk_text = self.__font.render("Run (R)", True, Configs.get("WHITE"))
+        atk_rect = atk_text.get_rect(center=(300, 487.5))
         self.__screen.blit(atk_text, atk_rect)
 
        
