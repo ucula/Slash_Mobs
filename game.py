@@ -213,7 +213,7 @@ class Game:
     3.Add in Health bar on top left
 
     """
-    
+
     # 3.Combat scene เเบบเละๆ
     def combat_scene(self):
         # BG
@@ -243,7 +243,7 @@ class Game:
             self.__clock.tick(Configs.get('FPS'))
             event = pg.event.get()
             for e in event:
-                if e.type == pg.QUIT:
+                if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
                     self.__running = False
 
                 # Check for combat start

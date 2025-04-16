@@ -13,7 +13,7 @@
 - pygame
 
 # How to play?
-- Walk around.
+- Walk around by using WASD.
 - If you see any mobs, walk towards it .
 - Info messages will pop up asking you if you to fight this mob or not.
 - Press **Space** to start the fight.
