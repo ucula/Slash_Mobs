@@ -8,8 +8,9 @@ import math
 
 class Monster_TMP:
     monster = ["slime", "goblin", "hop"]
-    def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, health=0, damage=0, level=0, evasion=0):
+    def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, name="", health=0, damage=0, level=0, evasion=0):
         self.ui = AllUI(screen)
+        self.name = name
         self.x_offset = x_off
         self.y_offset = y_off
         self.encounter_dist = 25
@@ -56,8 +57,8 @@ class Monster_TMP:
         pass
 
 class Slime(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, health=10, damage=1, level=1, evasion=0.1):
-        super().__init__(screen, x_off, y_off, x, y, health, damage, level, evasion)
+    def __init__(self, screen, x_off, y_off, x, y, name="slime", health=10, damage=1, level=1, evasion=0.1):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion)
         self.animation_steps = 6
         self.size = 1
         self.pixel = 128
@@ -84,8 +85,8 @@ class Slime(Monster_TMP):
             self.ui.prep_size = 0
    
 class Goblin(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, health=30, damage=5, level=2, evasion=0.2):
-        super().__init__(screen, x_off, y_off, x, y, health, damage, level, evasion)
+    def __init__(self, screen, x_off, y_off, x, y, name="goblin", health=30, damage=5, level=2, evasion=0.2):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion)
         self.animation_steps = 3
         self.size = 1
         self.pixel = 300
@@ -117,8 +118,8 @@ class Goblin(Monster_TMP):
             self.ui.prep_size = 0
 
 class Dark_Goblin(Goblin):
-    def __init__(self, screen, x_off, y_off, x, y, health=30, damage=10, level=5, evasion=0.7):
-        super().__init__(screen, x_off, y_off, x, y, health, damage, level, evasion)
+    def __init__(self, screen, x_off, y_off, x, y, name="dark", health=30, damage=10, level=5, evasion=0.7):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion)
         self.animation_steps = 3
         self.size = 3
         self.pixel = 64

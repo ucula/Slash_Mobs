@@ -9,24 +9,36 @@ import random
 
 class Game:
     def __init__(self):
+        # self.__weapon = Weapons()
         self.__mob_gacha = monster.Monster_TMP.monster
         self.__hostile_area = ["plain"]
         # [slime, goblin, hop]
-        self.__mob_rate = {"plain": [0.5, 0.5, 0.5]}
+        self.__mob_rate = {"plain": [1, 0, 0]}
         self.__mobs = None
-        # self.__weapon = Weapons()
-
+        
         pg.init()
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
-
         self.__player = Player(screen=self.__screen, name="")
         self.__ui = AllUI(self.__screen)
 
+        # for main loop
         self.__running = True
-
+        # for check combat status
+        self.__ready = False
+        # for check skill animation status
+        self.animate = None
+        
+        # for combat
+        self.__player_turn = True
+        self.__draw_gui = False
         self.__combat = False
+        
+        self.__action = False
+
+        self.__select = None
+        self.__action_dct = {"attack": self.__ui.draw_attack}
 
         self.__scene_dct = {"hall": self.hall_scene,
                             "plain": self.plain_scene,
@@ -74,21 +86,21 @@ class Game:
         if scene == "hall":
             if self.__player.y > 600:
                 self.__scene = "plain"
-                self.__before = "hall"
+                self.__before = scene
                 return True
         elif scene == "plain":
             if self.__player.y < 100:
                 self.__scene = "hall"
-                self.__before = "plain"
+                self.__before = scene
                 return True    
             if self.__player.x > 750:
                 self.__scene = "shop"
-                self.__before = "plain"
+                self.__before = scene
                 return True
         elif scene == "shop":
             if self.__player.y > 600:
                 self.__scene = "plain"
-                self.__before = "shop"
+                self.__before = scene
                 return True
         else:
             pass
@@ -113,6 +125,10 @@ class Game:
             elif scene == "shop":
                 self.__player.x = 350
                 self.__player.y = 550
+            elif scene == "combat":
+                self.__player.x = 800
+                self.__player.y = 300
+                print(self.__player.x, self.__player.y)
         self.__enter_scene = False
     
     # Generate random x, y coordinates according to scene
@@ -158,7 +174,23 @@ class Game:
         if self.check_scene_change(self.__scene):
             self.__enter_scene = True 
 
-    # Colelctions of scene
+    # Place mob on determined pos when enter combat scene
+    def create_mob_incombat(self):
+        if self.__mobs.name == "slime":
+            self.__mobs.x = Configs.get('MOB_x') + 50
+            self.__mobs.y = Configs.get('MOB_y') + 120
+        elif self.__mobs.name == "goblin":
+            self.__mobs.x = Configs.get('MOB_x')
+            self.__mobs.y = Configs.get('MOB_y')
+        elif self.__mobs.name == "dark":
+            self.__mobs.x = Configs.get('MOB_x')
+            self.__mobs.y = Configs.get('MOB_y') + 70
+        else:
+            pass
+        self.__mobs.draw_mon()
+        self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
+    
+    # Colelction of scenes
     def hall_scene(self):
         hall_img = self.__ui.draw_hall_bg()
         self.__screen.blit(hall_img, (0, 0))
@@ -172,11 +204,31 @@ class Game:
     def shop_scene(self):
         shop_img = self.__ui.draw_shop_bg()
         self.__screen.blit(shop_img, (0, 0))
-        self.tmp_scene()
+        self.tmp_scene()    
 
+    # 3.Combat scene เเบบเละๆ
     def combat_scene(self):
-        img = self.__ui.draw_combat_bg()
+        # BG
+        img = self.__ui.draw_plain_bg()
         self.__screen.blit(img, (0, 0))
+
+        # Animation intro 
+        self.start_point(self.__scene, None)
+
+        done = self.__ui.draw_enter_animation(self.__player)
+        self.__draw_gui = done
+
+        # Main
+        self.create_mob_incombat()
+        # Check ว่าถึง turn ของผู้เล่นรึยัง
+        if self.__player_turn:
+            # ถึงเเล้วให้วาด GUI
+            if self.__draw_gui:
+                self.__ui.draw_gui_combat()
+                print("GUI ON!")
+                self.__action = True
+
+        self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
 
     # Main loop
     def run(self):
@@ -187,21 +239,49 @@ class Game:
                 if e.type == pg.QUIT:
                     self.__running = False
 
+                # Check for combat start
+                if self.__ready:
+                    if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+                        self.__combat = True
+                        self.__enter_scene = True
+
+                # Check for skill trigger
+                if self.__action:
+                    # self.__draw_gui = False
+                    if e.type == pg.KEYDOWN:
+                        if e.key == pg.K_z:
+                            self.__select = "attack"
+                            self.__draw_gui = False
+                            self.animate = True
+                            self.__action = False
+
+            # Check animation
+            if self.animate:
+                print("animating")
+                done = self.__action_dct[self.__select](self.__player)
+                self.__draw_gui = done
+                if self.__draw_gui:
+                    print("finiah animating")
+                    self.__ui.animate1 = True
+                    self.animate = False
+                    self.__action = True
+
+            # 2. Combat scene
             if self.__combat:
                 self.__scene = "combat"
-                if self.__ui.intro:
+                # Do intro first
+                if self.__ui.intro_battle:
                     self.__ui.draw_intro_battle()
+
+                # After intro add in elements
                 else:
                     self.__scene_dct[self.__scene]()
-                    
+                        
             else:
+                # 1. Normal scene without engaing in combat
                 self.__scene_dct[self.__scene]()
                 if self.__scene in self.__hostile_area: 
-                    ready = self.create_mob()
-                    if ready:
-                        for e in event:
-                            if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
-                                self.__combat = True
+                    self.__ready = self.create_mob()
 
             pg.display.update()
         pg.quit
