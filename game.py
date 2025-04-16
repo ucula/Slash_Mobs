@@ -213,7 +213,6 @@ class Game:
     3.Add in Health bar on top left
 
     """
-
     # 3.Combat scene เเบบเละๆ
     def combat_scene(self):
         # BG
@@ -223,8 +222,11 @@ class Game:
         # Animation intro 
         self.start_point(self.__scene, None)
 
-        done = self.__ui.draw_enter_animation(self.__player)
-        self.__draw_gui = done
+        self.__ui.draw_enter_animation(self.__player)
+        if self.animate:
+            self.__draw_gui = False
+        else:
+            self.__draw_gui = True
 
         # Main
         self.create_mob_incombat()
