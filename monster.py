@@ -64,7 +64,7 @@ class Slime(Monster_TMP):
         self.pixel = 128
     
     def draw_mon(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/slime.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("assets/slime.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -94,7 +94,7 @@ class Goblin(Monster_TMP):
         self.hunter_instinct_rate = 0.14
 
     def draw_mon(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/goblin.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("assets/goblin.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -125,7 +125,7 @@ class Dark_Goblin(Goblin):
         self.pixel = 64
 
     def draw_mon(self):
-        sprite_sheet_image = pg.image.load("final_prog2/assets/dark.png").convert_alpha()
+        sprite_sheet_image = pg.image.load("assets/dark.png").convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
