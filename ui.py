@@ -6,7 +6,11 @@ class AllUI:
         self.__font = pg.font.Font(None, 30)
         self.__screen = screen
         self.__prep_size = 0
-        self.__intro_size = 0
+
+        self.intro_size = 0
+        self.intro = True
+        self.intro_right = True
+        self.intro_left = True
 
     @property
     def prep_size(self):
@@ -44,9 +48,24 @@ class AllUI:
             self.__screen.blit(text2, text2_rect)
 
     def draw_intro_battle(self):
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (255, 185, self.__intro_size, 600))
-        if self.__intro_size != 800:
-            self.__intro_size += 50
+        if self.intro_right:
+            pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.intro_size, 600))
+            # print("still here")
+            if self.intro_size != 900:
+                self.intro_size += 20
+            if self.intro_size == 900:
+                self.intro_right = False
+                self.intro = False
+        # else:
+        #     if self.intro_size > 0:
+        #         print("minus")
+        #         pg.draw.rect(self.__screen, Configs.get('WHITE'), (0, 0, self.intro_size, 600))
+        #         self.intro_size -= 50
+                # self.__screen.fill(Configs.get('WHITE'))
+
+    def draw_combat_bg(self):
+        image = pg.image.load("final_prog2/assets/combat.jpg").convert()
+        return image
 
     def draw_game_over(self):
         pass

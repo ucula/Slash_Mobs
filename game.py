@@ -26,11 +26,13 @@ class Game:
 
         self.__running = True
 
+        self.__combat = False
+
         self.__scene_dct = {"hall": self.hall_scene,
                             "plain": self.plain_scene,
-                            "shop": self.shop_scene
+                            "shop": self.shop_scene,
+                            "combat": self.combat_scene
                             }
-        
         self.__generate = True
         self.__before = None
         self.__scene = 'hall'
@@ -46,28 +48,24 @@ class Game:
                                (self.__player.x, self.__player.y))
             # self.__player.draw_walk_up()
             # self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
-
         elif keys[pg.K_s]:
             self.__player.y += self.__player.speed
             self.__screen.blit(self.__player.draw_walk_down(), 
                                (self.__player.x, self.__player.y))
             # self.__player.draw_walk_down()
             # self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
-
         elif keys[pg.K_a]:
             self.__player.x -= self.__player.speed
             self.__screen.blit(self.__player.draw_walk_left(), 
                                (self.__player.x, self.__player.y))
             # self.__player.draw_walk_left()
             # self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
-
         elif keys[pg.K_d]:
             self.__player.x += self.__player.speed
             self.__screen.blit(self.__player.draw_walk_right(), 
                                (self.__player.x, self.__player.y))
             # self.__player.draw_walk_right()
-            # self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
-            
+            # self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))       
         else:
             img = self.__player.draw_idle()
             self.__screen.blit(img , (self.__player.x, self.__player.y))
@@ -81,8 +79,8 @@ class Game:
         elif scene == "plain":
             if self.__player.y < 100:
                 self.__scene = "hall"
-                self.__before = "plain" 
-                return True     
+                self.__before = "plain"
+                return True    
             if self.__player.x > 750:
                 self.__scene = "shop"
                 self.__before = "plain"
@@ -98,8 +96,8 @@ class Game:
         if scene not in self.__hostile_area:
             self.__generate = True
             self.__mobs = None
-
-    # Set player pos when entering new map
+    
+    # Set player pos when entering new scene
     def start_point(self, scene, before):
         if self.__enter_scene:
             if scene == "hall":
@@ -123,6 +121,8 @@ class Game:
             x = random.randint(80, 650)
             y = random.randint(190, 250)
         else:
+            # x = random.randint(0,Configs.get('WIN_SIZE_W'))
+            # y = random.randint(0,Configs.get('WIN_SIZE_H'))
             pass
         return x, y
 
@@ -148,39 +148,37 @@ class Game:
             self.__generate = False
         self.__mobs.draw_mon()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
-        self.__mobs.check_distance(self.__player)
+        activate = self.__mobs.check_distance(self.__player)
+        return activate
 
-    # function for displaying hall bg
+    # Reduce repeatness in scenes function
+    def tmp_scene(self):
+        self.start_point(self.__scene, self.__before)
+        self.character_animate(self.__scene)
+        if self.check_scene_change(self.__scene):
+            self.__enter_scene = True 
+
+    # Colelctions of scene
     def hall_scene(self):
-        # BG
         hall_img = self.__ui.draw_hall_bg()
         self.__screen.blit(hall_img, (0, 0))
-
-        self.start_point(self.__scene, self.__before)
-        self.character_animate(self.__scene)
-        if self.check_scene_change(self.__scene):
-            self.__enter_scene = True  
-
+        self.tmp_scene()
+         
     def plain_scene(self):
-        # BG
         plain_img = self.__ui.draw_plain_bg()
         self.__screen.blit(plain_img, (0, 0))
-
-        self.start_point(self.__scene, self.__before)
-        self.character_animate(self.__scene)
-        if self.check_scene_change(self.__scene):
-            self.__enter_scene = True  
+        self.tmp_scene()
 
     def shop_scene(self):
-        # BG
         shop_img = self.__ui.draw_shop_bg()
         self.__screen.blit(shop_img, (0, 0))
+        self.tmp_scene()
 
-        self.start_point(self.__scene, self.__before)
-        self.character_animate(self.__scene)
-        if self.check_scene_change(self.__scene):
-            self.__enter_scene = True  
+    def combat_scene(self):
+        img = self.__ui.draw_combat_bg()
+        self.__screen.blit(img, (0, 0))
 
+    # Main loop
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
@@ -188,12 +186,22 @@ class Game:
             for e in event:
                 if e.type == pg.QUIT:
                     self.__running = False
-           
-            self.__scene_dct[self.__scene]()
-            if self.__scene in self.__hostile_area: 
-                self.create_mob()
-            
 
+            if self.__combat:
+                self.__scene = "combat"
+                if self.__ui.intro:
+                    self.__ui.draw_intro_battle()
+                else:
+                    self.__scene_dct[self.__scene]()
+                    
+            else:
+                self.__scene_dct[self.__scene]()
+                if self.__scene in self.__hostile_area: 
+                    ready = self.create_mob()
+                    if ready:
+                        for e in event:
+                            if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+                                self.__combat = True
 
             pg.display.update()
         pg.quit
