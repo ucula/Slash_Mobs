@@ -225,9 +225,8 @@ class Game:
             # ถึงเเล้วให้วาด GUI
             if self.__draw_gui:
                 self.__ui.draw_gui_combat()
-                print("GUI ON!")
+                # print("GUI ON!")
                 self.__action = True
-
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
 
     # Main loop
@@ -244,6 +243,7 @@ class Game:
                     if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
                         self.__combat = True
                         self.__enter_scene = True
+                        self.__ready = False
 
                 # Check for skill trigger
                 if self.__action:
@@ -252,16 +252,19 @@ class Game:
                         if e.key == pg.K_z:
                             self.__select = "attack"
                             self.__draw_gui = False
+                            print("GUI OFF!")
+                            print(self.__draw_gui)
                             self.animate = True
                             self.__action = False
 
             # Check animation
             if self.animate:
-                print("animating")
+                print(self.__draw_gui)
+                # print("animating")
                 done = self.__action_dct[self.__select](self.__player)
                 self.__draw_gui = done
                 if self.__draw_gui:
-                    print("finiah animating")
+                    print("finish animating")
                     self.__ui.animate1 = True
                     self.animate = False
                     self.__action = True

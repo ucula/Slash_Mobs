@@ -83,10 +83,8 @@ class AllUI:
             player.x += 20
             if player.x == 540:
                 self.animate2 = False
-        else:
-            pass
         
-        if not self.animate1 and not self.animate2:
+        elif not self.animate1 and not self.animate2:
             return True
         
         self.__screen.blit(player.draw_walk_left(), (player.x, player.y))
@@ -97,8 +95,7 @@ class AllUI:
             player.x -= 10
             if player.x == 540:
                 self.combat_intro = False
-        else:
-            return True
+        return True
     
     def draw_game_over(self):
         pass
