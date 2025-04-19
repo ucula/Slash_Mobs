@@ -5,9 +5,8 @@ from config import Configs
 from ui import AllUI
 import math
 
-
 class Monster_TMP:
-    monster = ["slime", "goblin", "hop"]
+    monster = ['SLIME', 'GOBLIN', 'DARK']
     def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, name="", health=0, damage=0, level=0, evasion=0,
                 steps=0, size=0, pixel=0):
         self.ui = AllUI(screen)
@@ -21,7 +20,6 @@ class Monster_TMP:
         self.damage = damage
         self.level = level
         self.evasion = evasion
-
         self.ready = False
         
         # For animating
@@ -33,6 +31,10 @@ class Monster_TMP:
         self.size = size
         self.pixel = pixel
 
+    @classmethod
+    def add_monster(cls, name):
+        cls.monster.append(name)
+
     def reduce_hp(self, damage):
         self.health -= damage
         if self.health <= 0:
@@ -40,7 +42,7 @@ class Monster_TMP:
 
     # Show mob info and ready for start fight trigger
     # รอใส่ข้อมูลมอน
-    def draw_mon(self):
+    def draw_monster(self):
         sprite_sheet_image = pg.image.load(Configs.monster(self.name)).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         current_time = pg.time.get_ticks()
@@ -62,7 +64,6 @@ class Monster_TMP:
 
     def show_info(self, name=None):
         self.ui.draw_mob_info(name)
-        # print(self.ready)  
 
     # Calculate dist player from mobs
     def calculate_dist(self, player):
@@ -84,11 +85,15 @@ class Slime(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=10, damage=1, level=1, evasion=0.1,
                  steps=6, size=1, pixel=128):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel) 
-   
+        self.skill = {'ATTACK': self.ui.draw_monster_attack,
+                       'RUN': self.ui.draw_monster_attack #เเก้ด้วย
+                       }
+        self.skill_chances = [0.95, 0.05]
+
 class Goblin(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=30, damage=5, level=2, evasion=0.2,
                  steps=3, size=1, pixel=300):
-        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel) 
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel)
 
         # Skill rate
         self.hunter_instinct_rate = 0.14
@@ -99,4 +104,6 @@ class Goblin(Monster_TMP):
 class Dark_Goblin(Goblin):
     def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=10, level=5, evasion=0.7,
                  steps=3, size=3, pixel=64):
-        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel) 
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel)
+
+print(Monster_TMP.monster) 

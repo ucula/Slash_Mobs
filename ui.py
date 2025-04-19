@@ -6,12 +6,7 @@ class AllUI:
         self.__font = pg.font.Font(None, 30)
         self.__screen = screen
         self.__prep_size = 0
-
-        self.intro_size = 0
-        
-        self.intro_battle = True
-        self.intro_right = True
-        self.intro_left = True
+        self.curtain = 0 
 
         self.animate1 = True
         self.animate2 = False
@@ -24,9 +19,6 @@ class AllUI:
         self.btn_width = 200
         self.btn_height = 75
         self.btn = [0, 450, self.btn_width, self.btn_height]
-
-        # combat intro
-        self.combat_intro = True
 
     @property
     def prep_size(self):
@@ -55,20 +47,25 @@ class AllUI:
             self.__screen.blit(text1, text1_rect)
             self.__screen.blit(text2, text2_rect)
 
-    def draw_intro_battle(self):
-        if self.intro_right:
-            pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.intro_size, 600))
-            # print("still here")
-            if self.intro_size != 900:
-                self.intro_size += 20
-            if self.intro_size == 900:
-                self.intro_right = False
-                self.intro_battle = False
+    def draw_enter_animation(self, player):
+        if player.x != 540:
+            player.x -= 10
+            return True
+        return False
+
+    def draw_screen_transition(self, range):
+        if self.curtain < range:
+            pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.curtain, 600))
+            self.curtain += 20
+            return True
+        else:
+            self.curtain = 0
+            return False
 
     def draw_attack(self, player):
         if self.animate1:
             player.x -= 20
-            if player.x == 300:
+            if player.x == 310:
                 self.animate1 = False
                 self.animate2 = True
         elif self.animate2:
@@ -76,17 +73,28 @@ class AllUI:
             if player.x == 540:
                 self.animate2 = False
         
-        elif not self.animate1 and not self.animate2:
-            return True
+        elif self.animate1 == False and self.animate2 == False:
+            return False
         
-        self.__screen.blit(player.draw_walk_left(), (player.x, player.y))
-        return False
+        print(player.x, player.y)
+        return True
     
-    def draw_enter_animation(self, player):
-        if self.combat_intro:
-            player.x -= 10
-            if player.x == 540:
-                self.combat_intro = False
+    def draw_monster_attack(self, monster):
+        if self.animate1:
+            monster.x += 20
+            if monster.x == 500:
+                self.animate1 = False
+                self.animate2 = True
+        elif self.animate2:
+            monster.x -= 20
+            if monster.x == 0:
+                self.animate2 = False
+        
+        elif self.animate1 == False and self.animate2 == False:
+            return False
+        
+        print(monster.x, monster.y)
+        return True
     
     def draw_game_over(self):
         pass
