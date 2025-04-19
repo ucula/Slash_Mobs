@@ -55,4 +55,3 @@ class SpriteSheet:
         image = pg.transform.scale(image, (width * scale, height * scale))
         image.set_colorkey(color)
         return image
-

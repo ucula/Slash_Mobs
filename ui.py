@@ -36,19 +36,11 @@ class AllUI:
     def prep_size(self, val):
         self.__prep_size = val
 
-    def draw_hall_bg(self):
-        image = pg.image.load("assets/hall.jpg").convert()
+    def draw_bg(self, scene):
+        image = pg.image.load(Configs.background(scene)).convert()
         return image
     
-    def draw_plain_bg(self):
-        image = pg.image.load("assets/plain.jpg").convert()
-        return image
-    
-    def draw_shop_bg(self):
-        image = pg.image.load("assets/shop.jpg").convert()
-        return image
-    
-    def draw_mob_info(self):
+    def draw_mob_info(self, name):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
         pg.draw.rect(self.__screen, Configs.get('GRAY'), (255, 185, self.prep_size-10, self.prep_size-10))
         if self.prep_size != 300:
