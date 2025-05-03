@@ -11,6 +11,7 @@ class AllUI:
         self.animate1 = True
         self.animate2 = False
         self.attack_speed = 20
+        self.start_pos = None
 
         self.player_arrow = [(575, 300), (590, 270), (560, 270)]
         self.box_y = 450
@@ -82,20 +83,25 @@ class AllUI:
         return True
     
     def draw_monster_attack(self, monster):
+        if self.start_pos is None:
+            self.start_pos = monster.x
+            
         if self.animate1:
-            monster.x += 20
-            if monster.x == 500:
+            monster.x += self.attack_speed
+            if monster.x > 350:
                 self.animate1 = False
                 self.animate2 = True
+
         elif self.animate2:
-            monster.x -= 20
-            if monster.x == 0:
+            monster.x -= self.attack_speed
+            if monster.x < self.start_pos:
+                monster.x = self.start_pos
                 self.animate2 = False
-        
+
         elif self.animate1 == False and self.animate2 == False:
             return False
         
-        print(monster.x, monster.y)
+        print(f'start:{self.start_pos}, x:{monster.x}')
         return True
     
     def draw_game_over(self):

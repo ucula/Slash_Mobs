@@ -23,9 +23,12 @@ class Game:
 
         # for main loop
         self.__running = True
-        self.__delay = 2000
-        self.__delay_started = False
+        
+        # delay switches
         self.__delay_done = False
+        self.__start_time = 0
+        self.__time_lock = False
+        self.__mob_delay = 1000
 
         # cut scene switch
         self.__transition = False
@@ -55,6 +58,7 @@ class Game:
         # for monster
         self.__mob_turn = False
         self.__mob_select = None
+        self.__already_place_mob = False
         
     # Reset Combat
     def reset(self, a):
@@ -178,16 +182,18 @@ class Game:
 
     # Place mob on determined pos when enter combat scene
     def create_mob_incombat(self):
-        if self.__mobs.name == "SLIME":
-            self.__mobs.x = Configs.get('MOB_x') + 50
-            self.__mobs.y = Configs.get('MOB_y') + 120
-        elif self.__mobs.name == "GOBLIN":
-            self.__mobs.x = Configs.get('MOB_x')
-            self.__mobs.y = Configs.get('MOB_y')
-        elif self.__mobs.name == "DARK":
-            self.__mobs.x = Configs.get('MOB_x')
-            self.__mobs.y = Configs.get('MOB_y') + 70
-       
+        if not self.__already_place_mob:
+            if self.__mobs.name == "SLIME":
+                self.__mobs.x = Configs.get('MOB_x') + 50
+                self.__mobs.y = Configs.get('MOB_y') + 120
+            elif self.__mobs.name == "GOBLIN":
+                self.__mobs.x = Configs.get('MOB_x')
+                self.__mobs.y = Configs.get('MOB_y')
+            elif self.__mobs.name == "DARK":
+                self.__mobs.x = Configs.get('MOB_x')
+                self.__mobs.y = Configs.get('MOB_y') + 70
+            self.__already_place_mob = True
+
     # Non-combat
     def normal_scene(self):
         # BG
@@ -259,12 +265,20 @@ class Game:
         if self.__mob_turn:
             if self.__mob_select is None:
                 print("Entering mob's turn")
+                print(self.__mobs.x)
                 self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)
-                print(self.__mob_select)
+                print(f'Mobs : {self.__mob_select[0]}')
             else:
-                self.__ui.draw_mob_skill_display(self.__mob_select)
-                # suppose to be delay here
-
+                if self.__delay_done:
+                    if self.__mobs.skill[self.__mob_select[0]](self.__mobs):
+                        # self.__mob_turn = False
+                        # self.__mob_select = None
+                        # self.__delay_done = False
+                        # self.__player_turn = True
+                        pass
+                else:
+                    self.__ui.draw_mob_skill_display(self.__mob_select)
+                    self.delay()
 
         # Animate Mob and player
         self.__mobs.draw_monster()
@@ -272,12 +286,16 @@ class Game:
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
     
     def delay(self):
-        pass
+        current_time = pg.time.get_ticks()
+        if not self.__time_lock:
+            self.__start_time = pg.time.get_ticks()
+            self.__time_lock = True
+        if current_time - self.__start_time >= self.__mob_delay:
+            self.__delay_done = True
 
 # Main loop
     def run(self):
         while self.__running:
-            self.__current_time = pg.time.get_ticks()
             self.__clock.tick(Configs.get('FPS'))
 
             # 1. Normal scene without engaing in combat (DONE)
