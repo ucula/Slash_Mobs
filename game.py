@@ -11,7 +11,6 @@ class Game:
         # self.__weapon = Weapons()
         self.__rand_mob = monster.Monster_TMP.monster
         self.__hostile_areas = ["PLAIN"]
-        # [slime, goblin, hop]
         self.__mob_rate = {"PLAIN": [0.8, 0.15, 0.05]}
         self.__mobs = None
         
@@ -19,31 +18,31 @@ class Game:
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
-        self.__player = Player(screen=self.__screen, name="")
+        self.__player = Player(self.__screen, name="Ucula")
         self.__ui = AllUI(self.__screen)
 
         # for main loop
         self.__running = True
 
-        # for check combat status
-        self.__engage_ready = False
-
-        # for check skill animation status
-        self.__player_animating = False
-
-        # self.__gui = False
-        self.__combat = False
+        # cut scene switch
         self.__transition = False
-        self.__action = False
-        self.__enter_anim_finished = False
 
-        # Player animation (DONE)
-        self.__player_state = "IDLE"
-        self.__states = {'IDLE': self.__player.draw_idle,
+        # Player animation in non-combat (DONE)
+        self.__walk = "IDLE"
+        self.__walk_direction = {'IDLE': self.__player.draw_idle,
                                'LEFT': self.__player.draw_walk_left,
                                'RIGHT': self.__player.draw_walk_right ,
                                'UP': self.__player.draw_walk_up ,
                                'DOWN': self.__player.draw_walk_down}
+        # Normal scene
+        self.__before = None
+        self.__scene = 'HALL'
+        self.__enter_scene = False
+
+        # for check combat status
+        self.__engage_ready = False
+        self.__combat = False
+
         # for player
         self.__state = "IDLE"
         self.__player_turn = False
@@ -53,44 +52,46 @@ class Game:
         # for monster
         self.__mob_turn = False
         self.__mob_select = None
-        self.__generate = True
-        self.__before = None
-        self.__scene = 'HALL'
-        self.__enter_scene = False
         
     # Reset Combat
     def reset(self, a):
         self.__combat = False
         self.__player_turn = False
-        self.__generate = True
         self.__engage_ready = False
         self.__transition = True
 
+    # Cut scene (Done)
+    def transition(self):
+        if self.__transition:
+            self.__transition = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
+            return True
+        return False
+    
     # Known bug
     def character_animate(self, scene):
         self.__player.borders[scene]()
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            self.__player_state = "UP"
+            self.__walk = "UP"
             self.__player.y -= self.__player.speed  
             # self.__player.draw_walk_up()
             # self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_s]:
-            self.__player_state = "DOWN"
+            self.__walk = "DOWN"
             self.__player.y += self.__player.speed
             # self.__player.draw_walk_down()
             # self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_a]:
-            self.__player_state = "LEFT"
+            self.__walk = "LEFT"
             self.__player.x -= self.__player.speed
             # self.__player.draw_walk_left()
             # self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_d]:
-            self.__player_state = "RIGHT"
+            self.__walk = "RIGHT"
             self.__player.x += self.__player.speed
             # self.__player.draw_walk_right()
             # self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))       
-        self.__screen.blit(self.__states[self.__player_state]() , (self.__player.x, self.__player.y))
+        self.__screen.blit(self.__walk_direction[self.__walk]() , (self.__player.x, self.__player.y))
     
     def check_scene_change(self, scene):
         if scene == "HALL":
@@ -116,7 +117,6 @@ class Game:
             pass
 
         if scene not in self.__hostile_areas:
-            self.__generate = True
             self.__mobs = None
     
     # Set player pos when entering new scene
@@ -167,9 +167,9 @@ class Game:
 
     # Create mob on and display on screen
     def create_mob(self):
-        if self.__generate:
+        if self.__mobs is None:
             self.__mobs = self.random_mob()
-            self.__generate = False
+
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
@@ -185,20 +185,17 @@ class Game:
             self.__mobs.x = Configs.get('MOB_x')
             self.__mobs.y = Configs.get('MOB_y') + 70
        
-    # Colelction of scenes
+    # Non combat
     def normal_scene(self):
+        # BG
         bg = self.__ui.draw_bg(self.__scene)
-        self.__screen.blit(bg, (0, 0))
+        self.__screen.blit(bg, (0, 0))  
+
         self.start_point(self.__scene, self.__before)
         self.character_animate(self.__scene)
         if self.check_scene_change(self.__scene):
-            self.__enter_scene = True    
+            self.__enter_scene = True  
 
-    def transition(self):
-        if self.__transition:
-            self.__transition = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
-            return True
-        return False
     """
     TODO: 
     - make code looks cleaner
@@ -208,7 +205,7 @@ class Game:
     - Add Health bar on top left
 
     """
-    # 3.Combat scene เเบบเละๆ
+    # 3.Combat scene
     def combat_scene(self):
         self.start_point(combat=1)
         bg = self.__ui.draw_bg(self.__scene)
@@ -216,25 +213,32 @@ class Game:
         self.create_mob_incombat()
 
         # Enter animation
-        if not self.__ui.draw_enter_animation(self.__player):
+        if not self.__ui.draw_enter_animation(self.__player) and not self.__mob_turn:
             self.__player_turn = True
 
         # Player's turn
         if self.__player_turn:
             if self.__state == "IDLE":
                 self.__ui.draw_gui_combat()
-                
             else:
                 if not self.__skill[self.__state](self.__player):
-                    # print(self.__state)
                     self.__player_turn = False
+
+                    # ปิดอันนี้เพื่อลองสกิล Player
+                    self.__mob_turn = True 
+                    # -------------------------
+
                     self.__state = "IDLE"
                     self.__ui.animate1 = True
 
         # Mob's turn
-        if self.__mob_turn and self.__mob_select is not None:
-            self.__mob_select = random.choices(list(self.__mobs.skill.key()), self.__mobs.skill_chances)
+        if self.__mob_turn:
+            if self.__mob_select is None:
+                print("Entering mob's turn")
+                self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)
+                print(self.__mob_select)
 
+        # Animate Mob and player
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
@@ -245,10 +249,9 @@ class Game:
             if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
                 self.__running = False
 
-            # Check for combat start
+            # Ready up
             if self.__engage_ready:
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
-                    # self.__before = self.__scene
                     self.__combat = True
                     self.__enter_scene = True
                     self.__engage_ready = False
@@ -257,7 +260,6 @@ class Game:
             # Check for skill trigger
             if self.__state == "IDLE" and self.__player_turn:
                 if e.type == pg.KEYDOWN:
-                    print("0000")
                     if e.key == pg.K_z:
                         self.__state = "ATTACK"
                     elif e.key == pg.K_r:
