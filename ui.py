@@ -110,6 +110,15 @@ class AllUI:
     def draw_status(self):
         pass
     
+    # Done
+    def draw_mob_skill_display(self, message=None):
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
+        pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
+        text = self.__font.render("ATTACK", True, Configs.get("BLACK"))
+        rect = text.get_rect(center=(420, 25))
+        self.__screen.blit(text, rect)
+
+    # Done
     def draw_gui_combat(self):
         pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), self.box_pos)

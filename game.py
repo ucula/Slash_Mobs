@@ -23,6 +23,9 @@ class Game:
 
         # for main loop
         self.__running = True
+        self.__delay = 2000
+        self.__delay_started = False
+        self.__delay_done = False
 
         # cut scene switch
         self.__transition = False
@@ -185,7 +188,7 @@ class Game:
             self.__mobs.x = Configs.get('MOB_x')
             self.__mobs.y = Configs.get('MOB_y') + 70
        
-    # Non combat
+    # Non-combat
     def normal_scene(self):
         # BG
         bg = self.__ui.draw_bg(self.__scene)
@@ -196,15 +199,36 @@ class Game:
         if self.check_scene_change(self.__scene):
             self.__enter_scene = True  
 
+    def user_event(self):
+        event = pg.event.get()
+        for e in event:
+            if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
+                self.__running = False
+
+            # Ready up
+            if self.__engage_ready:
+                if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+                    self.__combat = True
+                    self.__enter_scene = True
+                    self.__engage_ready = False
+                    self.__transition = True
+
+            # Check for skill trigger
+            if self.__state == "IDLE" and self.__player_turn:
+                if e.type == pg.KEYDOWN:
+                    if e.key == pg.K_z:
+                        self.__state = "ATTACK"
+                    elif e.key == pg.K_r:
+                        self.__state = "RUN"
+                    print(self.__state)
+        
     """
     TODO: 
-    - make code looks cleaner
     - Add Mob's turn 
     - Add End battle 
-    - Add Flee option
     - Add Health bar on top left
-
     """
+
     # 3.Combat scene
     def combat_scene(self):
         self.start_point(combat=1)
@@ -237,38 +261,23 @@ class Game:
                 print("Entering mob's turn")
                 self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)
                 print(self.__mob_select)
+            else:
+                self.__ui.draw_mob_skill_display(self.__mob_select)
+                # suppose to be delay here
+
 
         # Animate Mob and player
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
+    
+    def delay(self):
+        pass
 
-    def user_event(self):
-        event = pg.event.get()
-        for e in event:
-            if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
-                self.__running = False
-
-            # Ready up
-            if self.__engage_ready:
-                if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
-                    self.__combat = True
-                    self.__enter_scene = True
-                    self.__engage_ready = False
-                    self.__transition = True
-
-            # Check for skill trigger
-            if self.__state == "IDLE" and self.__player_turn:
-                if e.type == pg.KEYDOWN:
-                    if e.key == pg.K_z:
-                        self.__state = "ATTACK"
-                    elif e.key == pg.K_r:
-                        self.__state = "RUN"
-                    print(self.__state)
-        
 # Main loop
     def run(self):
         while self.__running:
+            self.__current_time = pg.time.get_ticks()
             self.__clock.tick(Configs.get('FPS'))
 
             # 1. Normal scene without engaing in combat (DONE)
