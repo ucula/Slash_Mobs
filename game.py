@@ -58,6 +58,14 @@ class Game:
         self.__scene = 'HALL'
         self.__enter_scene = False
         
+    # Reset Combat
+    def reset(self, a):
+        self.__combat = False
+        self.__player_turn = False
+        self.__generate = True
+        self.__engage_ready = False
+        self.__transition = True
+
     # Known bug
     def character_animate(self, scene):
         self.__player.borders[scene]()
@@ -202,17 +210,14 @@ class Game:
     """
     # 3.Combat scene เเบบเละๆ
     def combat_scene(self):
-        self.transition()
         self.start_point(combat=1)
-
-        # Main
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
         self.create_mob_incombat()
 
+        # Enter animation
         if not self.__ui.draw_enter_animation(self.__player):
             self.__player_turn = True
-            print("running")
 
         # Player's turn
         if self.__player_turn:
@@ -225,7 +230,6 @@ class Game:
                     self.__player_turn = False
                     self.__state = "IDLE"
                     self.__ui.animate1 = True
-                    print(self.__player_turn)
 
         # Mob's turn
         if self.__mob_turn and self.__mob_select is not None:
@@ -253,29 +257,23 @@ class Game:
             # Check for skill trigger
             if self.__state == "IDLE" and self.__player_turn:
                 if e.type == pg.KEYDOWN:
-                    print("1")
+                    print("0000")
                     if e.key == pg.K_z:
                         self.__state = "ATTACK"
-                        print(self.__state)
                     elif e.key == pg.K_r:
                         self.__state = "RUN"
-
-    def reset(self, a):
-        self.__combat = False
-        self.__player_turn = False
-        self.__generate = True
-        self.__engage_ready = False
-        self.__transition = True
-        print(self.__player_turn)
+                    print(self.__state)
         
 # Main loop
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
+
             # 1. Normal scene without engaing in combat (DONE)
             if not self.__combat:
-                # Do intro first
+                # Intro 
                 if not self.transition():
+                    # Scene
                     self.normal_scene()
                     if self.__scene in self.__hostile_areas: 
                         self.create_mob()
@@ -285,9 +283,7 @@ class Game:
             # 2. Combat scene
             elif self.__combat:
                 if not self.transition():
-                    self.combat_scene()
-                    print(self.__player_turn)
-                    
+                    self.combat_scene()        
                     
             self.user_event()
             pg.display.update()
