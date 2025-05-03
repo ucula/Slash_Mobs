@@ -10,6 +10,7 @@ class AllUI:
 
         self.animate1 = True
         self.animate2 = False
+        self.attack_speed = 20
 
         self.player_arrow = [(575, 300), (590, 270), (560, 270)]
         self.box_y = 450
@@ -50,6 +51,7 @@ class AllUI:
     def draw_enter_animation(self, player):
         if player.x != 540:
             player.x -= 10
+            # print("entering")
             return True
         return False
 
@@ -63,8 +65,9 @@ class AllUI:
             return False
 
     def draw_attack(self, player):
+        # print("trig")
         if self.animate1:
-            player.x -= 20
+            player.x -= self.attack_speed
             if player.x == 310:
                 self.animate1 = False
                 self.animate2 = True
@@ -76,7 +79,6 @@ class AllUI:
         elif self.animate1 == False and self.animate2 == False:
             return False
         
-        print(player.x, player.y)
         return True
     
     def draw_monster_attack(self, monster):

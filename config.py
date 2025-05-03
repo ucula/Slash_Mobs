@@ -20,6 +20,7 @@ class Configs:
               'GOBLIN': "final_prog2/assets/goblin.png",
               'DARK': "final_prog2/assets/dark.png"
               }
+              
     __BG = {
         'HALL': "final_prog2/assets/hall.jpg",
         'PLAIN': "final_prog2/assets/plain.jpg",
