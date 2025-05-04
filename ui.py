@@ -8,9 +8,10 @@ class AllUI:
         self.__prep_size = 0
         self.curtain = 0 
 
+        self.state = "forward"
         self.animate1 = True
         self.animate2 = False
-        self.attack_speed = 20
+        self.speed = 20
         self.start_pos = None
 
         self.player_arrow = [(575, 300), (590, 270), (560, 270)]
@@ -36,7 +37,7 @@ class AllUI:
     
     def draw_mob_info(self, name):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
-        pg.draw.rect(self.__screen, Configs.get('GRAY'), (255, 185, self.prep_size-10, self.prep_size-10))
+        pg.draw.rect(self.__screen, Configs.get('WHITE'), (255, 185, self.prep_size-10, self.prep_size-10))
         if self.prep_size != 300:
             self.prep_size += 50
         if self.prep_size == 300:
@@ -66,43 +67,54 @@ class AllUI:
             return False
 
     def draw_attack(self, player):
-        # print("trig")
         if self.animate1:
-            player.x -= self.attack_speed
+            player.x -= self.speed
             if player.x == 310:
                 self.animate1 = False
                 self.animate2 = True
         elif self.animate2:
-            player.x += 20
+            player.x += self.speed
             if player.x == 540:
                 self.animate2 = False
         
         elif self.animate1 == False and self.animate2 == False:
             return False
-        
         return True
     
-    def draw_monster_attack(self, monster):
+    def draw_monster_attack(self, player, monster):
         if self.start_pos is None:
             self.start_pos = monster.x
-            
-        if self.animate1:
-            monster.x += self.attack_speed
-            if monster.x > 350:
-                self.animate1 = False
-                self.animate2 = True
+            self.state = "forward"
 
-        elif self.animate2:
-            monster.x -= self.attack_speed
-            if monster.x < self.start_pos:
+        if self.state == "forward":
+            monster.x += self.speed
+            if monster.x >= player.x - 150:
+                self.state = "backward"
+
+        elif self.state == "backward":
+            monster.x -= self.speed
+            if monster.x <= self.start_pos:
                 monster.x = self.start_pos
-                self.animate2 = False
+                self.state = "idle"
+                self.start_pos = None
+                return False
 
-        elif self.animate1 == False and self.animate2 == False:
-            return False
-        
-        print(f'start:{self.start_pos}, x:{monster.x}')
         return True
+            
+        # if self.animate1:
+        #     monster.x += self.attack_speed
+        #     if monster.x > 400:
+        #         self.animate1 = False
+        #         self.animate2 = True
+        # elif self.animate2:
+        #     monster.x -= 20
+        #     if monster.x < self.start_pos:
+        #         self.animate2 = False
+        #         monster.x = self.start_pos
+        
+        # elif self.animate1 == False and self.animate2 == False:
+        #     return False
+        # return True
     
     def draw_game_over(self):
         pass

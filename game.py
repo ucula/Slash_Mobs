@@ -25,9 +25,9 @@ class Game:
         self.__running = True
         
         # delay switches
-        self.__delay_done = False
         self.__start_time = 0
         self.__time_lock = False
+        self.__turn_delay = 500
         self.__mob_delay = 1000
 
         # cut scene switch
@@ -50,12 +50,13 @@ class Game:
         self.__combat = False
 
         # for player
-        self.__state = "IDLE"
+        self.__pstate = "IDLE"
         self.__player_turn = False
-        self.__skill = {"ATTACK": self.__ui.draw_attack,
+        self.__pskill = {"ATTACK": self.__ui.draw_attack,
                         "RUN": self.reset}
 
         # for monster
+        self.__mstate = "IDLE"
         self.__mob_turn = False
         self.__mob_select = None
         self.__already_place_mob = False
@@ -66,6 +67,9 @@ class Game:
         self.__player_turn = False
         self.__engage_ready = False
         self.__transition = True
+        self.__already_place_mob = False
+        self.__time_lock = False
+        self.__pstate = "IDLE"
 
     # Cut scene (Done)
     def transition(self):
@@ -73,6 +77,17 @@ class Game:
             self.__transition = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
             return True
         return False
+    
+    # Delays
+    def delay(self, limit):
+        # print("delaying")
+        current_time = pg.time.get_ticks()
+        if not self.__time_lock:
+            self.__start_time = pg.time.get_ticks()
+            self.__time_lock = True
+        if current_time - self.__start_time >= limit:
+            return False
+        return True
     
     # Known bug
     def character_animate(self, scene):
@@ -220,13 +235,13 @@ class Game:
                     self.__transition = True
 
             # Check for skill trigger
-            if self.__state == "IDLE" and self.__player_turn:
+            if self.__pstate == "IDLE" and self.__player_turn:
                 if e.type == pg.KEYDOWN:
                     if e.key == pg.K_z:
-                        self.__state = "ATTACK"
+                        self.__pstate = "ATTACK"
                     elif e.key == pg.K_r:
-                        self.__state = "RUN"
-                    print(self.__state)
+                        self.__pstate = "RUN"
+                    print(f"Player: {self.__pstate}")
         
     """
     TODO: 
@@ -248,56 +263,53 @@ class Game:
 
         # Player's turn
         if self.__player_turn:
-            if self.__state == "IDLE":
+            if self.__pstate == "IDLE":
                 self.__ui.draw_gui_combat()
             else:
-                if not self.__skill[self.__state](self.__player):
+                if not self.__pskill[self.__pstate](self.__player):
                     self.__player_turn = False
-
-                    # ปิดอันนี้เพื่อลองสกิล Player
-                    self.__mob_turn = True 
-                    # -------------------------
-
-                    self.__state = "IDLE"
-                    self.__ui.animate1 = True
+                    if not self.delay(self.__turn_delay):
+                        self.__ui.animate1 = True
+                        # ปิดอันนี้เพื่อลองสกิล Player
+                        self.__mob_turn = True 
+                        # -------------------------
+                        self.__pstate = "IDLE"
+                        self.__time_lock = False
 
         # Mob's turn
         if self.__mob_turn:
             if self.__mob_select is None:
-                print("Entering mob's turn")
-                print(self.__mobs.x)
                 self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)
-                print(f'Mobs : {self.__mob_select[0]}')
-            else:
-                if self.__delay_done:
-                    if self.__mobs.skill[self.__mob_select[0]](self.__mobs):
-                        # self.__mob_turn = False
-                        # self.__mob_select = None
-                        # self.__delay_done = False
-                        # self.__player_turn = True
-                        pass
-                else:
+                print("Monster pick skill")
+                # print(f'Mobs : {self.__mob_select[0]}')
+            if self.__mstate == "IDLE":
+                if self.delay(self.__mob_delay):
                     self.__ui.draw_mob_skill_display(self.__mob_select)
-                    self.delay()
+                else:
+                    self.__mstate = "ATTACKING"
+                    self.__ui.start_pos = None
+                    self.__time_lock = None
+                    self.__ui.animate1 = True
+
+            elif self.__mstate == "ATTACKING":
+                animating = self.__mobs.skill[self.__mob_select[0]](self.__player, self.__mobs)
+                if not animating:
+                    print("1")
+                    self.__mstate = "IDLE"
+                    self.__mob_select = None
+                    self.__time_lock = None
+                    self.__player_turn = True
+                    self.__mob_turn = False
 
         # Animate Mob and player
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
     
-    def delay(self):
-        current_time = pg.time.get_ticks()
-        if not self.__time_lock:
-            self.__start_time = pg.time.get_ticks()
-            self.__time_lock = True
-        if current_time - self.__start_time >= self.__mob_delay:
-            self.__delay_done = True
-
 # Main loop
     def run(self):
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
-
             # 1. Normal scene without engaing in combat (DONE)
             if not self.__combat:
                 # Intro 
