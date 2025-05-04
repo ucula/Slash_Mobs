@@ -32,6 +32,7 @@ class Game:
 
         # cut scene switch
         self.__transition = False
+        self.__enter_combat = True
 
         # Player animation in non-combat (DONE)
         self.__walk = "IDLE"
@@ -52,8 +53,7 @@ class Game:
         # for player
         self.__pstate = "IDLE"
         self.__player_turn = False
-        self.__pskill = {"ATTACK": self.__ui.draw_attack,
-                        "RUN": self.reset}
+        self.__pskill = {"ATTACK": self.__ui.draw_attack}
 
         # for monster
         self.__mstate = "IDLE"
@@ -62,14 +62,20 @@ class Game:
         self.__already_place_mob = False
         
     # Reset Combat
-    def reset(self, a):
+    def reset(self):
         self.__combat = False
-        self.__player_turn = False
-        self.__engage_ready = False
         self.__transition = True
+        self.__mobs = None
+        self.__mob_turn = False
+        self.__player_turn = False
+
+        self.__engage_ready = False
+        
         self.__already_place_mob = False
         self.__time_lock = False
         self.__pstate = "IDLE"
+        self.__mstate = "IDLE"
+        self.__enter_combat = True
 
     # Cut scene (Done)
     def transition(self):
@@ -87,6 +93,7 @@ class Game:
             self.__time_lock = True
         if current_time - self.__start_time >= limit:
             return False
+        # print(current_time - self.__start_time)
         return True
     
     # Known bug
@@ -208,6 +215,8 @@ class Game:
                 self.__mobs.x = Configs.get('MOB_x')
                 self.__mobs.y = Configs.get('MOB_y') + 70
             self.__already_place_mob = True
+        self.__mobs.draw_monster()
+        self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
     # Non-combat
     def normal_scene(self):
@@ -245,7 +254,6 @@ class Game:
         
     """
     TODO: 
-    - Add Mob's turn 
     - Add End battle 
     - Add Health bar on top left
     """
@@ -256,54 +264,54 @@ class Game:
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
         self.create_mob_incombat()
-
+    
         # Enter animation
-        if not self.__ui.draw_enter_animation(self.__player) and not self.__mob_turn:
-            self.__player_turn = True
+        if self.__enter_combat:
+            if not self.__ui.draw_enter_animation(self.__player):
+                self.__player_turn = True
+                self.__enter_combat = False
 
         # Player's turn
         if self.__player_turn:
             if self.__pstate == "IDLE":
                 self.__ui.draw_gui_combat()
+            elif self.__pstate == "RUN":
+                self.reset()
             else:
-                if not self.__pskill[self.__pstate](self.__player):
+                animating = self.__pskill[self.__pstate](self.__player)
+                if not animating:
                     self.__player_turn = False
-                    if not self.delay(self.__turn_delay):
-                        self.__ui.animate1 = True
-                        # ปิดอันนี้เพื่อลองสกิล Player
-                        self.__mob_turn = True 
-                        # -------------------------
-                        self.__pstate = "IDLE"
-                        self.__time_lock = False
+                    # ปิดอันนี้เพื่อลองสกิล Player
+                    self.__mob_turn = True 
+                    # -------------------------
+                    self.__pstate = "IDLE"
+                    self.__time_lock = False
 
         # Mob's turn
         if self.__mob_turn:
+            # Mob pick skill
             if self.__mob_select is None:
+                print("select")
                 self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)
-                print("Monster pick skill")
-                # print(f'Mobs : {self.__mob_select[0]}')
+
             if self.__mstate == "IDLE":
-                if self.delay(self.__mob_delay):
-                    self.__ui.draw_mob_skill_display(self.__mob_select)
-                else:
+                if not self.delay(self.__mob_delay):
                     self.__mstate = "ATTACKING"
                     self.__ui.start_pos = None
-                    self.__time_lock = None
-                    self.__ui.animate1 = True
-
+                    self.__time_lock = False
+                else:
+                    self.__ui.draw_mob_skill_display(self.__mob_select)
+                    
             elif self.__mstate == "ATTACKING":
                 animating = self.__mobs.skill[self.__mob_select[0]](self.__player, self.__mobs)
                 if not animating:
-                    print("1")
                     self.__mstate = "IDLE"
                     self.__mob_select = None
-                    self.__time_lock = None
+                    self.__time_lock = False
                     self.__player_turn = True
                     self.__mob_turn = False
 
         # Animate Mob and player
-        self.__mobs.draw_monster()
-        self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
     
 # Main loop

@@ -8,9 +8,10 @@ class AllUI:
         self.__prep_size = 0
         self.curtain = 0 
 
-        self.state = "forward"
-        self.animate1 = True
-        self.animate2 = False
+        self.pstate = "forward"
+        self.mstate = "forward"
+        self.p_pos = None
+        self.m_pos = None
         self.speed = 20
         self.start_pos = None
 
@@ -67,55 +68,59 @@ class AllUI:
             return False
 
     def draw_attack(self, player):
-        if self.animate1:
+        if self.p_pos is None:
+            print("trigger")
+            self.p_pos = player.x
+            self.pstate = "forward"
+
+        if self.pstate == "forward":
             player.x -= self.speed
-            if player.x == 310:
-                self.animate1 = False
-                self.animate2 = True
-        elif self.animate2:
+            if player.x <= 310:
+                self.pstate = "backward"
+
+        elif self.pstate == "backward":
             player.x += self.speed
-            if player.x == 540:
-                self.animate2 = False
-        
-        elif self.animate1 == False and self.animate2 == False:
-            return False
-        return True
-    
-    def draw_monster_attack(self, player, monster):
-        if self.start_pos is None:
-            self.start_pos = monster.x
-            self.state = "forward"
-
-        if self.state == "forward":
-            monster.x += self.speed
-            if monster.x >= player.x - 150:
-                self.state = "backward"
-
-        elif self.state == "backward":
-            monster.x -= self.speed
-            if monster.x <= self.start_pos:
-                monster.x = self.start_pos
-                self.state = "idle"
-                self.start_pos = None
+            if player.x >= self.p_pos:
+                player.x = self.p_pos
+                self.pstate = "idle"
+                self.p_pos = None
                 return False
 
         return True
-            
         # if self.animate1:
-        #     monster.x += self.attack_speed
-        #     if monster.x > 400:
+        #     player.x -= self.speed
+        #     if player.x == 310:
         #         self.animate1 = False
         #         self.animate2 = True
         # elif self.animate2:
-        #     monster.x -= 20
-        #     if monster.x < self.start_pos:
+        #     player.x += self.speed
+        #     if player.x == 540:
         #         self.animate2 = False
-        #         monster.x = self.start_pos
         
         # elif self.animate1 == False and self.animate2 == False:
         #     return False
         # return True
     
+    def draw_monster_attack(self, player, monster):
+        if self.m_pos is None:
+            self.m_pos = monster.x
+            self.mstate = "forward"
+
+        if self.mstate == "forward":
+            monster.x += self.speed
+            if monster.x >= player.x - 150:
+                self.mstate = "backward"
+
+        elif self.mstate == "backward":
+            monster.x -= self.speed
+            if monster.x <= self.m_pos:
+                monster.x = self.m_pos
+                self.mstate = "idle"
+                self.m_pos = None
+                return False
+
+        return True
+
     def draw_game_over(self):
         pass
 
