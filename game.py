@@ -19,7 +19,7 @@ class Game:
 
         self.__rand_mob = monster.Monster_TMP.monster
         self.__hostile_areas = ["PLAIN"]
-        self.__mob_rate = {"PLAIN": [0.8, 0.15, 0.05]}
+        self.__mob_rate = {"PLAIN": [0.6, 0.35, 0.05]}
         self.__mobs = None
 
         # for main loop
@@ -141,8 +141,10 @@ class Game:
                 self.__scene = "PLAIN"
                 self.__before = scene
                 return True
+            
+        if scene not in self.__hostile_areas:
+            self.__mobs = None
         
-    
     # Set player pos when entering new scene
     def start_point(self, scene=None, before=None, combat=None):
         if self.__enter_scene:
@@ -179,11 +181,11 @@ class Game:
         select = random.choices(self.__rand_mob, self.__mob_rate[self.__scene])[0]
         pos_x, pos_y = self.gen_cords()
         if select == "SLIME":
-            tmp_mob = monster.Slime(self.__screen, 28, 25, pos_x, pos_y)
+            tmp_mob = monster.Slime(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
         elif select == "GOBLIN":
-            tmp_mob = monster.Goblin(self.__screen, 117, 133, pos_x, pos_y)
+            tmp_mob = monster.Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
         elif select == "DARK":
-            tmp_mob = monster.Dark_Goblin(self.__screen, 57, 72, pos_x, pos_y)
+            tmp_mob = monster.Dark_Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
         else:
             pass
         return tmp_mob
@@ -197,15 +199,11 @@ class Game:
 
     def create_mob_incombat(self):
         if not self.__already_place_mob:
-            if self.__mobs.name == "SLIME":
-                self.__mobs.x = Configs.get('MOB_x') + 50
-                self.__mobs.y = Configs.get('MOB_y') + 120
-            elif self.__mobs.name == "GOBLIN":
-                self.__mobs.x = Configs.get('MOB_x')
-                self.__mobs.y = Configs.get('MOB_y')
-            elif self.__mobs.name == "DARK":
-                self.__mobs.x = Configs.get('MOB_x')
-                self.__mobs.y = Configs.get('MOB_y') + 70
+            x = Configs.monster_combat(self.__mobs.name)[0]
+            y = Configs.monster_combat(self.__mobs.name)[1]
+            self.__mobs.x = x
+            self.__mobs.y = y
+            print(self.__mobs.x, self.__mobs.y)
             self.__already_place_mob = True
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
@@ -305,19 +303,15 @@ class Game:
                 self.reset()
 
             elif self.__pstate == "CALCULATING":
-                if self.__mob_evade:
-                    #draw damage show up
+                self.__ui.draw_damage("player", self.__player, self.__mobs, self.__mob_evade)
+                if not self.delay(self.__turn_delay):
                     self.__pstate = "CHANGE_TURN"
-                    pass
-                else:
-                    #draw miss show up
-                    self.__pstate = "CHANGE_TURN"
-                    pass
 
             elif self.__pstate == "CHANGE_TURN":
                 self.__player_turn = False
-                self.__mob_turn = True 
-                self.__mobs.health -= self.__player.damage
+                self.__mob_turn = True
+                if not self.__mob_evade: 
+                    self.__mobs.health -= self.__player.damage
                 self.__pstate = "IDLE"
                 self.__time_lock = False
                 if self.__mobs.health <= 0:

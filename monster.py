@@ -102,9 +102,9 @@ class Goblin(Monster_TMP):
         self.damage += 2
 
 class Dark_Goblin(Goblin):
-    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=5, damage=10, level=5, evasion=0.7,
+    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=5, damage=10, level=5, evasion=0.8,
                  steps=3, size=3, pixel=64, exp=100, coin=1):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.ui.draw_monster_attack,
                        'RUN': self.ui.draw_monster_flee}
-        self.skill_chances = [0.6, 0.4]
+        self.skill_chances = [0.2, 0.8]

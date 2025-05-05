@@ -120,24 +120,25 @@ class AllUI:
             return True
         return False
 
-    def draw_damage(self, turn, player, monster):
+    def draw_damage(self, turn, player, monster, evade):
+        font = pg.font.SysFont(None, 48)
+        x = Configs.monster_ui(monster.name)[0]
+        y = Configs.monster_ui(monster.name)[1]
         if turn == "player":
-            text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
-            rect = text.get_rect(center=(400, 300))
+            if evade:
+                text = font.render(f"MISS", True, Configs.get("BLACK"))
+            else:
+                text = font.render(f"{player.damage}", True, Configs.get("BLACK"))
+            rect = text.get_rect(bottomright=(x, y))
         else:
-            text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
-            rect = text.get_rect(center=(400, 300))
+            # change to mobs here
+            if evade:
+                text = self.__font.render(f"MISS", True, Configs.get("BLACK"))
+            else:
+                text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
+            rect = text.get_rect(center=(player.x, player.y))
 
         self.__screen.blit(text, rect)
-
-    def draw_game_over(self):
-        pass
-
-    def draw_start(self):
-        pass
-
-    def draw_tutorial(self):
-        pass  
 
     def draw_summary(self, drops):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 90), 5)

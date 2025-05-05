@@ -1,6 +1,6 @@
 class Configs:
     __CONFIGS = {
-        'FPS': 80,
+        'FPS': 60,
         'SPEED': 4,
         'WIN_SIZE_W': 800,
         'WIN_SIZE_H': 600,
@@ -15,6 +15,20 @@ class Configs:
         'MOB_x': 100,
         'MOB_y': 160
         }
+    __MONS_OFFSET = {'SLIME': (28, 25),
+                    'GOBLIN': (117, 133),
+                    'DARK': (57, 72)
+                    }
+    
+    __MONS_COMBAT_CORDS = {'SLIME': (150, 280),
+                            'GOBLIN': (100, 160),
+                            'DARK': (100, 230)
+                            }
+    
+    __MONS_UI_COORDS = {'SLIME': (230, 320),
+                        'GOBLIN': (260, 290),
+                        'DARK': (210, 320)
+                        }
     
     __MONS = {'SLIME': "final_prog2/assets/slime.png",
               'GOBLIN': "final_prog2/assets/goblin.png",
@@ -50,3 +64,15 @@ class Configs:
     @classmethod
     def player_animation(cls, key):
         return cls.__PLAYER[key]
+    
+    @classmethod
+    def monster_offsets(cls, key):
+        return cls.__MONS_OFFSET[key]
+    
+    @classmethod
+    def monster_combat(cls, key):
+        return cls.__MONS_COMBAT_CORDS[key]
+    
+    @classmethod
+    def monster_ui(cls, key):
+        return cls.__MONS_UI_COORDS[key]
