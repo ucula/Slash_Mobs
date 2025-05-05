@@ -8,7 +8,8 @@ class Player:
     def __init__(self, screen, name: str):
         self.ui = AllUI(screen)
         self.name = name
-        self.health = 1
+        self.health = 20
+        self.max_health = 20
         self.level = 1
         self.exp = 0
         self.damage = 10

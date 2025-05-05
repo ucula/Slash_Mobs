@@ -160,10 +160,10 @@ class AllUI:
         self.__screen.blit(text2, rect2)
         self.__screen.blit(text3, rect3)
 
-    def draw_health_bar(self, health=1):
+    def draw_health_bar(self, player):
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (603, 378, self.btn_width-6, self.btn_height-6))
-        health_text = self.__font.render(f"Health: {health}/100", True, Configs.get("RED"))
+        health_text = self.__font.render(f"Health: {player.health}/{player.max_health}", True, Configs.get("RED"))
         health_rect = health_text.get_rect(center=(700, 412.5))
 
         self.__screen.blit(health_text, health_rect)

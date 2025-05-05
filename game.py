@@ -369,7 +369,7 @@ class Game:
                         self.__player.health = 1
 
         if self.__health:
-            self.__ui.draw_health_bar(self.__player.health)
+            self.__ui.draw_health_bar(self.__player)
             """
             TODO
             add check player health = 0, if so kill the player and reset progress/(or smth else)
