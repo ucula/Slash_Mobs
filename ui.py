@@ -120,25 +120,31 @@ class AllUI:
             return True
         return False
 
-    def draw_damage(self, turn, player, monster, evade):
+    def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
         x = Configs.monster_ui(monster.name)[0]
         y = Configs.monster_ui(monster.name)[1]
         if turn == "player":
             if evade:
-                text = font.render(f"MISS", True, Configs.get("BLACK"))
+                text1 = font.render(f"MISS", True, Configs.get("BLACK"))
+                text2 = font.render(f"MISS", True, Configs.get("WHITE"))
             else:
-                text = font.render(f"{player.damage}", True, Configs.get("BLACK"))
-            rect = text.get_rect(bottomright=(x, y))
+                text1 = font.render(f"{player.damage}", True, Configs.get("BLACK"))
+                text2 = font.render(f"{player.damage}", True, Configs.get("WHITE"))
+            rect1 = text1.get_rect(bottomright=(x, y))
+            rect2 = text2.get_rect(bottomright=(x+4, y))
         else:
-            # change to mobs here
             if evade:
-                text = self.__font.render(f"MISS", True, Configs.get("BLACK"))
+                text1 = font.render(f"MISS", True, Configs.get("BLACK"))
+                text2 = font.render(f"MISS", True, Configs.get("WHITE"))
             else:
-                text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
-            rect = text.get_rect(center=(player.x, player.y))
+                text1 = font.render(f"{monster.damage}", True, Configs.get("BLACK"))
+                text2 = font.render(f"{monster.damage}", True, Configs.get("WHITE"))
+            rect1 = text1.get_rect(center=(player.x+35, player.y-10))
+            rect2 = text2.get_rect(center=(player.x+39, player.y-10))
 
-        self.__screen.blit(text, rect)
+        self.__screen.blit(text1, rect1)
+        self.__screen.blit(text2, rect2)
 
     def draw_summary(self, drops):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 90), 5)

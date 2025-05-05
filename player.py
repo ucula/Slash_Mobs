@@ -2,16 +2,17 @@ from ui import AllUI
 from config import Configs
 from spritesheet import SpriteSheet
 import pygame as pg
+import random
 
 class Player:
     def __init__(self, screen, name: str):
         self.ui = AllUI(screen)
         self.name = name
-        self.health = 100
+        self.health = 1
         self.level = 1
         self.exp = 0
         self.damage = 10
-        self.evasion = 0.1
+        self.evasion = 0.2
         self.skill1_status = False
         self.skill2_status = False
 
@@ -39,17 +40,11 @@ class Player:
     def level_up(self):
         pass
 
-    def reduce_hp(self, damage: int):
-        pass
-
     def die(self):
         pass
 
-    def attack(self, enemy):
-        pass
-
-    def dodge(self):
-        pass
+    def roll_evasion(self):
+        return random.choices([False, True], [1-self.evasion,self.evasion])[0]
 
     def escape(self):
         pass

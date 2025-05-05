@@ -94,7 +94,7 @@ class Goblin(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.ui.draw_monster_attack,
                        'RUN': self.ui.draw_monster_flee}
-        self.skill_chances = [0.99, 0.01]
+        self.skill_chances = [0.9, 0.1]
         # Skill rate
         self.hunter_instinct_rate = 0.14
     

@@ -273,12 +273,6 @@ class Game:
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
                     self.__pstate = "ENDING"
         
-    """
-    TODO: 
-    - Add End battle 
-    - Add Health bar on top left
-    - Add Damage inflict
-    """
     # 3.Combat scene
     def combat_scene(self):
         self.start_point(combat=1)
@@ -291,6 +285,7 @@ class Game:
         if self.__enter_combat:
             if not self.__ui.draw_enter_animation(self.__player):
                 self.__player_turn = True
+                self.__pstate = "IDLE"
                 self.__enter_combat = False
                 self.__health = True
 
@@ -356,12 +351,22 @@ class Game:
                     self.reset()
 
                 elif not animating and self.__mob_select != "RUN":
+                    self.__mstate = "CALCULATING"
+
+            elif self.__mstate == "CALCULATING":
+                self.__ui.draw_damage("mob", self.__player, self.__mobs, )
+                if not self.delay(self.__turn_delay):
                     self.__player.health -= self.__mobs.damage
                     self.__mstate = "IDLE"
                     self.__mob_select = None
                     self.__time_lock = False
                     self.__player_turn = True
                     self.__mob_turn = False
+                    if self.__player.health <= 0:
+                        self.reset()
+                        # ตรงนี้ใส่ cutscene สักอย่าง ฉากคืนชีพก้ได้มั้ง
+                        self.__pstate = None
+                        self.__player.health = 1
 
         if self.__health:
             self.__ui.draw_health_bar(self.__player.health)
