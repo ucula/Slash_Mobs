@@ -56,7 +56,6 @@ class AllUI:
     def draw_enter_animation(self, player):
         if player.x != 540:
             player.x -= 10
-            # print("entering")
             return True
         return False
 
@@ -78,7 +77,6 @@ class AllUI:
     # Done
     def draw_attack(self, player):
         if self.p_pos is None:
-            print("trigger")
             self.p_pos = player.x
             self.pstate = "forward"
 
@@ -116,11 +114,21 @@ class AllUI:
                 return False
         return True
     
-    def draw_monster_flee(self, monster):
+    def draw_monster_flee(self, player, monster):
         if monster.x > -50:
             monster.x -= 10
-            return False
-        return True
+            return True
+        return False
+
+    def draw_damage(self, turn, player, monster):
+        if turn == "player":
+            text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
+            rect = text.get_rect(center=(400, 300))
+        else:
+            text = self.__font.render(f"{player.damage}", True, Configs.get("BLACK"))
+            rect = text.get_rect(center=(400, 300))
+
+        self.__screen.blit(text, rect)
 
     def draw_game_over(self):
         pass
@@ -130,6 +138,20 @@ class AllUI:
 
     def draw_tutorial(self):
         pass  
+
+    def draw_summary(self, drops):
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 90), 5)
+        pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 84))
+
+        text1 = self.__font.render(f"You earned {drops[0]} coins", True, Configs.get("BLACK"))
+        text2 = self.__font.render(f"You earned {drops[1]} exp", True, Configs.get("BLACK"))
+        text3 = self.__font.render(f"Press \"SPACE\" to continue", True, Configs.get("BLACK"))
+        rect1 = text1.get_rect(center=(420, 25))
+        rect2 = text2.get_rect(center=(420, 50))
+        rect3 = text3.get_rect(center=(420, 75))
+        self.__screen.blit(text1, rect1)
+        self.__screen.blit(text2, rect2)
+        self.__screen.blit(text3, rect3)
 
     def draw_health_bar(self, health=1):
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
@@ -143,7 +165,7 @@ class AllUI:
     def draw_mob_skill_display(self, message=None):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
-        text = self.__font.render("ATTACK", True, Configs.get("BLACK"))
+        text = self.__font.render(message, True, Configs.get("BLACK"))
         rect = text.get_rect(center=(420, 25))
         self.__screen.blit(text, rect)
 
