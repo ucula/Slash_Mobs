@@ -10,7 +10,7 @@ class Player:
         self.health = 100
         self.level = 1
         self.exp = 0
-        self.damage = 1
+        self.damage = 20
         self.evasion = 0.1
         self.skill1_status = False
         self.skill2_status = False

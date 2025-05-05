@@ -86,7 +86,7 @@ class Slime(Monster_TMP):
                  steps=6, size=1, pixel=128):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel) 
         self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_attack}
+                       'RUN': self.ui.draw_monster_flee}
         self.skill_chances = [0.95, 0.05]
 
 class Goblin(Monster_TMP):
@@ -94,7 +94,7 @@ class Goblin(Monster_TMP):
                  steps=3, size=1, pixel=300):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel)
         self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_attack}
+                       'RUN': self.ui.draw_monster_flee}
         self.skill_chances = [0.95, 0.05]
         # Skill rate
         self.hunter_instinct_rate = 0.14
@@ -107,7 +107,7 @@ class Dark_Goblin(Goblin):
                  steps=3, size=3, pixel=64):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel)
         self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_attack}
+                       'RUN': self.ui.draw_monster_flee}
         self.skill_chances = [0.95, 0.05]
 
 # print(Monster_TMP.monster) 

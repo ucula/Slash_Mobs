@@ -60,15 +60,20 @@ class AllUI:
             return True
         return False
 
+    def draw_walk_out(self, player):
+        if player.x > 0:
+            player.x -= 10
+            return False
+        return True
     # Done
     def draw_screen_transition(self, range):
         if self.curtain < range:
             pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.curtain, 600))
             self.curtain += 20
-            return True
+            return False
         else:
             self.curtain = 0
-            return False
+            return True
 
     # Done
     def draw_attack(self, player):
@@ -89,7 +94,6 @@ class AllUI:
                 self.pstate = "idle"
                 self.p_pos = None
                 return False
-
         return True
     
     # Done
@@ -110,7 +114,12 @@ class AllUI:
                 self.mstate = "idle"
                 self.m_pos = None
                 return False
-
+        return True
+    
+    def draw_monster_flee(self, monster):
+        if monster.x > -50:
+            monster.x -= 10
+            return False
         return True
 
     def draw_game_over(self):
@@ -161,4 +170,10 @@ class AllUI:
         atk_rect = atk_text.get_rect(center=(300, 487.5))
         self.__screen.blit(atk_text, atk_rect)
 
-       
+    def draw_shop(self):
+        rect = pg.Rect(0, 800, 0, 600)
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), rect)
+
+        atk_text = self.__font.render("Attack (Z)", True, Configs.get("WHITE"))
+        atk_rect = atk_text.get_rect(center=(100, 487.5))
+        self.__screen.blit(atk_text, atk_rect)
