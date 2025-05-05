@@ -51,6 +51,7 @@ class Game:
         self.__combat = False
 
         # for player
+        self.__health = False
         self.__pstate = "IDLE"
         self.__player_turn = False
         self.__pskill = {"ATTACK": self.__ui.draw_attack}
@@ -68,6 +69,7 @@ class Game:
         self.__mobs = None
         self.__mob_turn = False
         self.__player_turn = False
+        self.__health = False
 
         self.__engage_ready = False
         
@@ -195,6 +197,7 @@ class Game:
         return tmp_mob
 
     # Create mob on and display on screen
+    # Done
     def create_mob(self):
         if self.__mobs is None:
             self.__mobs = self.random_mob()
@@ -203,6 +206,7 @@ class Game:
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
     # Place mob on determined pos when enter combat scene
+    # Done
     def create_mob_incombat(self):
         if not self.__already_place_mob:
             if self.__mobs.name == "SLIME":
@@ -219,6 +223,7 @@ class Game:
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
     # Non-combat
+    # Done
     def normal_scene(self):
         # BG
         bg = self.__ui.draw_bg(self.__scene)
@@ -256,8 +261,8 @@ class Game:
     TODO: 
     - Add End battle 
     - Add Health bar on top left
+    - Add Damage inflict
     """
-
     # 3.Combat scene
     def combat_scene(self):
         self.start_point(combat=1)
@@ -270,6 +275,7 @@ class Game:
             if not self.__ui.draw_enter_animation(self.__player):
                 self.__player_turn = True
                 self.__enter_combat = False
+                self.__health = True
 
         # Player's turn
         if self.__player_turn:
@@ -311,7 +317,8 @@ class Game:
                     self.__player_turn = True
                     self.__mob_turn = False
 
-        # Animate Mob and player
+        if self.__health:
+            self.__ui.draw_health_bar(self.__player.health)
         self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
     
 # Main loop

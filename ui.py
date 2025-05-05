@@ -32,6 +32,7 @@ class AllUI:
     def prep_size(self, val):
         self.__prep_size = val
 
+    # Done
     def draw_bg(self, scene):
         image = pg.image.load(Configs.background(scene)).convert()
         return image
@@ -51,6 +52,7 @@ class AllUI:
             self.__screen.blit(text1, text1_rect)
             self.__screen.blit(text2, text2_rect)
 
+    # Done
     def draw_enter_animation(self, player):
         if player.x != 540:
             player.x -= 10
@@ -58,6 +60,7 @@ class AllUI:
             return True
         return False
 
+    # Done
     def draw_screen_transition(self, range):
         if self.curtain < range:
             pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.curtain, 600))
@@ -67,6 +70,7 @@ class AllUI:
             self.curtain = 0
             return False
 
+    # Done
     def draw_attack(self, player):
         if self.p_pos is None:
             print("trigger")
@@ -87,20 +91,8 @@ class AllUI:
                 return False
 
         return True
-        # if self.animate1:
-        #     player.x -= self.speed
-        #     if player.x == 310:
-        #         self.animate1 = False
-        #         self.animate2 = True
-        # elif self.animate2:
-        #     player.x += self.speed
-        #     if player.x == 540:
-        #         self.animate2 = False
-        
-        # elif self.animate1 == False and self.animate2 == False:
-        #     return False
-        # return True
     
+    # Done
     def draw_monster_attack(self, player, monster):
         if self.m_pos is None:
             self.m_pos = monster.x
@@ -128,10 +120,15 @@ class AllUI:
         pass
 
     def draw_tutorial(self):
-        pass
+        pass  
 
-    def draw_status(self):
-        pass
+    def draw_health_bar(self, health=1):
+        pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), (603, 378, self.btn_width-6, self.btn_height-6))
+        health_text = self.__font.render(f"Health: {health}/100", True, Configs.get("RED"))
+        health_rect = health_text.get_rect(center=(700, 412.5))
+
+        self.__screen.blit(health_text, health_rect)
     
     # Done
     def draw_mob_skill_display(self, message=None):
