@@ -19,7 +19,7 @@ class Game:
 
         self.__rand_mob = monster.Monster_TMP.monster
         self.__hostile_areas = ["PLAIN"]
-        self.__mob_rate = {"PLAIN": [0.6, 0.35, 0.05]}
+        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3]}
         self.__mobs = None
 
         # for main loop
@@ -49,6 +49,7 @@ class Game:
         self.__enter_scene = False
         self.__enable_walk = True
         self.__shop = False
+        self.__status = False
 
         # for check combat status
         self.__engage_ready = False
@@ -56,6 +57,7 @@ class Game:
         self.__move = True
 
         # for player
+        self.__up = False
         self.__health = False
         self.__pstate = "IDLE"
         self.__player_turn = False
@@ -65,7 +67,7 @@ class Game:
         self.__mstate = "IDLE"
         self.__mob_turn = False
         self.__mob_select = None
-        self.__mob_evade = None
+        self.__evade = None
         self.__already_place_mob = False
         
     # Reset Combat
@@ -205,7 +207,6 @@ class Game:
             y = Configs.monster_combat(self.__mobs.name)[1]
             self.__mobs.x = x
             self.__mobs.y = y
-            print(self.__mobs.x, self.__mobs.y)
             self.__already_place_mob = True
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
@@ -216,8 +217,6 @@ class Game:
         TODO
         ทำให้ shop ติด
         """
-        # if self.__shop:
-        #     self.__ui.draw_shop()
         # BG
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
@@ -233,11 +232,16 @@ class Game:
         if not self.__scene_manager == "CHANGING":
             if self.__scene in self.__hostile_areas: 
                 self.create_mob()
-
                 if self.__mobs.in_range(self.__player):
                     self.__engage_ready = True
                 else:
                     self.__engage_ready = False
+        
+        if self.__shop:
+            self.__ui.draw_shop()
+
+        if self.__status:   
+            self.__ui.draw_status_window(self.__player)
 
     def user_event(self):
         event = pg.event.get()
@@ -271,10 +275,20 @@ class Game:
                     elif e.key == pg.K_r:
                         self.__pstate = "RUN"
             
-            if self.__pstate == "SUMMARY":
+            if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
                     self.__pstate = "ENDING"
-        
+
+            # Status window
+            if self.__scene_manager == "NORMAL" and self.__enable_walk:
+                if e.type == pg.KEYDOWN and e.key == pg.K_i:
+                    self.__status = True
+                    self.__enable_walk = False
+            elif self.__scene_manager == "NORMAL" and not self.__enable_walk:
+                if e.type == pg.KEYDOWN and e.key == pg.K_i:
+                    self.__status = False
+                    self.__enable_walk = True
+
     # 3.Combat scene
     def combat_scene(self):
         self.start_point(combat=1)
@@ -303,14 +317,15 @@ class Game:
 
             elif self.__pstate == "CALCULATING":
                 self.__move = False
-                self.__ui.draw_damage("player", self.__player, self.__mobs, self.__mob_evade)
+                # if self.__mobs.attack_skill: 
+                self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
                 if not self.delay(self.__turn_delay):
                     self.__pstate = "CHANGE_TURN"
 
             elif self.__pstate == "CHANGE_TURN":
                 self.__player_turn = False
                 self.__mob_turn = True
-                if not self.__mob_evade: 
+                if not self.__evade:
                     self.__mobs.health -= self.__player.damage
                 self.__pstate = "IDLE"
                 self.__time_lock = False
@@ -320,23 +335,29 @@ class Game:
                     self.__mobs = None
                     self.__mob_turn = False
                     self.__player_turn = True
-
+                    self.__player.coin += self.__mob_drops[0]
+                    self.__player.exp += self.__mob_drops[1]
+                    self.__up = self.__player.level_up()
+                    # print(self.__up)
+                    
             elif self.__pstate == "SUMMARY":
                 if not self.delay(self.__turn_delay):
-                    self.__ui.draw_summary(self.__mob_drops)
+                    self.__ui.draw_summary(self.__mob_drops, self.__player, self.__up)
+                    self.__health = False
 
             elif self.__pstate == "ENDING":
                 self.__move = True
+                self.__up = False
                 walk_out = self.__ui.draw_walk_out(self.__player)
                 if walk_out:
                     self.reset()
-            
+    
             else:
                 self.__move = True
                 animating = self.__pskill[self.__pstate](self.__player)
                 if not animating:
                     self.__pstate = "CALCULATING"
-                    self.__mob_evade = self.__mobs.roll_evasion()
+                    self.__evade = self.__mobs.roll_evasion()
         
         # Mob's turn
         if self.__mob_turn:
@@ -356,24 +377,36 @@ class Game:
                 animating = self.__mobs.skill[self.__mob_select](self.__player, self.__mobs)
                 if not animating and self.__mob_select == "RUN":
                     self.reset()
+                    self.__move = True
+                
+                elif not animating and self.__mob_select == "INSTINCT":
+                    self.__mobs.hunter_instinct()
+                    self.__mstate = "CALCULATING"
 
                 elif not animating and self.__mob_select != "RUN":
                     self.__mstate = "CALCULATING"
+                    self.__evade = self.__player.roll_evasion()
 
             elif self.__mstate == "CALCULATING":
-                self.__ui.draw_damage("mob", self.__player, self.__mobs, )
+                if self.__mobs.attack_skill:
+                    self.__ui.draw_damage("mob", self.__player, self.__mobs, self.__evade)
                 if not self.delay(self.__turn_delay):
-                    self.__player.health -= self.__mobs.damage
-                    self.__mstate = "IDLE"
-                    self.__mob_select = None
-                    self.__time_lock = False
-                    self.__player_turn = True
-                    self.__mob_turn = False
-                    if self.__player.health <= 0:
-                        self.reset()
-                        # ตรงนี้ใส่ cutscene สักอย่าง ฉากคืนชีพก้ได้มั้ง
-                        self.__pstate = None
-                        self.__player.health = 1
+                    if not self.__evade and self.__mobs.attack_skill:
+                        self.__player.health -= self.__mobs.damage
+                    self.__mstate = "CHANGE_TURN"
+
+            elif self.__mstate == "CHANGE_TURN":
+                self.__mobs.attack_skill = True
+                self.__mstate = "IDLE"
+                self.__mob_select = None
+                self.__time_lock = False
+                self.__player_turn = True
+                self.__mob_turn = False
+                if self.__player.health <= 0:
+                    self.reset()
+                    # ตรงนี้ใส่ cutscene สักอย่าง ฉากคืนชีพก้ได้มั้ง
+                    self.__pstate = None
+                    self.__player.health = 1
 
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
@@ -392,7 +425,6 @@ class Game:
         while self.__running:
             self.__clock.tick(Configs.get('FPS'))
             self.user_event()
-
             # Changing cutscene
             if self.__scene_manager == "CHANGING":
                 done = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)

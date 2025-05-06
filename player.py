@@ -12,8 +12,10 @@ class Player:
         self.max_health = 20
         self.level = 1
         self.exp = 0
+        self.exp_threshold = 30
+        self.coin = 0
         self.damage = 10
-        self.evasion = 0.2
+        self.evasion = 0.1
         self.skill1_status = False
         self.skill2_status = False
 
@@ -39,7 +41,16 @@ class Player:
                        "SHOP": self.check_lim_shop}
 
     def level_up(self):
-        pass
+        if self.exp >= self.exp_threshold:
+            remain = self.exp - self.exp_threshold
+            self.level += 1
+            self.damage += 2
+            self.exp_threshold += self.level*0.7
+            self.exp = remain
+            self.max_health += 5
+            self.health = self.max_health
+            return True
+        return False
 
     def die(self):
         pass
