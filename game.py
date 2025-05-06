@@ -53,6 +53,7 @@ class Game:
         # for check combat status
         self.__engage_ready = False
         self.__combat = False
+        self.__move = True
 
         # for player
         self.__health = False
@@ -95,31 +96,32 @@ class Game:
             return False
         return True
     
-    # Known bug
     def character_animate(self, scene):
         self.__player.borders[scene]()
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            self.__walk = "UP"
+            # self.__walk = "UP"
+            self.__player.draw_walk_up()
             self.__player.y -= self.__player.speed  
-            # self.__player.draw_walk_up()
-            # self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_s]:
-            self.__walk = "DOWN"
+            # self.__walk = "DOWN"
+            self.__player.draw_walk_down()
             self.__player.y += self.__player.speed
-            # self.__player.draw_walk_down()
-            # self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_a]:
-            self.__walk = "LEFT"
+            # self.__walk = "LEFT"
+            self.__player.draw_walk_left()
             self.__player.x -= self.__player.speed
-            # self.__player.draw_walk_left()
-            # self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_d]:
-            self.__walk = "RIGHT"
+            # self.__walk = "RIGHT"
+            self.__player.draw_walk_right()
             self.__player.x += self.__player.speed
-            # self.__player.draw_walk_right()
-            # self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))       
-        self.__screen.blit(self.__walk_direction[self.__walk]() , (self.__player.x, self.__player.y))
+            self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
+        else:
+              self.__screen.blit(self.__walk_direction["IDLE"]() , (self.__player.x, self.__player.y))    
+        # self.__screen.blit(self.__walk_direction[self.__walk]() , (self.__player.x, self.__player.y))
     
     def check_scene_change(self, scene):
         if scene == "HALL":
@@ -288,6 +290,7 @@ class Game:
                 self.__pstate = "IDLE"
                 self.__enter_combat = False
                 self.__health = True
+                self.__move = False
 
         # Player's turn
         if self.__player_turn:
@@ -295,9 +298,11 @@ class Game:
                 self.__ui.draw_gui_combat()
 
             elif self.__pstate == "RUN":
+                self.__move = True
                 self.reset()
 
             elif self.__pstate == "CALCULATING":
+                self.__move = False
                 self.__ui.draw_damage("player", self.__player, self.__mobs, self.__mob_evade)
                 if not self.delay(self.__turn_delay):
                     self.__pstate = "CHANGE_TURN"
@@ -321,11 +326,13 @@ class Game:
                     self.__ui.draw_summary(self.__mob_drops)
 
             elif self.__pstate == "ENDING":
+                self.__move = True
                 walk_out = self.__ui.draw_walk_out(self.__player)
                 if walk_out:
                     self.reset()
             
             else:
+                self.__move = True
                 animating = self.__pskill[self.__pstate](self.__player)
                 if not animating:
                     self.__pstate = "CALCULATING"
@@ -374,7 +381,11 @@ class Game:
             TODO
             add check player health = 0, if so kill the player and reset progress/(or smth else)
             """
-        self.__screen.blit(self.__player.draw_walk_left(), (self.__player.x, self.__player.y))
+        if self.__move:
+            self.__player.draw_walk_left()
+            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
+        else:
+            self.__screen.blit(self.__player.draw_idle_combat(), (self.__player.x, self.__player.y))
     
 # Main loop
     def run(self):

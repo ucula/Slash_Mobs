@@ -126,6 +126,12 @@ class Player:
         else:
             self.speed = Configs.get('SPEED')
     
+    def draw_idle_combat(self):
+        sprite_sheet_image = pg.image.load(Configs.player_animation('LEFT')).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        return sprite_sheet.get_image2((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
+    
     def draw_walk_down(self):
         sprite_sheet_image = pg.image.load(Configs.player_animation('DOWN')).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
@@ -137,15 +143,17 @@ class Player:
             if self.frame >= len(self.animation_down):
                 self.frame = 0
 
-        for i in range(self.animation_steps):
-            self.animation_down.append(sprite_sheet.get_image1((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-        
-        # Temporarily
-        return sprite_sheet.get_image1((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
+        if len(self.animation_down) <= 0:
+            for i in range(self.animation_steps):
+                self.animation_down.append(sprite_sheet.get_image1((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
     
     def draw_walk_left(self):
         sprite_sheet_image = pg.image.load(Configs.player_animation('LEFT')).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        if len(self.animation_left) <= 0:
+            for i in range(self.animation_steps):
+                self.animation_left.append(sprite_sheet.get_image2((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
 
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -154,15 +162,13 @@ class Player:
             if self.frame >= len(self.animation_left):
                 self.frame = 0
 
-        for i in range(self.animation_steps):
-            self.animation_left.append(sprite_sheet.get_image2((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-
-        # Temporarily
-        return sprite_sheet.get_image2((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
-
     def draw_walk_up(self):
         sprite_sheet_image = pg.image.load(Configs.player_animation('UP')).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        if len(self.animation_up) <= 0:
+            for i in range(self.animation_steps):
+                self.animation_up.append(sprite_sheet.get_image3((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
 
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -171,15 +177,13 @@ class Player:
             if self.frame >= len(self.animation_up):
                 self.frame = 0
 
-        for i in range(self.animation_steps):
-            self.animation_up.append(sprite_sheet.get_image3((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-        
-        # Temporarily
-        return sprite_sheet.get_image3((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
-
     def draw_walk_right(self):
         sprite_sheet_image = pg.image.load(Configs.player_animation('RIGHT')).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
+
+        if len(self.animation_right) <= 0:
+            for i in range(self.animation_steps):
+                self.animation_right.append(sprite_sheet.get_image4((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
 
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -187,12 +191,6 @@ class Player:
             self.last_up = current_time
             if self.frame >= len(self.animation_right):
                 self.frame = 0
-
-        for i in range(self.animation_steps):
-            self.animation_right.append(sprite_sheet.get_image4((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-        
-        # Temporarily
-        return sprite_sheet.get_image4((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
 
     def draw_idle(self):
         sprite_sheet_image = pg.image.load(Configs.player_animation('IDLE')).convert_alpha()
