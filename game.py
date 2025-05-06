@@ -3,6 +3,7 @@ from weapon import Weapons
 import monster
 from ui import AllUI
 from config import Configs
+from shop import Shop
 import pygame as pg
 import random
 
@@ -16,7 +17,7 @@ class Game:
         self.__player = Player(self.__screen, name="Ucula")
         # self.__weapon = Weapons()
         self.__ui = AllUI(self.__screen)
-
+        self.__shopee = Shop(self.__screen)
         self.__rand_mob = monster.Monster_TMP.monster
         self.__hostile_areas = ["PLAIN"]
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3]}
@@ -50,6 +51,7 @@ class Game:
         self.__enable_walk = True
         self.__shop = False
         self.__status = False
+        self.__help = True
 
         # for check combat status
         self.__engage_ready = False
@@ -87,6 +89,7 @@ class Game:
         self.__mstate = "IDLE"
         self.__enter_combat = True
         self.__scene_manager = "CHANGING"
+        self.__help = True
 
     # Delays
     def delay(self, limit):
@@ -123,7 +126,6 @@ class Game:
             self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
         else:
               self.__screen.blit(self.__walk_direction["IDLE"]() , (self.__player.x, self.__player.y))    
-        # self.__screen.blit(self.__walk_direction[self.__walk]() , (self.__player.x, self.__player.y))
     
     def check_scene_change(self, scene):
         if scene == "HALL":
@@ -149,7 +151,6 @@ class Game:
         if scene not in self.__hostile_areas:
             self.__mobs = None
         
-    # Set player pos when entering new scene
     def start_point(self, scene=None, before=None, combat=None):
         if self.__enter_scene:
             if scene == "HALL":
@@ -169,10 +170,9 @@ class Game:
                 self.__player.y = 300
         self.__enter_scene = False
     
-    # Generate random x, y coordinates according to scene
     def gen_cords(self):
         if self.__scene == "PLAIN":
-            x = random.randint(80, 650)
+            x = random.randint(80, 550)
             y = random.randint(190, 250)
         else:
             # x = random.randint(0,Configs.get('WIN_SIZE_W'))
@@ -180,7 +180,7 @@ class Game:
             pass
         return x, y
 
-    # Return random mob to generate on that scene
+    # Done
     def random_mob(self):
         select = random.choices(self.__rand_mob, self.__mob_rate[self.__scene])[0]
         pos_x, pos_y = self.gen_cords()
@@ -194,6 +194,7 @@ class Game:
             pass
         return tmp_mob
     
+    # Done
     def create_mob(self):
         if self.__mobs is None:
             self.__mobs = self.random_mob()
@@ -201,6 +202,7 @@ class Game:
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
+    # Done
     def create_mob_incombat(self):
         if not self.__already_place_mob:
             x = Configs.monster_combat(self.__mobs.name)[0]
@@ -232,16 +234,22 @@ class Game:
         if not self.__scene_manager == "CHANGING":
             if self.__scene in self.__hostile_areas: 
                 self.create_mob()
-                if self.__mobs.in_range(self.__player):
+                if self.__mobs.in_range(self.__player, self.__mobs):
                     self.__engage_ready = True
                 else:
                     self.__engage_ready = False
         
         if self.__shop:
-            self.__ui.draw_shop()
+            self.__shopee.draw_menu()
 
         if self.__status:   
             self.__ui.draw_status_window(self.__player)
+        
+        if self.__help:
+            if self.__scene == "SHOP":
+                self.__ui.draw_help(shop=True)
+            else:
+                self.__ui.draw_help()
 
     def user_event(self):
         event = pg.event.get()
@@ -249,12 +257,11 @@ class Game:
             if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
                 self.__running = False
             
-            # Bug
             if self.__scene == "SHOP" and self.__enable_walk:
-                if e.type == pg.KEYDOWN and e.key == pg.K_e:
+                if e.type == pg.KEYDOWN and e.key == pg.K_e and not self.__status:
                     self.__shop = True
                     self.__enable_walk = False
-            elif self.__scene == "SHOP" and not self.__enable_walk:
+            elif self.__scene == "SHOP" and not self.__enable_walk and not self.__status:
                 if e.type == pg.KEYDOWN and e.key == pg.K_e:
                     self.__shop = False
                     self.__enable_walk = True
@@ -265,6 +272,7 @@ class Game:
                     self.__combat = True
                     self.__enter_scene = True
                     self.__engage_ready = False
+                    self.__help = False
                     self.__scene_manager = "CHANGING"
 
             # Check for skill trigger
@@ -280,11 +288,11 @@ class Game:
                     self.__pstate = "ENDING"
 
             # Status window
-            if self.__scene_manager == "NORMAL" and self.__enable_walk:
+            if self.__scene_manager == "NORMAL" and self.__enable_walk and not self.__shop:
                 if e.type == pg.KEYDOWN and e.key == pg.K_i:
                     self.__status = True
                     self.__enable_walk = False
-            elif self.__scene_manager == "NORMAL" and not self.__enable_walk:
+            elif self.__scene_manager == "NORMAL" and not self.__enable_walk and not self.__shop:
                 if e.type == pg.KEYDOWN and e.key == pg.K_i:
                     self.__status = False
                     self.__enable_walk = True

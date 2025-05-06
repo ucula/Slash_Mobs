@@ -5,7 +5,6 @@ class AllUI:
     def __init__(self, screen):
         self.__font = pg.font.Font(None, 30)
         self.__screen = screen
-        self.__prep_size = 0
         self.curtain = 0 
 
         self.start_time = 0
@@ -36,34 +35,25 @@ class AllUI:
         if current_time - self.start_time >= limit:
             return False
         return True
-    
-    @property
-    def prep_size(self):
-        return self.__prep_size
-    
-    @prep_size.setter
-    def prep_size(self, val):
-        self.__prep_size = val
 
     # Done
     def draw_bg(self, scene):
         image = pg.image.load(Configs.background(scene)).convert()
         return image
-    
-    def draw_mob_info(self, name):
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (255, 185, self.prep_size-10, self.prep_size-10))
-        if self.prep_size != 300:
-            self.prep_size += 50
-        if self.prep_size == 300:
-            text1 = self.__font.render("Monster info: bla bla", True, Configs.get("BLACK"))
-            text1_rect = text1.get_rect(center=(400, 300))
 
-            text2 = self.__font.render("Press SPACE to fight", True, Configs.get("BLACK"))
-            text2_rect = text1.get_rect(center=(400, 350))
+    def draw_help(self, shop=None, battle=None):
+        coords = [0, 250, 0, 60]
+        offset = 3
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), (coords[0], coords[2], coords[1], coords[3]), 5)
+        pg.draw.rect(self.__screen, Configs.get('CREAMY'), (coords[0]+offset, coords[2]+offset, coords[1]-2*offset, coords[3]-2*offset))
+        help_text = self.__font.render(f"Press \"I\" to open status", True, Configs.get("BLACK"))
+        help_rect = help_text.get_rect(topleft=(10, 10))
+        shop_text = self.__font.render(f"Press \"E\" to open shop", True, Configs.get("BLACK"))
+        shop_rect = help_text.get_rect(topleft=(10, 30))
 
-            self.__screen.blit(text1, text1_rect)
-            self.__screen.blit(text2, text2_rect)
+        if shop:
+            self.__screen.blit(shop_text, shop_rect)
+        self.__screen.blit(help_text, help_rect)
 
     # Done
     def draw_enter_animation(self, player):
@@ -71,7 +61,7 @@ class AllUI:
             player.x -= 10
             return True
         return False
-
+    # Done
     def draw_walk_out(self, player):
         if player.x > 0:
             player.x -= 10
@@ -86,7 +76,6 @@ class AllUI:
         else:
             self.curtain = 0
             return True
-
     # Done
     def draw_attack(self, player):
         if self.p_pos is None:
@@ -106,7 +95,6 @@ class AllUI:
                 self.p_pos = None
                 return False
         return True
-    
     # Done
     def draw_monster_attack(self, player, monster):
         if self.m_pos is None:
@@ -126,14 +114,13 @@ class AllUI:
                 self.m_pos = None
                 return False
         return True
-    
     # Done
     def draw_monster_flee(self, player, monster):
         if monster.x > -50:
             monster.x -= 10
             return True
         return False
-    
+    # Done
     def draw_instinct(self, a, b):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
@@ -145,7 +132,7 @@ class AllUI:
             self.time_lock = False
             return False
         return True
-
+    # Done
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
         x = Configs.monster_ui(monster.name)[0]
@@ -171,7 +158,7 @@ class AllUI:
 
         self.__screen.blit(text1, rect1)
         self.__screen.blit(text2, rect2)
-
+    # Done
     def draw_summary(self, drops, player, up):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 120), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 114))
@@ -191,7 +178,7 @@ class AllUI:
         self.__screen.blit(text3, rect3)
         if up:
             self.__screen.blit(text4, rect4)
-
+    # Done
     def draw_health_bar(self, player):
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (603, 378, self.btn_width-6, self.btn_height-6))
@@ -199,7 +186,6 @@ class AllUI:
         health_rect = health_text.get_rect(center=(700, 412.5))
 
         self.__screen.blit(health_text, health_rect)
-    
     # Done
     def draw_mob_skill_display(self, message=None):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
@@ -207,7 +193,6 @@ class AllUI:
         text = self.__font.render(message, True, Configs.get("BLACK"))
         rect = text.get_rect(center=(420, 25))
         self.__screen.blit(text, rect)
-
     # Done
     def draw_gui_combat(self):
         pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
@@ -231,17 +216,7 @@ class AllUI:
         atk_rect = atk_text.get_rect(center=(300, 487.5))
         self.__screen.blit(atk_text, atk_rect)
 
-    """
-    TODO
-    """
-    def draw_shop(self):
-        rect = pg.Rect(0, 0, 800, 600)
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), rect)
-
-        atk_text = self.__font.render("Attack (Z)", True, Configs.get("WHITE"))
-        atk_rect = atk_text.get_rect(center=(100, 487.5))
-        self.__screen.blit(atk_text, atk_rect)
-
+    # Done
     def draw_status_window(self, player):
         x1 = 200
         x2 = 400
@@ -251,7 +226,7 @@ class AllUI:
         c2 = (y1 + y2)/2
         offset = 30
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (x1, y1, x2, y2), 5)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (x1+3, y1+3, x2-6, y2-6))
+        pg.draw.rect(self.__screen, Configs.get('CREAMY'), (x1+3, y1+3, x2-6, y2-6))
 
         health_text = self.__font.render(f"Health: {player.health}/{player.max_health}", True, Configs.get("BLACK"))
         health_rect = health_text.get_rect(topleft=(c1, c2))
@@ -265,16 +240,20 @@ class AllUI:
         atk_rect = name_text.get_rect(topleft=(c1, c2+(2*offset)))
         self.__screen.blit(atk_text, atk_rect)
 
+        eva_text = self.__font.render(f"Evasion: {player.evasion * 100}%", True, Configs.get("BLACK"))
+        eva_rect = eva_text.get_rect(topleft=(c1, c2+(3*offset))) 
+        self.__screen.blit(eva_text, eva_rect)
+
         exp_text = self.__font.render(f"Exp: {player.exp}/{player.exp_threshold}", True, Configs.get("BLACK"))
-        exp_rect = name_text.get_rect(topleft=(c1, c2+(3*offset)))
+        exp_rect = name_text.get_rect(topleft=(c1, c2+(4*offset)))
         self.__screen.blit(exp_text, exp_rect)
 
         lvl_text = self.__font.render(f"Level: {player.level}", True, Configs.get("BLACK"))
-        lvl_rect = name_text.get_rect(topleft=(c1, c2+(4*offset)))
+        lvl_rect = name_text.get_rect(topleft=(c1, c2+(5*offset)))
         self.__screen.blit(lvl_text, lvl_rect)
 
         coin_text = self.__font.render(f"Coin: {player.coin}", True, Configs.get("BLACK"))
-        coin_rect = name_text.get_rect(topleft=(c1, c2+(5*offset)))
+        coin_rect = name_text.get_rect(topleft=(c1, c2+(6*offset)))
         self.__screen.blit(coin_text, coin_rect)
 
         player.draw_walk_down()

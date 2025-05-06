@@ -10,6 +10,9 @@ class Monster_TMP:
     def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, name="", health=0, damage=0, level=0, evasion=0,
                 steps=0, size=0, pixel=0, exp=0, coin=0):
         self.ui = AllUI(screen)
+        self.font = pg.font.Font(None, 30)
+        self.prep_size = 0
+        self.screen = screen
         self.name = name
         self.x_offset = x_off
         self.y_offset = y_off
@@ -54,16 +57,28 @@ class Monster_TMP:
         for i in range(self.animation_steps):
             self.animation.append(sprite_sheet.get_monster((0, 0), i, self.pixel, self.pixel, self.size, Configs.get('BLACK')))
     
-    def in_range(self, player):
+    def draw_mob_info(self, name):
+        pg.draw.rect(self.screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
+        pg.draw.rect(self.screen, Configs.get('CREAMY'), (255, 185, self.prep_size-10, self.prep_size-10))
+        if self.prep_size != 300:
+            self.prep_size += 50
+        if self.prep_size == 300:
+            text1 = self.font.render("Monster info: bla bla", True, Configs.get("BLACK"))
+            text1_rect = text1.get_rect(center=(400, 300))
+
+            text2 = self.font.render("Press SPACE to fight", True, Configs.get("BLACK"))
+            text2_rect = text1.get_rect(center=(400, 350))
+
+            self.screen.blit(text1, text1_rect)
+            self.screen.blit(text2, text2_rect)
+
+    def in_range(self, player, monster):
         distance = self.calculate_dist(player)
         if distance < self.encounter_dist:
-            self.show_info(self.name)
+            self.draw_mob_info(monster.name)
             return True
         else:
-            self.ui.prep_size = 0
-
-    def show_info(self, name=None):
-        self.ui.draw_mob_info(name)
+            self.prep_size = 0
 
     # Calculate dist player from mobs
     def calculate_dist(self, player):
@@ -106,6 +121,7 @@ class Goblin(Monster_TMP):
     def hunter_instinct(self):
         self.attack_skill = False
         self.damage *= 1.5
+        self.damage = round(self.damage)
 
 class Dark_Goblin(Goblin):
     def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=50, damage=2, level=2, evasion=0.3,
