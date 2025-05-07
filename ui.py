@@ -236,23 +236,23 @@ class AllUI:
         lvl_rect = lvl_text.get_rect(topleft=(c1, c2+offset))
         self.__screen.blit(lvl_text, lvl_rect)
 
-        health_text = self.__font.render(f"Health: {player.health}/{player.max_health}", True, Configs.get("BLACK"))
+        health_text = self.__font.render(f"Health: {player.health:.0f}/{player.max_health:.0f}", True, Configs.get("BLACK"))
         health_rect = health_text.get_rect(topleft=(c1, c2+(2*offset)))
         self.__screen.blit(health_text, health_rect)
 
-        atk_text = self.__font.render(f"Attack: {player.damage}", True, Configs.get("BLACK"))
+        atk_text = self.__font.render(f"Attack: {player.damage:.0f}", True, Configs.get("BLACK"))
         atk_rect = atk_text.get_rect(topleft=(c1, c2+(3*offset)))
         self.__screen.blit(atk_text, atk_rect)
 
-        eva_text = self.__font.render(f"Evasion: {player.evasion * 100}%", True, Configs.get("BLACK"))
+        eva_text = self.__font.render(f"Evasion: {(player.evasion * 100):.0f}%", True, Configs.get("BLACK"))
         eva_rect = eva_text.get_rect(topleft=(c1, c2+(4*offset))) 
         self.__screen.blit(eva_text, eva_rect)
 
-        exp_text = self.__font.render(f"Exp: {player.exp}/{player.exp_threshold}", True, Configs.get("BLACK"))
+        exp_text = self.__font.render(f"Exp: {player.exp}/{player.exp_threshold:.0f}", True, Configs.get("BLACK"))
         exp_rect = exp_text.get_rect(topleft=(c1, c2+(5*offset)))
         self.__screen.blit(exp_text, exp_rect)
 
-        coin_text = self.__font.render(f"Coin: {player.coin}", True, Configs.get("BLACK"))
+        coin_text = self.__font.render(f"Coin: {player.coin:.0f}", True, Configs.get("BLACK"))
         coin_rect = coin_text.get_rect(topleft=(c1, c2+(6*offset)))
         self.__screen.blit(coin_text, coin_rect)
 

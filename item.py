@@ -1,75 +1,108 @@
 class Item_TMP:
     # Items = []
-    def __init__(self, price, name):
+    def __init__(self, price, name, type):
         self.price = price
         self.name = name
-        # Item_TMP.Items.append(self)
+
+        self.type = type
+        self.save = ()
     
 class Potion(Item_TMP):
-    def __init__(self, price=5, name="Potion"):
-        super().__init__(price, name)
+    def __init__(self, price=5, name="Potion", type="item"):
+        super().__init__(price, name, type)
         self.heal = 10
 
 class Hi_Potion(Item_TMP):
-    def __init__(self, price=20, name="Hi-potion"):
-        super().__init__(price, name)
+    def __init__(self, price=20, name="Hi-Potion", type="item"):
+        super().__init__(price, name, type)
         self.heal = 100
 
 class X_Potion(Item_TMP):
-    def __init__(self, price=500, name="X-Potion"):
-        super().__init__(price, name)
+    def __init__(self, price=500, name="X-Potion", type="item"):
+        super().__init__(price, name, type)
         self.heal = 500
 
 class Battle_drum(Item_TMP):
-    def __init__(self, price=500, name="Drum"):
-        super().__init__(price, name)
+    def __init__(self, price=500, name="Drum", type="item"):
+        super().__init__(price, name, type)
 
     def up_stats(self, player=None):
         player.damage *= 2
 
 class Bomb(Item_TMP):
-    def __init__(self, price=300, name="Bomb"):
-        super().__init__(price, name)
+    def __init__(self, price=300, name="Bomb", type="item"):
+        super().__init__(price, name, type)
     
     def damage(self, monster=None):
         monster.health -= monster.health*0.5
 
 class Greed_bag(Item_TMP):
-    def __init__(self, price=50, name="Loot bag"):
-        super().__init__(price, name)
+    def __init__(self, price=50, name="Loot bag", type="item"):
+        super().__init__(price, name, type)
 
 class Longsword(Item_TMP):
-    def __init__(self, price=500, name="Longsword"):
-        super().__init__(price, name)
+    def __init__(self, price=500, name="Longsword", type="weapon"):
+        super().__init__(price, name, type)
 
-    def upstats(self, player=None):
-        player.damage *= 1.3
-        player.evasion += 0.1
+    def up_stats(self, player=None):
+        player.damage *= 1.5
+        player.damage = round(player.damage, 0)
+        player.max_health *= 1.2
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage, 0)
+        player.health = round(player.health, 0)
+    
+    def return_stats(self, player):
+        player.damage //= 1.5
+        player.max_health //= 1.2
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage, 0)
+        player.health = round(player.health, 0)
 
 class Mace(Item_TMP):
-    def __init__(self, price=500, name="Mace"):
-        super().__init__(price, name)
+    def __init__(self, price=500, name="Mace", type="weapon"):
+        super().__init__(price, name, type)
     
     def up_stats(self, player=None):
-        player.damage *= 2
+        self.save = (player.damage, player.max_health, player.evasion)
+        player.damage *= 2.5
         player.evasion = 0
+        player.max_health *= 3
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage, 0)
+        player.health = round(player.health, 0)
+
+    def return_stats(self, player):
+        player.damage //= 2.5
+        player.max_health //= 3
+        player.evasion = 0.2
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage, 0)
+        player.health = round(player.health, 0)
 
 class Knife(Item_TMP):
-    def __init__(self, price=500, name="Knife"):
-        super().__init__(price, name)
+    def __init__(self, price=500, name="Knife", type="weapon"):
+        super().__init__(price, name, type)
 
     def up_stats(self, player=None):
-        player.damage *= 0.5
-        player.evasion += 0.5
+        self.save = (player.damage, player.max_health, player.evasion)
+        player.damage *= 0.7
+        player.evasion += 0.6
+        player.max_health *= 0.3
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage)
+        player.health = round(player.health)
 
-# a = Potion()
-# b = Hi_Potion()
-# c = X_Potion()
-# d = Battle_drum()
-# e = Bomb()
-# f = Greed_bag()
-# g = Longsword()
-# h = Mace()
-# i = Knife()
-
-# print(Item_TMP.Items)
+    def return_stats(self, player):
+        player.damage //= 0.7
+        player.max_health //= 0.3
+        player.evasion -= 0.6
+        if player.health > player.max_health:
+            player.health = player.max_health
+        player.damage = round(player.damage)
+        player.health = round(player.health)

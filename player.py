@@ -8,12 +8,13 @@ class Player:
     def __init__(self, screen, name: str):
         self.ui = AllUI(screen)
         self.name = name
+        self.weapon = None
         self.health = 20
         self.max_health = 20
         self.level = 1
         self.exp = 0
         self.exp_threshold = 30
-        self.coin = 0
+        self.coin = 2000000
         self.damage = 10
         self.evasion = 0.1
         self.skill1_status = False

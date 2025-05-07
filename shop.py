@@ -15,7 +15,9 @@ class Shop:
         self.longsword = item.Longsword()
         self.mace = item.Mace()
         self.knife = item.Knife()
-            
+        # print(self.knife)
+        
+        self.select = None
         self.check = None
 
     def draw_menu(self, player, weapon=0):
@@ -79,3 +81,32 @@ class Shop:
         self.__screen.blit(box8_text, box8_rect)
         self.__screen.blit(box9_text, box9_rect)
     
+    def buy(self, player, select=None):
+        if select == 49:
+            self.select = self.longsword
+        elif select == 50:
+            self.select = self.knife
+        elif select == 51:
+            self.select = self.mace
+        elif select == 52:
+            self.select = self.potion
+        elif select == 53:
+            self.select = self.hi_potion
+        elif select == 54:
+            self.select = self.x_potion
+        elif select == 55:
+            self.select = self.battle_drum
+        elif select == 56:
+            self.select = self.greed
+        elif select == 57:
+            self.select = self.bomb
+        
+        diff = player.coin - self.select.price
+        if diff < 0 or player.weapon == self.select:
+            print("denied")
+            return None, None
+        else:
+            print("success")
+            player.coin -= self.select.price
+            return [self.select, self.select.type]
+        

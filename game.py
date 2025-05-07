@@ -14,7 +14,7 @@ class Game:
         self.__clock = pg.time.Clock()
 
         self.__player = Player(self.__screen, name="Ucula")
-        # self.__weapon = Weapons()
+        self.__weapon = None
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
@@ -47,7 +47,13 @@ class Game:
         self.__help = True
 
         # for Shop
-        self.__confirm = False
+        self.potion_count = 0
+        self.hipotion_count = 0
+        self.xpotion_count = 0
+        self.battledrum_count = 0
+        self.greedbag_count = 0
+        self.bomb_count = 0
+        self.__just_buy = False
 
         # for check combat status
         self.__engage_ready = False
@@ -325,7 +331,10 @@ class Game:
                     self.__engage_ready = True
                 else:
                     self.__engage_ready = False
-        
+        if self.__just_buy:
+            self.__player.weapon.up_stats(self.__player)
+            self.__just_buy = False
+
         if self.__shop:
             self.__shopee.draw_menu(self.__player)
 
@@ -507,6 +516,29 @@ class Game:
         else:
             self.__screen.blit(self.__player.draw_idle_combat(), (self.__player.x, self.__player.y))
     
+    def manage_item(self, item):
+        tmp = item.name
+        if tmp == "Potion":
+            self.potion_count += 1
+        elif tmp == "Hi_Potion":
+            self.hipotion_count += 1
+        elif tmp == "X-Potion":
+            self.xpotion_count += 1
+        elif tmp == "Drum":
+            self.battledrum_count += 1
+        elif tmp == "Loot bag":
+            self.greedbag_count += 1
+        elif tmp == "Bomb":
+            self.bomb_count += 1
+    
+    def open_shop(self):
+        self.__shop = True
+        self.__enable_walk = False
+
+    def close_shop(self):
+        self.__shop = False
+        self.__enable_walk = True
+
     # Check action for every scenarios
     def user_event(self):
         event = pg.event.get()
@@ -528,13 +560,27 @@ class Game:
             if self.__scene == "SHOP":
                 if self.__enable_walk:
                     if e.type == pg.KEYDOWN and e.key == pg.K_e and not self.__status:
-                        self.__shop = True
-                        self.__enable_walk = False
+                        self.open_shop()
+
                 elif not self.__enable_walk and not self.__status:
                     if e.type == pg.KEYDOWN and e.key == pg.K_e:
-                        self.__shop = False
-                        self.__enable_walk = True
+                        self.close_shop()
         
+                if self.__shop and e.type == pg.KEYDOWN:
+                    if e.key in (pg.K_1, pg.K_2, pg.K_3, pg.K_4, pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9):
+                        item, type = self.__shopee.buy(self.__player, e.key)
+                        if item is None and type is None:
+                            print("You cant buy that")
+                            
+                        elif type == "weapon":
+                            if self.__player.weapon is not None:
+                                self.__player.weapon.return_stats(self.__player)
+                            self.__player.weapon = item
+                            self.__just_buy = True
+                            print(self.__player.weapon.name)
+                        else:
+                            self.manage_item(item)
+                        self.close_shop()
             # Ready up
             if self.__engage_ready:
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
