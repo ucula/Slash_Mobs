@@ -13,23 +13,32 @@ class Monster_TMP:
 
     def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, name="", health=0, damage=0, level=0, evasion=0,
                 steps=0, size=0, pixel=0, exp=0, coin=0):
-        self.ui = AllUI(screen)
-        self.font = pg.font.Font(None, 30)
-        self.prep_size = 0
+        
         self.screen = screen
-        self.name = name
-        self.x_offset = x_off
-        self.y_offset = y_off
-        self.encounter_dist = 25
+        # Mob's coords in every scenarios ex. combat, normal
         self.x = x
         self.y = y
+        self.x_offset = x_off
+        self.y_offset = y_off
+
+        # Mob's stats
+        self.name = name
+        self.level = level
         self.health = health
         self.damage = damage
-        self.level = level
         self.evasion = evasion
         self.exp = exp
         self.coin = coin
-        self.attack_skill = True    
+
+        # Check attack (could be made better)
+        self.attack_skill = True  
+
+        # Display info
+        self.ui = AllUI(screen)
+        self.font = pg.font.Font(None, 30)
+        self.prep_size = 0
+        self.text_offset = 25
+        self.encounter_dist = 25
         
         # For animating
         self.animation = []
@@ -43,8 +52,6 @@ class Monster_TMP:
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
 
-    # Show mob info and ready for start fight trigger
-    # รอใส่ข้อมูลมอน
     def draw_monster(self):
         sprite_sheet_image = pg.image.load(Configs.monster(self.name)).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
@@ -57,25 +64,49 @@ class Monster_TMP:
         for i in range(self.animation_steps):
             self.animation.append(sprite_sheet.get_monster((0, 0), i, self.pixel, self.pixel, self.size, Configs.get('BLACK')))
     
-    def draw_mob_info(self, name):
+    def draw_mob_info(self):
         pg.draw.rect(self.screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
         pg.draw.rect(self.screen, Configs.get('CREAMY'), (255, 185, self.prep_size-10, self.prep_size-10))
         if self.prep_size != 300:
             self.prep_size += 50
         if self.prep_size == 300:
-            text1 = self.font.render("Monster info: bla bla", True, Configs.get("BLACK"))
-            text1_rect = text1.get_rect(center=(400, 300))
+            name = self.font.render(f"Name: {self.name}", True, Configs.get("BLACK"))
+            name_rect = name.get_rect(topleft=(270, 200))
 
-            text2 = self.font.render("Press SPACE to fight", True, Configs.get("BLACK"))
-            text2_rect = text1.get_rect(center=(400, 350))
+            lvl = self.font.render(f"Level: {self.level}", True, Configs.get("BLACK"))
+            lvl_rect = lvl.get_rect(topleft=(270, 200+(1*self.text_offset)))
 
-            self.screen.blit(text1, text1_rect)
-            self.screen.blit(text2, text2_rect)
+            health = self.font.render(f"Health: {self.health}", True, Configs.get("BLACK"))
+            health_rect = health.get_rect(topleft=(270, 200+(2*self.text_offset)))
+
+            dmg = self.font.render(f"Damage: {self.damage}", True, Configs.get("BLACK"))
+            dmg_rect = dmg.get_rect(topleft=(270, 200+(3*self.text_offset)))
+
+            eva = self.font.render(f"Evasion: {self.evasion*100}%", True, Configs.get("BLACK"))
+            eva_rect = eva.get_rect(topleft=(270, 200+(4*self.text_offset)))
+
+            exp = self.font.render(f"Exp drop: {self.exp}", True, Configs.get("BLACK"))
+            exp_rect = exp.get_rect(topleft=(270, 200+(5*self.text_offset)))
+
+            coin = self.font.render(f"Coin drop: {self.coin}", True, Configs.get("BLACK"))
+            coin_rect = coin.get_rect(topleft=(270, 200+(6*self.text_offset)))
+
+            help = self.font.render("Press \"SPACE\" to fight", True, Configs.get("BLACK"))
+            help_rect = help.get_rect(topleft=(270, 200+(7*self.text_offset)))
+
+            self.screen.blit(name, name_rect)
+            self.screen.blit(lvl, lvl_rect)
+            self.screen.blit(health, health_rect)
+            self.screen.blit(dmg, dmg_rect)
+            self.screen.blit(eva, eva_rect)
+            self.screen.blit(exp, exp_rect)
+            self.screen.blit(coin, coin_rect)
+            self.screen.blit(help, help_rect)
 
     def in_range(self, player, monster):
         distance = self.calculate_dist(player)
         if distance < self.encounter_dist:
-            self.draw_mob_info(monster.name)
+            self.draw_mob_info()
             # print("in range")
             return True
         else:

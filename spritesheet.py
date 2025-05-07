@@ -5,7 +5,7 @@ class SpriteSheet:
         self.sheet = image
     
     def get_monster(self, cords: tuple, frame, width, height, scale, color):
-        image = pg.Surface((width, height)).convert_alpha()
+        image = pg.Surface((width, height)).convert_alpha() 
         image.blit(self.sheet, cords, ((frame * width), 0, width, height))
 
         image = pg.transform.scale(image, (width * scale, height * scale))

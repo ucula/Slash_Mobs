@@ -46,6 +46,7 @@ class AllUI:
         offset = 3
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (coords[0], coords[2], coords[1], coords[3]), 5)
         pg.draw.rect(self.__screen, Configs.get('CREAMY'), (coords[0]+offset, coords[2]+offset, coords[1]-2*offset, coords[3]-2*offset))
+        
         help_text = self.__font.render(f"Press \"I\" to open status", True, Configs.get("BLACK"))
         help_rect = help_text.get_rect(topleft=(10, 10))
         shop_text = self.__font.render(f"Press \"E\" to open shop", True, Configs.get("BLACK"))
@@ -166,7 +167,6 @@ class AllUI:
         text2 = self.__font.render(f"You earned {drops[1]} exp", True, Configs.get("BLACK"))
         text3 = self.__font.render(f"Press \"SPACE\" to continue", True, Configs.get("BLACK"))
         text4 = self.__font.render(f"{player.name} level up!", True, Configs.get("BLACK"))
-       
     
         rect1 = text1.get_rect(center=(420, 25))
         rect2 = text2.get_rect(center=(420, 50))
@@ -228,32 +228,32 @@ class AllUI:
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (x1, y1, x2, y2), 5)
         pg.draw.rect(self.__screen, Configs.get('CREAMY'), (x1+3, y1+3, x2-6, y2-6))
 
-        health_text = self.__font.render(f"Health: {player.health}/{player.max_health}", True, Configs.get("BLACK"))
-        health_rect = health_text.get_rect(topleft=(c1, c2))
-        self.__screen.blit(health_text, health_rect)
-
         name_text = self.__font.render(f"Name: {player.name}", True, Configs.get("BLACK"))
-        name_rect = name_text.get_rect(topleft=(c1, c2+offset))
+        name_rect = name_text.get_rect(topleft=(c1, c2))
         self.__screen.blit(name_text, name_rect)
 
+        lvl_text = self.__font.render(f"Level: {player.level}", True, Configs.get("BLACK"))
+        lvl_rect = lvl_text.get_rect(topleft=(c1, c2+offset))
+        self.__screen.blit(lvl_text, lvl_rect)
+
+        health_text = self.__font.render(f"Health: {player.health}/{player.max_health}", True, Configs.get("BLACK"))
+        health_rect = health_text.get_rect(topleft=(c1, c2+(2*offset)))
+        self.__screen.blit(health_text, health_rect)
+
         atk_text = self.__font.render(f"Attack: {player.damage}", True, Configs.get("BLACK"))
-        atk_rect = name_text.get_rect(topleft=(c1, c2+(2*offset)))
+        atk_rect = atk_text.get_rect(topleft=(c1, c2+(3*offset)))
         self.__screen.blit(atk_text, atk_rect)
 
         eva_text = self.__font.render(f"Evasion: {player.evasion * 100}%", True, Configs.get("BLACK"))
-        eva_rect = eva_text.get_rect(topleft=(c1, c2+(3*offset))) 
+        eva_rect = eva_text.get_rect(topleft=(c1, c2+(4*offset))) 
         self.__screen.blit(eva_text, eva_rect)
 
         exp_text = self.__font.render(f"Exp: {player.exp}/{player.exp_threshold}", True, Configs.get("BLACK"))
-        exp_rect = name_text.get_rect(topleft=(c1, c2+(4*offset)))
+        exp_rect = exp_text.get_rect(topleft=(c1, c2+(5*offset)))
         self.__screen.blit(exp_text, exp_rect)
 
-        lvl_text = self.__font.render(f"Level: {player.level}", True, Configs.get("BLACK"))
-        lvl_rect = name_text.get_rect(topleft=(c1, c2+(5*offset)))
-        self.__screen.blit(lvl_text, lvl_rect)
-
         coin_text = self.__font.render(f"Coin: {player.coin}", True, Configs.get("BLACK"))
-        coin_rect = name_text.get_rect(topleft=(c1, c2+(6*offset)))
+        coin_rect = coin_text.get_rect(topleft=(c1, c2+(6*offset)))
         self.__screen.blit(coin_text, coin_rect)
 
         player.draw_walk_down()

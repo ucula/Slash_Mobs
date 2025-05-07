@@ -26,8 +26,8 @@ class Configs:
                     'MINOTAUR2': (38, 72),
                     'MINOTAUR3': (38, 72),
                     'SCORPION': (0, 0),
-                    'BLUE': (80, 80),
-                    'PURPLE': (80, 80)
+                    'BLUE': (60, 80),
+                    'PURPLE': (60, 80)
                     }
     
     __MONS_COMBAT_CORDS = {'SLIME': (150, 280),
@@ -40,8 +40,8 @@ class Configs:
                             'MINOTAUR2': (130, 230),
                             'MINOTAUR3': (130, 230),
                             'SCORPION': (200, 300),
-                            'BLUE': (120, 230),
-                            'PURPLE': (120, 230)
+                            'BLUE': (130, 250),
+                            'PURPLE': (130, 250)
                             }
     
     __MONS_UI_COORDS = {'SLIME': (230, 320),
