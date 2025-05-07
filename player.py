@@ -38,7 +38,10 @@ class Player:
 
         self.borders = {"HALL": self.check_lim_hall,
                        "PLAIN": self.check_lim_plain,
-                       "SHOP": self.check_lim_shop}
+                       "SHOP": self.check_lim_shop,
+                       "DESERT": self.check_lim_desert,
+                       "SNOW": self.check_lim_snow,
+                       "CAVE": self.check_lim_cave}
 
     def level_up(self):
         if self.exp >= self.exp_threshold:
@@ -52,29 +55,54 @@ class Player:
             return True
         return False
 
-    def die(self):
-        pass
-
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
 
-    def escape(self):
-        pass
+    def check_lim_cave(self):
+        if self.y < 300 or (self.x in range(0, 400) and self.y < 450) or (self.x in range(500, 800) and self.y < 425):
+            self.speed = 0
+            self.y += 1 
+        elif self.x < 0 or (self.y in range(0, 450) and self.x < 410):
+            self.speed = 0
+            self.x += 1
+        elif self.x > 750 or (self.y in range(0, 425) and self.x > 490):
+            self.speed = 0
+            self.x -= 1
+        else:
+            self.speed = Configs.get("SPEED")
+    
+    def check_lim_snow(self):
+        # Bottom rock border
+        if self.y > 525:
+            self.speed = 0
+            self.y -= 1
 
-    def buy(self, item_name: str):
-        pass
+        # Left rock border
+        elif (self.x < 330 and 50 <= self.y <= 180) or self.x < 0:
+            self.speed = 0
+            self.x += 1
 
-    def sell(self, item_name: str):
-        pass
+        # Under Left/Right rock border
+        elif (self.x < 330 and 185 <= self.y <= 188) or (self.x > 550 and 185 <= self.y <= 188):
+            self.speed = 0
+            self.y += 1
 
-    def discard_item(self, item_name: str):
-        pass
+        # Right rock border
+        elif (self.x > 550) and (50 <= self.y <= 180):
+            self.speed = 0
+            self.x -= 1
+        else:
+            self.speed = Configs.get('SPEED')
 
-    def skill1(self):
-        pass
-
-    def skill2(self):
-        pass
+    def check_lim_desert(self):
+        if self.y < 250:
+            self.speed = 0
+            self.y += 1
+        elif self.y > 530:
+            self.speed = 0
+            self.y -= 1
+        else:
+            self.speed = Configs.get("SPEED")
 
     def check_lim_shop(self):
         # check top border

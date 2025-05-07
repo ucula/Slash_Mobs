@@ -18,9 +18,11 @@ class Game:
         # self.__weapon = Weapons()
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
-        self.__rand_mob = monster.Monster_TMP.monster
-        self.__hostile_areas = ["PLAIN"]
-        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3]}
+        self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
+        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
+                           "DESERT": [0.5, 0.5, 0.5],
+                           "SNOW": [0.5, 0.5, 0.5],
+                           "CAVE": [0.5, 0.5, 0.5]}
         self.__mobs = None
 
         # for main loop
@@ -34,19 +36,11 @@ class Game:
 
         # cut scene switch
         self.__enter_combat = True
-
-        # Player animation in non-combat (DONE)
-        self.__walk = "IDLE"
-        self.__walk_direction = {'IDLE': self.__player.draw_idle,
-                               'LEFT': self.__player.draw_walk_left,
-                               'RIGHT': self.__player.draw_walk_right ,
-                               'UP': self.__player.draw_walk_up ,
-                               'DOWN': self.__player.draw_walk_down}
         
         self.__scene_manager = "NORMAL"
         # Normal scene
         self.__before = None
-        self.__scene = 'HALL'
+        self.__scene = "DESERT"
         self.__enter_scene = False
         self.__enable_walk = True
         self.__shop = False
@@ -100,89 +94,166 @@ class Game:
         if current_time - self.__start_time >= limit:
             return False
         return True
-    
+    # Done
     def character_animate(self, scene):
         self.__player.borders[scene]()
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            # self.__walk = "UP"
             self.__player.draw_walk_up()
             self.__player.y -= self.__player.speed  
             self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_s]:
-            # self.__walk = "DOWN"
             self.__player.draw_walk_down()
             self.__player.y += self.__player.speed
             self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_a]:
-            # self.__walk = "LEFT"
             self.__player.draw_walk_left()
             self.__player.x -= self.__player.speed
             self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_d]:
-            # self.__walk = "RIGHT"
             self.__player.draw_walk_right()
             self.__player.x += self.__player.speed
             self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
         else:
-              self.__screen.blit(self.__walk_direction["IDLE"]() , (self.__player.x, self.__player.y))    
-    
+              self.__screen.blit(self.__player.draw_idle() , (self.__player.x, self.__player.y))    
+    # Done
     def check_scene_change(self, scene):
         if scene == "HALL":
             if self.__player.y > 600: 
+                self.__mobs = None
+                self.__before = scene
                 self.__scene = "PLAIN"
-                self.__before = scene
-                return True
-        elif scene == "PLAIN":
-            if self.__player.y < 100:
-                self.__scene = "HALL"
-                self.__before = scene
-                return True    
-            if self.__player.x > 750:
-                self.__scene = "SHOP"
-                self.__before = scene
-                return True
-        elif scene == "SHOP":
-            if self.__player.y > 600:
-                self.__scene = "PLAIN"
-                self.__before = scene
                 return True
             
-        if scene not in self.__hostile_areas:
-            self.__mobs = None
+        elif scene == "PLAIN":
+            if self.__player.y < 100:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "HALL"
+                return True    
+            elif self.__player.x > 750:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "SHOP"
+                return True
+            elif self.__player.x < 0:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "DESERT"
+                return True
+            
+        elif scene == "SHOP":
+            if self.__player.y > 600:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "PLAIN"
+                return True
+            
+        elif scene == "DESERT":
+            if self.__player.x > 750:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "PLAIN"
+                return True
+            elif self.__player.x < 0:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "SNOW"
+                return True
+            
+        elif scene == "SNOW":
+            if self.__player.x > 750:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "DESERT"
+                return True
+            elif self.__player.y < 100:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "CAVE"
+                return True
         
+        elif scene == "CAVE":
+            if self.__player.y > 580:
+                self.__mobs = None
+                self.__before = scene
+                self.__scene = "SNOW"
+                return True
+
+    # Done
     def start_point(self, scene=None, before=None, combat=None):
         if self.__enter_scene:
+            # Hall
             if scene == "HALL":
                 self.__player.x = 390
                 self.__player.y = 550
-            if scene == "PLAIN" and before == "HALL":
-                self.__player.x = 500
-                self.__player.y = 150
-            elif scene == "PLAIN" and before == "SHOP": 
-                self.__player.x = 750
-                self.__player.y = 300
+            # Plain
+            if scene == "PLAIN":
+                if before == "HALL":
+                    self.__player.x = 500
+                    self.__player.y = 150
+                if before == "SHOP":
+                    self.__player.x = 750
+                    self.__player.y = 300
+                if before == "DESERT":
+                    self.__player.x = 50
+                    self.__player.y = 300
+            # Shop
             if scene == "SHOP":
                 self.__player.x = 350
                 self.__player.y = 550
+            # Desert
+            if scene == "DESERT":
+                if before == "PLAIN":
+                    self.__player.x = 700
+                    self.__player.y = 375
+                if before == "SNOW":
+                    self.__player.x = 50
+                    self.__player.y = 375
+            # Snow
+            if scene == "SNOW":
+                if before == "DESERT":
+                    self.__player.x = 700
+                    self.__player.y = 375
+                if before == "CAVE":
+                    self.__player.x = 400
+                    self.__player.y = 150
+            # Cave
+            if scene == "CAVE":
+                self.__player.x = 400
+                self.__player.y = 550
+            # Combat
             if combat is not None:
                 self.__player.x = 800
                 self.__player.y = 300
         self.__enter_scene = False
-    
+    # Done
     def gen_cords(self):
         if self.__scene == "PLAIN":
             x = random.randint(80, 550)
             y = random.randint(190, 250)
-        else:
-            # x = random.randint(0,Configs.get('WIN_SIZE_W'))
-            # y = random.randint(0,Configs.get('WIN_SIZE_H'))
-            pass
+        elif self.__scene == "DESERT":
+            x = random.randint(80, 550)
+            y = random.randint(280, 300)
+        elif self.__scene == "SNOW":
+            x = random.randint(80, 550)
+            y = random.randint(280, 300)
+        elif self.__scene == "CAVE":
+            x = random.randint(80, 550)
+            y = random.randint(280, 300)
         return x, y
-
     # Done
     def random_mob(self):
-        select = random.choices(self.__rand_mob, self.__mob_rate[self.__scene])[0]
+        if self.__scene == "PLAIN":
+            mob_set = monster.Monster_TMP.monster1
+        elif self.__scene == "DESERT":
+            mob_set = monster.Monster_TMP.monster2
+        elif self.__scene == "SNOW":
+            mob_set = monster.Monster_TMP.monster3
+        elif self.__scene == "CAVE":
+            mob_set = monster.Monster_TMP.monster4
+
+        select = random.choices(mob_set, self.__mob_rate[self.__scene])[0]
         pos_x, pos_y = self.gen_cords()
         if select == "SLIME":
             tmp_mob = monster.Slime(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
@@ -190,18 +261,32 @@ class Game:
             tmp_mob = monster.Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
         elif select == "DARK":
             tmp_mob = monster.Dark_Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
-        else:
-            pass
-        return tmp_mob
-    
+        elif select == "VAMPIRE1":
+            tmp_mob = monster.Vampire1(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "VAMPIRE2":
+            tmp_mob = monster.Vampire2(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "VAMPIRE3":
+            tmp_mob = monster.Vampire3(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "MINOTAUR1":
+            tmp_mob = monster.Minotaur1(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "MINOTAUR2":
+            tmp_mob = monster.Minotaur2(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "MINOTAUR3":
+            tmp_mob = monster.Minotaur3(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "BLUE":
+            tmp_mob = monster.Blue_worm(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "PURPLE":
+            tmp_mob = monster.Purple_worm(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        elif select == "SCORPION":
+            tmp_mob = monster.Scorpion(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+        return tmp_mob  
     # Done
     def create_mob(self):
-        if self.__mobs is None:
+        if self.__scene in self.__hostile_areas and self.__mobs is None:
             self.__mobs = self.random_mob()
 
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
-
     # Done
     def create_mob_incombat(self):
         if not self.__already_place_mob:
@@ -212,13 +297,8 @@ class Game:
             self.__already_place_mob = True
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
-
     # Non-combat
     def normal_scene(self):
-        """
-        TODO
-        ทำให้ shop ติด
-        """
         # BG
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))

@@ -18,28 +18,67 @@ class Configs:
         }
     __MONS_OFFSET = {'SLIME': (28, 25),
                     'GOBLIN': (117, 133),
-                    'DARK': (57, 72)
+                    'DARK': (57, 72),
+                    'VAMPIRE1': (38, 72),
+                    'VAMPIRE2': (38, 72),
+                    'VAMPIRE3': (38, 72),
+                    'MINOTAUR1': (38, 72),
+                    'MINOTAUR2': (38, 72),
+                    'MINOTAUR3': (38, 72),
+                    'SCORPION': (0, 0),
+                    'BLUE': (80, 80),
+                    'PURPLE': (80, 80)
                     }
     
     __MONS_COMBAT_CORDS = {'SLIME': (150, 280),
                             'GOBLIN': (100, 160),
-                            'DARK': (100, 230)
+                            'DARK': (100, 230),
+                            'VAMPIRE1': (130, 230),
+                            'VAMPIRE2': (130, 230),
+                            'VAMPIRE3': (130, 230),
+                            'MINOTAUR1': (130, 230),
+                            'MINOTAUR2': (130, 230),
+                            'MINOTAUR3': (130, 230),
+                            'SCORPION': (200, 300),
+                            'BLUE': (120, 230),
+                            'PURPLE': (120, 230)
                             }
     
     __MONS_UI_COORDS = {'SLIME': (230, 320),
                         'GOBLIN': (260, 290),
-                        'DARK': (210, 320)
+                        'DARK': (210, 320),
+                        'VAMPIRE1': (210, 320),
+                        'VAMPIRE2': (210, 320),
+                        'VAMPIRE3': (210, 320),
+                        'MINOTAUR1': (210, 320),
+                        'MINOTAUR2': (210, 320),
+                        'MINOTAUR3': (210, 320),
+                        'SCORPION': (210, 320),
+                        'BLUE': (210, 320),
+                        'PURPLE': (210, 320)
                         }
     
     __MONS = {'SLIME': "final_prog2/assets/slime.png",
               'GOBLIN': "final_prog2/assets/goblin.png",
-              'DARK': "final_prog2/assets/dark.png"
+              'DARK': "final_prog2/assets/dark.png",
+              'VAMPIRE1': "final_prog2/assets/vampire1.png",
+              'VAMPIRE2': "final_prog2/assets/vampire2.png",
+              'VAMPIRE3': "final_prog2/assets/vampire3.png",
+              'MINOTAUR1': "final_prog2/assets/minotaur1.png",
+              'MINOTAUR2': "final_prog2/assets/minotaur2.png",
+              'MINOTAUR3': "final_prog2/assets/minotaur3.png",
+              'SCORPION': "final_prog2/assets/scorpion.png",
+              'BLUE': "final_prog2/assets/blue.png",
+              'PURPLE': "final_prog2/assets/purple.png" 
               }
               
     __BG = {
         'HALL': "final_prog2/assets/hall.jpg",
         'PLAIN': "final_prog2/assets/plain.jpg",
         'SHOP': "final_prog2/assets/shop.jpg",
+        'DESERT': "final_prog2/assets/desert.jpg",
+        'SNOW': "final_prog2/assets/snow.jpg",
+        'CAVE': "final_prog2/assets/cave.jpg"
     }
 
     __PLAYER = {
@@ -74,6 +113,7 @@ class Configs:
     def monster_combat(cls, key):
         return cls.__MONS_COMBAT_CORDS[key]
     
+    # WTF what is tis for
     @classmethod
     def monster_ui(cls, key):
         return cls.__MONS_UI_COORDS[key]

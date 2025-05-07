@@ -140,19 +140,19 @@ class AllUI:
         if turn == "player":
             if evade:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))
-                text2 = font.render(f"MISS", True, Configs.get("WHITE"))
+                text2 = font.render(f"MISS", True, Configs.get("GRAY"))
             else:
                 text1 = font.render(f"{player.damage:.0f}", True, Configs.get("BLACK"))
-                text2 = font.render(f"{player.damage:.0f}", True, Configs.get("WHITE"))
+                text2 = font.render(f"{player.damage:.0f}", True, Configs.get("GRAY"))
             rect1 = text1.get_rect(bottomright=(x, y))
             rect2 = text2.get_rect(bottomright=(x+4, y))
         elif turn == "mob":
             if evade:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))
-                text2 = font.render(f"MISS", True, Configs.get("WHITE"))
+                text2 = font.render(f"MISS", True, Configs.get("GRAY"))
             else:
                 text1 = font.render(f"{monster.damage:.0f}", True, Configs.get("BLACK"))
-                text2 = font.render(f"{monster.damage:.0f}", True, Configs.get("WHITE"))
+                text2 = font.render(f"{monster.damage:.0f}", True, Configs.get("GRAY"))
             rect1 = text1.get_rect(center=(player.x+35, player.y-10))
             rect2 = text2.get_rect(center=(player.x+39, player.y-10))
 
