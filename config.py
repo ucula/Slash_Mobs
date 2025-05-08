@@ -16,6 +16,7 @@ class Configs:
         'MOB_x': 100,
         'MOB_y': 160
         }
+    
     __MONS_OFFSET = {'SLIME': (28, 25),
                     'GOBLIN': (117, 133),
                     'DARK': (57, 72),

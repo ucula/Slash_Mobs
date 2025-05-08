@@ -18,7 +18,7 @@ class Game:
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.0, 0.0, 0.3],
+        self.__mob_rate = {"PLAIN": [0.0, 0.5, 0.5],
                            "DESERT": [0.4, 0.3, 0.4],
                            "SNOW": [0.4, 0.3, 0.3],
                            "CAVE": [0.4, 0.3, 0.3]}

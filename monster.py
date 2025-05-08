@@ -181,32 +181,27 @@ class Goblin(Monster_TMP):
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
         self.create_aura()
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
+        self.attack_rate =  0 #0.55
+        self.run_rate = 0 # 0.05
         self.hunter_instinct_rate = 0.25 # 0.4
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
     def create_aura(self):
-        print("create")
         sprite_sheet_image = pg.image.load(Configs.effects("AURA")).convert_alpha()
         sprite_sheet = SpriteSheet(sprite_sheet_image)
         if len(self.aura_eff) <= 0:
             for _ in range(2):
                 for i in range(5):
-                    self.aura_eff.append(sprite_sheet.get_effects((0, 0), i, 30, 30, self.size, Configs.get('BLACK')))
+                    self.aura_eff.append(sprite_sheet.get_effects((0, 0), i, 30, 30, 3, Configs.get('BLACK')))
         # print(self.aura_eff)
 
     def draw_aura(self):
         self.ui.draw_mob_skill_display(f"{self.name}'s damage increased by 1.5x!")
         current_time = pg.time.get_ticks()
         if not self.time_lock:
-            # print("lock")
-            # print(self.start)
-            # print(self.frame2)
             self.start = current_time
             self.time_lock = True
 
-        # print(self.time_lock)
         if current_time - self.start >= 150:
             self.frame2 += 1
             self.time_lock = False
@@ -214,7 +209,9 @@ class Goblin(Monster_TMP):
             self.frame2 = 0
             return False
         
-        self.screen.blit(self.aura_eff[self.frame2], (Configs.monster_combat(self.name)[0]+50, Configs.monster_combat(self.name)[1]+80))
+        self.screen.blit(self.aura_eff[self.frame2], 
+                         (Configs.monster_combat(self.name)[0]+105, 
+                             Configs.monster_combat(self.name)[1]+150))
         return True
     
     def hunter_instinct(self, a):
@@ -222,12 +219,12 @@ class Goblin(Monster_TMP):
         self.damage = round(self.damage)
         self.s_damage = False
         if not self.draw_aura():
-            print("finish animate")
+
             return False
         return True
         
 class Dark_Goblin(Goblin):
-    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=2, evasion=0.3,
+    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=3, evasion=0.3,
                  steps=3, size=3, pixel=64, exp=15, coin=8):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -237,6 +234,34 @@ class Dark_Goblin(Goblin):
         self.run_rate = 0 # 0.7
         self.hunter_instinct_rate = 0.6 #0.2
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
+
+    def draw_aura(self):
+        self.ui.draw_mob_skill_display(f"{self.name}'s damage increased by 2x!")
+        current_time = pg.time.get_ticks()
+        if not self.time_lock:
+            self.start = current_time
+            self.time_lock = True
+
+        if current_time - self.start >= 150:
+            self.frame2 += 1
+            self.time_lock = False
+        if self.frame2 >= len(self.aura_eff):
+            self.frame2 = 0
+            return False
+        
+        self.screen.blit(self.aura_eff[self.frame2], 
+                         (Configs.monster_combat(self.name)[0]+50, 
+                             Configs.monster_combat(self.name)[1]+80))
+        return True
+    
+    def hunter_instinct(self, a):
+        self.damage *= 2
+        self.damage = round(self.damage)
+        self.s_damage = False
+        if not self.draw_aura():
+
+            return False
+        return True
 
 class Scorpion(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=55, damage=10, level=4, evasion=0.3,
