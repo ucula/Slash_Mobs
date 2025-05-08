@@ -3,7 +3,15 @@ import pygame as pg
 class SpriteSheet:
     def __init__(self, image):
         self.sheet = image
-    
+
+    def get_effects(self, cords: tuple, frame, width, height, scale, color):
+        image = pg.Surface((width, height)).convert_alpha() 
+        image.blit(self.sheet, cords, ((frame * width), 0, width, height))
+
+        image = pg.transform.scale(image, (width * scale, height * scale))
+        image.set_colorkey(color)
+        return image
+
     def get_monster(self, cords: tuple, frame, width, height, scale, color):
         image = pg.Surface((width, height)).convert_alpha() 
         image.blit(self.sheet, cords, ((frame * width), 0, width, height))

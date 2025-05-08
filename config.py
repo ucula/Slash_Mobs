@@ -58,6 +58,9 @@ class Configs:
                         'PURPLE': (210, 320)
                         }
     
+    __EFFECTS = {"AURA": "final_prog2/assets/aura.png",
+                 "FIRE": "final_prog2/assets/fire.png"}
+
     __MONS = {'SLIME': "final_prog2/assets/slime.png",
               'GOBLIN': "final_prog2/assets/goblin.png",
               'DARK': "final_prog2/assets/dark.png",
@@ -113,7 +116,10 @@ class Configs:
     def monster_combat(cls, key):
         return cls.__MONS_COMBAT_CORDS[key]
     
-    # WTF what is tis for
     @classmethod
     def monster_ui(cls, key):
         return cls.__MONS_UI_COORDS[key]
+    
+    @classmethod
+    def effects(cls, key):
+        return cls.__EFFECTS[key]

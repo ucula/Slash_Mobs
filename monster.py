@@ -33,7 +33,7 @@ class Monster_TMP:
         self.coin = coin
 
         # Check attack (could be made better)
-        self.attack_skill = True  
+        self.s_damage = True  
 
         # Display info
         self.ui = AllUI(screen)
@@ -44,14 +44,28 @@ class Monster_TMP:
         
         # For animating
         self.animation = []
+        self.fire_eff = []
+        self.aura_eff = []
+        
         self.animation_steps = steps
         self.last_up = pg.time.get_ticks()
         self.cool_down = 100
+        self.time_lock = False
+        self.start = 0
         self.frame = 0
+        self.frame2 = 0
         self.size = size
         self.pixel = pixel
         self.speed = 20
 
+    def delay(self):
+        current_time = pg.time.get_ticks()
+        if not self.__time_lock:
+            self.__start_time = pg.time.get_ticks()
+            self.__time_lock = True
+        if current_time - self.__start_time >= 1000:
+            return False
+        return True
     # Done
     def draw_monster_attack(self, player):
         if self.m_pos is None:
@@ -165,26 +179,61 @@ class Goblin(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
+                       'INSTINCT': self.hunter_instinct}
+        self.create_aura()
         self.attack_rate =  0.7 #0.55
         self.run_rate = 0.05 # 0.05
         self.hunter_instinct_rate = 0.25 # 0.4
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-           
-    def hunter_instinct(self):
-        self.attack_skill = False
+    
+    def create_aura(self):
+        print("create")
+        sprite_sheet_image = pg.image.load(Configs.effects("AURA")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.aura_eff) <= 0:
+            for _ in range(2):
+                for i in range(5):
+                    self.aura_eff.append(sprite_sheet.get_effects((0, 0), i, 30, 30, self.size, Configs.get('BLACK')))
+        # print(self.aura_eff)
+
+    def draw_aura(self):
+        self.ui.draw_mob_skill_display(f"{self.name}'s damage increased by 1.5x!")
+        current_time = pg.time.get_ticks()
+        if not self.time_lock:
+            # print("lock")
+            # print(self.start)
+            # print(self.frame2)
+            self.start = current_time
+            self.time_lock = True
+
+        # print(self.time_lock)
+        if current_time - self.start >= 150:
+            self.frame2 += 1
+            self.time_lock = False
+        if self.frame2 >= len(self.aura_eff):
+            self.frame2 = 0
+            return False
+        
+        self.screen.blit(self.aura_eff[self.frame2], (Configs.monster_combat(self.name)[0]+50, Configs.monster_combat(self.name)[1]+80))
+        return True
+    
+    def hunter_instinct(self, a):
         self.damage *= 1.5
         self.damage = round(self.damage)
+        self.s_damage = False
+        if not self.draw_aura():
+            print("finish animate")
+            return False
+        return True
         
-
 class Dark_Goblin(Goblin):
     def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=2, evasion=0.3,
                  steps=3, size=3, pixel=64, exp=15, coin=8):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate = 0.4 # 0.1
+                       'INSTINCT': self.hunter_instinct}
+        self.attack_rate = 0.0 # 0.4
         self.run_rate = 0 # 0.7
         self.hunter_instinct_rate = 0.6 #0.2
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
@@ -215,10 +264,26 @@ class Blue_worm(Monster_TMP):
     
     def draw_crunch(self):
         pass
+    
+    def create_fire(self):
+        sprite_sheet_image = pg.image.load(Configs.effects("FIRE")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for i in range(self.animation_steps):
+                self.animation.append(sprite_sheet.get_effects((0, 0), i, 120, 120, self.size, Configs.get('BLACK')))
+            for i in range(self.animation_steps):
+                self.animation.append(sprite_sheet.get_effects((0, 120), i, 120, 120, self.size, Configs.get('BLACK')))
 
-    def draw_fire(self):
-        pass
-
+    def draw_fire(self, a):
+        self.create_fire()
+        current_time = pg.time.get_ticks()
+        if current_time - self.last_up >= self.cool_down:
+            self.frame += 1
+            self.last_up = current_time
+            if self.frame >= len(self.animation):
+                return False
+        return True
+        
 class Purple_worm(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=200, damage=50, level=5, evasion=0.2,
                  steps=9, size=2, pixel=90, exp=30, coin=10):

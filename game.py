@@ -14,11 +14,11 @@ class Game:
         self.__clock = pg.time.Clock()
 
         self.__player = Player(self.__screen, name="Ucula")
-        self.__weapon = None
+
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
+        self.__mob_rate = {"PLAIN": [0.0, 0.0, 0.3],
                            "DESERT": [0.4, 0.3, 0.4],
                            "SNOW": [0.4, 0.3, 0.3],
                            "CAVE": [0.4, 0.3, 0.3]}
@@ -265,6 +265,7 @@ class Game:
 
         select = random.choices(mob_set, self.__mob_rate[self.__scene])[0]
         pos_x, pos_y = self.gen_cords()
+        # print("call")
         if select == "SLIME":
             tmp_mob = monster.Slime(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
         elif select == "GOBLIN":
@@ -380,18 +381,14 @@ class Game:
             self.__ui.draw_mob_skill_display(self.__mob_select)
 
     def m_action(self):
-        animating = self.__mobs.skill[self.__mob_select](self.__player)
-        if not animating and self.__mob_select == "RUN":
+        if self.__mob_select == "RUN":
             self.reset()
             self.__move = True
-        
-        elif not animating and self.__mob_select == "INSTINCT":
-            self.__mobs.hunter_instinct()
-            self.__mstate = "CALCULATING"
 
-        elif not animating and self.__mob_select != "RUN":
+        animating = self.__mobs.skill[self.__mob_select](self.__player)
+        if not animating:
             self.__mstate = "CALCULATING"
-            self.__evade = self.__player.roll_evasion()
+            self.__evade = self.__player.roll_evasion()           
 
     def p_calculate_stage(self):
         self.__move = False
@@ -400,10 +397,10 @@ class Game:
             self.__pstate = "CHANGE_TURN"
 
     def m_calculate_stage(self):
-        if self.__mobs.attack_skill:
+        if self.__mobs.s_damage:
             self.__ui.draw_damage("mob", self.__player, self.__mobs, self.__evade)
         if not self.delay(self.__turn_delay):
-            if not self.__evade and self.__mobs.attack_skill:
+            if not self.__evade and self.__mobs.s_damage:
                 self.__player.health -= self.__mobs.damage
             self.__mstate = "CHANGE_TURN"
     

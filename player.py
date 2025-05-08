@@ -14,7 +14,7 @@ class Player:
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 10
+        self.damage = 0
         self.evasion = 0.2
         self.skill1_status = False
         self.skill2_status = False
