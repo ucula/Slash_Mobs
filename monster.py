@@ -207,6 +207,8 @@ class Goblin(Monster_TMP):
 
         if self.frame2 >= len(self.aura_eff):
             self.frame2 = 0
+            self.damage *= 1.5
+            self.damage = round(self.damage)
             return False
         
         self.screen.blit(self.aura_eff[self.frame2], 
@@ -215,8 +217,6 @@ class Goblin(Monster_TMP):
         return True
     
     def hunter_instinct(self, a):
-        self.damage *= 1.5
-        self.damage = round(self.damage)
         self.s_damage = False
         if not self.draw_aura():
             return False
@@ -246,6 +246,8 @@ class Dark_Goblin(Goblin):
             self.time_lock = False
         if self.frame2 >= len(self.aura_eff):
             self.frame2 = 0
+            self.damage *= 2
+            self.damage = round(self.damage)
             return False
         
         self.screen.blit(self.aura_eff[self.frame2], 
@@ -254,8 +256,6 @@ class Dark_Goblin(Goblin):
         return True
     
     def hunter_instinct(self, a):
-        self.damage *= 2
-        self.damage = round(self.damage)
         self.s_damage = False
         if not self.draw_aura():
 

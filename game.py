@@ -18,7 +18,7 @@ class Game:
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.4, 0.0, 0.0],
+        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
                            "DESERT": [0.4, 0.3, 0.4],
                            "SNOW": [0.4, 0.3, 0.3],
                            "CAVE": [0.4, 0.3, 0.3]}
@@ -423,7 +423,7 @@ class Game:
             self.__up = self.__player.level_up()
     
     def m_change_turn(self):
-        self.__mobs.attack_skill = True
+        self.__mobs.s_damage = True
         self.__mstate = "IDLE"
         self.__mob_select = None
         self.__time_lock = False
