@@ -18,7 +18,7 @@ class Game:
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.0, 0.5, 0.5],
+        self.__mob_rate = {"PLAIN": [0.4, 0.0, 0.0],
                            "DESERT": [0.4, 0.3, 0.4],
                            "SNOW": [0.4, 0.3, 0.3],
                            "CAVE": [0.4, 0.3, 0.3]}
@@ -381,14 +381,15 @@ class Game:
             self.__ui.draw_mob_skill_display(self.__mob_select)
 
     def m_action(self):
-        if self.__mob_select == "RUN":
-            self.reset()
-            self.__move = True
-
         animating = self.__mobs.skill[self.__mob_select](self.__player)
         if not animating:
-            self.__mstate = "CALCULATING"
-            self.__evade = self.__player.roll_evasion()           
+            if self.__mob_select == "RUN":
+                self.reset()
+                self.__move = True
+            elif self.__mob_select != "RUN":
+                self.__mstate = "CALCULATING"
+                self.__evade = self.__player.roll_evasion()   
+                    
 
     def p_calculate_stage(self):
         self.__move = False
