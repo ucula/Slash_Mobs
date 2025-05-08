@@ -20,6 +20,8 @@ class Monster_TMP:
         self.y = y
         self.x_offset = x_off
         self.y_offset = y_off
+        self.m_pos = None
+        self.mstate = "forward"
 
         # Mob's stats
         self.name = name
@@ -48,7 +50,35 @@ class Monster_TMP:
         self.frame = 0
         self.size = size
         self.pixel = pixel
+        self.speed = 20
 
+    # Done
+    def draw_monster_attack(self, player):
+        if self.m_pos is None:
+            self.m_pos = self.x
+            self.mstate = "forward"
+
+        if self.mstate == "forward":
+            self.x += self.speed
+            if self.x >= player.x - 150:
+                self.mstate = "backward"
+
+        elif self.mstate == "backward":
+            self.x -= self.speed
+            if self.x <= self.m_pos:
+                self.x = self.m_pos
+                self.mstate = "idle"
+                self.m_pos = None
+                return False
+        return True
+    
+    # Done
+    def draw_monster_flee(self, a):
+        if self.x > -50:
+            self.x -= 10
+            return True
+        return False
+    
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
 
@@ -120,21 +150,21 @@ class Monster_TMP:
         return distance 
 
 class Slime(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=15, damage=1, level=1, evasion=0.1,
+    def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=8, damage=1, level=1, evasion=0.1,
                  steps=6, size=1, pixel=128, exp=2, coin=2):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin) 
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee}
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
         self.attack_rate = 0.95
         self.run_rate = 0.05
         self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Goblin(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=50, damage=5, level=2, evasion=0.1,
-                 steps=3, size=1, pixel=300, exp=10, coin=5, a=0, b=1):
+    def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=20, damage=7, level=2, evasion=0.1,
+                 steps=3, size=1, pixel=300, exp=10, coin=5):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee,
                        'INSTINCT': self.ui.draw_instinct}
         self.attack_rate =  0.7 #0.55
         self.run_rate = 0.05 # 0.05
@@ -145,168 +175,117 @@ class Goblin(Monster_TMP):
         self.attack_skill = False
         self.damage *= 1.5
         self.damage = round(self.damage)
+        
 
 class Dark_Goblin(Goblin):
-    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=50, damage=2, level=2, evasion=0.3,
-                 steps=3, size=3, pixel=64, exp=15, coin=20):
+    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=2, evasion=0.3,
+                 steps=3, size=3, pixel=64, exp=15, coin=8):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee,
                        'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate = 0.5 # 0.1
+        self.attack_rate = 0.4 # 0.1
         self.run_rate = 0 # 0.7
-        self.hunter_instinct_rate = 0.5 #0.2
+        self.hunter_instinct_rate = 0.6 #0.2
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
+
+class Scorpion(Monster_TMP):
+    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=55, damage=10, level=4, evasion=0.3,
+                 steps=3, size=1, pixel=64, exp=25, coin=15):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.9 #0.55
+        self.run_rate = 0.1 # 0.05
+        self.skill_chances = [self.attack_rate, self.run_rate]
+
+class Blue_worm(Monster_TMP):
+    def __init__(self, screen, x_off, y_off, x, y, name="BLUE", health=200, damage=8, level=5, evasion=0.4,
+                 steps=9, size=2, pixel=90, exp=30, coin=15):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee,
+                       'CRUNCH': self.draw_crunch,
+                       'FIRE': self.draw_fire}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.crunch_rate = 0
+        self.fire_rate = 0
+        self.skill_chances = [self.attack_rate, self.run_rate]
+    
+    def draw_crunch(self):
+        pass
+
+    def draw_fire(self):
+        pass
+
+class Purple_worm(Monster_TMP):
+    def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=200, damage=50, level=5, evasion=0.2,
+                 steps=9, size=2, pixel=90, exp=30, coin=10):
+        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
+
 
 class Vampire1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE1", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Vampire2(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Vampire3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Minotaur1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Minotaur2(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR2", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]
 
 class Minotaur3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50, a=0, b=1):
+                 steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
-
-class Scorpion(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=200, damage=30, level=10, evasion=0.4,
-                 steps=3, size=1, pixel=64, exp=100, coin=50, a=0, b=1):
-        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
-
-class Blue_worm(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="BLUE", health=200, damage=30, level=10, evasion=0.4,
-                 steps=9, size=2, pixel=90, exp=100, coin=50, a=0, b=1):
-        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
-
-class Purple_worm(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=200, damage=30, level=10, evasion=0.4,
-                 steps=9, size=2, pixel=90, exp=100, coin=50, a=0, b=1):
-        super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
-        self.skill = {'ATTACK': self.ui.draw_monster_attack,
-                       'RUN': self.ui.draw_monster_flee,
-                       'INSTINCT': self.ui.draw_instinct}
-        self.attack_rate =  0.7 #0.55
-        self.run_rate = 0.05 # 0.05
-        self.hunter_instinct_rate = 0.25 # 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-        
-    def hunter_instinct(self):
-        self.attack_skill = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        self.skill = {'ATTACK': self.draw_monster_attack,
+                       'RUN': self.draw_monster_flee}
+        self.attack_rate =  0.7 
+        self.run_rate = 0.05 
+        self.skill_chances = [self.attack_rate, self.run_rate]

@@ -96,33 +96,9 @@ class AllUI:
                 self.p_pos = None
                 return False
         return True
-    # Done
-    def draw_monster_attack(self, player, monster):
-        if self.m_pos is None:
-            self.m_pos = monster.x
-            self.mstate = "forward"
 
-        if self.mstate == "forward":
-            monster.x += self.speed
-            if monster.x >= player.x - 150:
-                self.mstate = "backward"
-
-        elif self.mstate == "backward":
-            monster.x -= self.speed
-            if monster.x <= self.m_pos:
-                monster.x = self.m_pos
-                self.mstate = "idle"
-                self.m_pos = None
-                return False
-        return True
     # Done
-    def draw_monster_flee(self, player, monster):
-        if monster.x > -50:
-            monster.x -= 10
-            return True
-        return False
-    # Done
-    def draw_instinct(self, a, b):
+    def draw_instinct(self, a):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
         text = self.__font.render(f"Mob's damage increases by 1.5x", True, Configs.get("BLACK"))
@@ -182,7 +158,7 @@ class AllUI:
     def draw_health_bar(self, player):
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (603, 378, self.btn_width-6, self.btn_height-6))
-        health_text = self.__font.render(f"Health: {player.health:.0f}/{player.max_health}", True, Configs.get("RED"))
+        health_text = self.__font.render(f"Health: {player.health:.0f}/{player.max_health:.0f}", True, Configs.get("RED"))
         health_rect = health_text.get_rect(center=(700, 412.5))
 
         self.__screen.blit(health_text, health_rect)
@@ -248,7 +224,7 @@ class AllUI:
         eva_rect = eva_text.get_rect(topleft=(c1, c2+(4*offset))) 
         self.__screen.blit(eva_text, eva_rect)
 
-        exp_text = self.__font.render(f"Exp: {player.exp}/{player.exp_threshold:.0f}", True, Configs.get("BLACK"))
+        exp_text = self.__font.render(f"Exp: {player.exp:.0f}/{player.exp_threshold:.0f}", True, Configs.get("BLACK"))
         exp_rect = exp_text.get_rect(topleft=(c1, c2+(5*offset)))
         self.__screen.blit(exp_text, exp_rect)
 

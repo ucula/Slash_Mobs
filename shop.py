@@ -40,7 +40,7 @@ class Shop:
 
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (600, 0, 800, 60), 60)
         pg.draw.rect(self.__screen, Configs.get('CREAMY'), (600+offset,0+offset, 800-2*offset, 60-2*offset))
-        coin_text = self.__font.render(f"Coin: {player.coin}", True, Configs.get("BLACK"))
+        coin_text = self.__font.render(f"Coin: {player.coin:.0f}", True, Configs.get("BLACK"))
         coin_rect = coin_text.get_rect(center=(700, 30))
 
         box1_text = self.__font.render(f"{self.longsword.name} {self.longsword.price}$ (1)", True, Configs.get("BLACK"))

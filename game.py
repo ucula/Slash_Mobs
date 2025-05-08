@@ -39,7 +39,7 @@ class Game:
         self.__scene_manager = "NORMAL"
         # Normal scene
         self.__before = None
-        self.__scene = "SHOP"
+        self.__scene = "HALL"
         self.__enter_scene = False
         self.__enable_walk = True
         self.__shop = False
@@ -380,7 +380,7 @@ class Game:
             self.__ui.draw_mob_skill_display(self.__mob_select)
 
     def m_action(self):
-        animating = self.__mobs.skill[self.__mob_select](self.__player, self.__mobs)
+        animating = self.__mobs.skill[self.__mob_select](self.__player)
         if not animating and self.__mob_select == "RUN":
             self.reset()
             self.__move = True
@@ -434,7 +434,11 @@ class Game:
         if self.__player.health <= 0:
             self.reset()
             self.__pstate = None
-            self.__player.health = 1
+            self.__player.health = 0.5 * self.__player.max_health
+            self.__player.coin *= 0.5
+            self.__scene = "HALL"
+            self.__before = None
+            self.__enter_scene = True
 
     def summary(self):
         if not self.delay(self.__turn_delay):
@@ -578,9 +582,10 @@ class Game:
                             self.__player.weapon = item
                             self.__just_buy = True
                             print(self.__player.weapon.name)
+                            self.close_shop()
                         else:
                             self.manage_item(item)
-                        self.close_shop()
+                        # self.close_shop()
             # Ready up
             if self.__engage_ready:
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
