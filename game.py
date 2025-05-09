@@ -39,7 +39,13 @@ class Game:
         self.__scene_manager = "NORMAL"
         # Normal scene
         self.__before = None
+
+        # self.__scene = "SHOP"
+        # self.__scene = "PLAIN"
         self.__scene = "DESERT"
+        # self.__scene = "SNOW"
+        # self.__scene = "CAVE"
+
         self.__enter_scene = False
         self.__enable_walk = True
         self.__shop = False
@@ -607,6 +613,8 @@ class Game:
                         self.__pstate = "ATTACK"
                     elif e.key == pg.K_r:
                         self.__pstate = "RUN"
+                    elif e.key == pg.K_d:
+                        self.__pstate = "DEFEND"
             
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:

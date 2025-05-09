@@ -16,10 +16,13 @@ class Player:
         self.coin = 1000
         self.damage = 10
         self.evasion = 0.2
+        self.weapon = None
         self.skill1_status = False
         self.skill2_status = False
-        self.weapon = None
+        self.skill3_status = False
+        self.skill4_status = False
 
+        # spawnpoint
         self.x = 366
         self.y = 460
         self.speed = Configs.get('SPEED')

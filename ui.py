@@ -175,9 +175,23 @@ class AllUI:
             pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
        
         atk_text, atk_rect = AllUI.animate_text_center("Attack (Z)", "WHITE", 100, 487.5)
-        run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE",300, 487.5)
+        run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)
+        defend_text, defend_rect = AllUI.animate_text_center("Defend (D)", "WHITE",100, 562.5)
+        item_text, item_rect = AllUI.animate_text_center("Item (I)", "WHITE",300, 562.5)
+
+        skill1_text, skill1_rect = AllUI.animate_text_center("Locked", "WHITE", 500, 487.5)
+        skill2_text, skill2_rect = AllUI.animate_text_center("Locked", "WHITE", 500, 562.5)
+        skill3_text, skill3_rect = AllUI.animate_text_center("Locked", "WHITE", 700, 487.5)
+        skill4_text, skill4_rect = AllUI.animate_text_center("Locked", "WHITE", 700, 562.5)
+
         self.__screen.blit(atk_text, atk_rect)
         self.__screen.blit(run_text, run_rect)
+        self.__screen.blit(defend_text, defend_rect)
+        self.__screen.blit(item_text, item_rect)
+        self.__screen.blit(skill1_text, skill1_rect)
+        self.__screen.blit(skill2_text, skill2_rect)
+        self.__screen.blit(skill3_text, skill3_rect)
+        self.__screen.blit(skill4_text, skill4_rect)
 
     # Done
     def draw_status_window(self, player):
@@ -186,7 +200,7 @@ class AllUI:
         y1 = 200
         y2 = 300
         c1 = (x1 + x2)/2
-        c2 = (y1 + y2)/2
+        c2 = 230
         offset = 30
         settings = Configs.ui_pos("STATUS")
         AllUI.create_box(self.__screen, settings)
@@ -198,6 +212,10 @@ class AllUI:
         eva_text, eva_rect = AllUI.animate_text_topleft(message=f"Evasion: {(player.evasion * 100):.0f}%", color="BLACK", x=c1, y=c2+(4*offset))
         exp_text, exp_rect = AllUI.animate_text_topleft(message=f"Exp: {player.exp:.0f}/{player.exp_threshold:.0f}", color="BLACK", x=c1, y=c2+(5*offset))
         coin_text, coin_rect = AllUI.animate_text_topleft(message=f"Coin: {player.coin:.0f}", color="BLACK", x=c1, y=c2+(6*offset))
+        if player.weapon is None:
+            weapon_text, weapon_rect = AllUI.animate_text_topleft(message=f"Weapon: None", color="BLACK", x=c1, y=c2+(7*offset))
+        elif player.weapon is not None:
+            weapon_text, weapon_rect = AllUI.animate_text_topleft(message=f"Weapon: {player.weapon.name}", color="BLACK", x=c1, y=c2+(7*offset))
 
         self.__screen.blit(name_text, name_rect)
         self.__screen.blit(lvl_text, lvl_rect) 
@@ -206,6 +224,7 @@ class AllUI:
         self.__screen.blit(eva_text, eva_rect)
         self.__screen.blit(exp_text, exp_rect)
         self.__screen.blit(coin_text, coin_rect)
+        self.__screen.blit(weapon_text, weapon_rect)
 
         player.draw_walk_down()
         self.__screen.blit(player.animation_down[player.frame], (x1, y2+125))
