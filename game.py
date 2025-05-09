@@ -42,9 +42,9 @@ class Game:
 
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
-        self.__scene = "DESERT"
+        # self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        # self.__scene = "CAVE"
+        self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -64,7 +64,8 @@ class Game:
         # for check combat status
         self.__engage_ready = False
         self.__combat = False
-        self.__move = True
+        self.__move_combat = True
+        self.__move_normal = False
 
         # for player
         self.__player_turn = False
@@ -90,7 +91,6 @@ class Game:
         self.__health = False
         self.__enter_scene = True
         self.__engage_ready = False
-        
         self.__already_place_mob = False
         self.__time_lock = False
         self.__pstate = "IDLE"
@@ -98,7 +98,8 @@ class Game:
         self.__enter_combat = True
         self.__scene_manager = "CHANGING"
         self.__help = True
-
+        self.__player.direction = 'DOWN'
+   
     # Delays
     def delay(self, limit):
         current_time = pg.time.get_ticks()
@@ -113,23 +114,29 @@ class Game:
         self.__player.borders[scene]()
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            self.__player.draw_walk_up()
+            self.__move_normal = True
+            self.__player.direction = "UP"
             self.__player.y -= self.__player.speed  
-            self.__screen.blit(self.__player.animation_up[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_s]:
-            self.__player.draw_walk_down()
+            self.__move_normal = True
+            self.__player.direction = "DOWN"
             self.__player.y += self.__player.speed
-            self.__screen.blit(self.__player.animation_down[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_a]:
-            self.__player.draw_walk_left()
+            self.__move_normal = True
+            self.__player.direction = "LEFT"
             self.__player.x -= self.__player.speed
-            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
         elif keys[pg.K_d]:
-            self.__player.draw_walk_right()
+            self.__move_normal = True
+            self.__player.direction = "RIGHT"
             self.__player.x += self.__player.speed
-            self.__screen.blit(self.__player.animation_right[self.__player.frame], (self.__player.x, self.__player.y))
         else:
-              self.__screen.blit(self.__player.draw_idle() , (self.__player.x, self.__player.y))    
+            self.__move_normal = False
+        
+        if not self.__move_normal:
+            self.__player.draw_idle()
+        elif self.__move_normal:
+            self.__player.draw_walk()
+
     # Done
     def check_scene_change(self, scene):
         if scene == "HALL":
@@ -199,7 +206,6 @@ class Game:
         if self.__enter_scene:
             # Hall
             if scene == "HALL":
-                print("in")
                 self.__player.x = 366
                 self.__player.y = 460
             # Plain
@@ -207,11 +213,14 @@ class Game:
                 if before == "HALL":
                     self.__player.x = 500
                     self.__player.y = 150
-                if before == "SHOP":
+                elif before == "SHOP":
                     self.__player.x = 750
                     self.__player.y = 300
-                if before == "DESERT":
+                elif before == "DESERT":
                     self.__player.x = 50
+                    self.__player.y = 300
+                else:
+                    self.__player.x = 400
                     self.__player.y = 300
             # Shop
             if scene == "SHOP":
@@ -222,21 +231,28 @@ class Game:
                 if before == "PLAIN":
                     self.__player.x = 700
                     self.__player.y = 375
-                if before == "SNOW":
+                elif before == "SNOW":
                     self.__player.x = 50
                     self.__player.y = 375
+                else:
+                    self.__player.x = 400
+                    self.__player.y = 500
             # Snow
             if scene == "SNOW":
                 if before == "DESERT":
                     self.__player.x = 700
                     self.__player.y = 375
-                if before == "CAVE":
+                elif before == "CAVE":
                     self.__player.x = 400
                     self.__player.y = 150
+                else:
+                    self.__player.x = 400
+                    self.__player.y = 300
             # Cave
             if scene == "CAVE":
                 self.__player.x = 400
-                self.__player.y = 550
+                self.__player.y = 500
+                
             # Combat
             if combat is not None:
                 self.__player.x = 800
@@ -365,7 +381,7 @@ class Game:
                 self.__pstate = "IDLE"
                 self.__enter_combat = False
                 self.__health = True
-                self.__move = False
+                self.__move_combat = False
 
     # Random skill for mobs based on fixed probability
     def m_pick_skill(self):
@@ -384,7 +400,7 @@ class Game:
 
     # Animate any player's skill
     def p_action(self):
-        self.__move = True
+        self.__move_combat = True
         print("action")
         animating = self.__player.attacks[self.__pselect]()
         print(animating)
@@ -403,13 +419,13 @@ class Game:
         if not animating:
             if self.__mob_select == "RUN":
                 self.reset()
-                self.__move = True
+                self.__move_combat = True
             elif self.__mob_select != "RUN":
                 self.__mstate = "CALCULATING"
                 self.__evade = self.__player.roll_evasion()   
 
     def p_calculate_stage(self):
-        self.__move = False
+        self.__move_combat = False
         self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
         if not self.delay(self.__turn_delay):
             self.__pstate = "CHANGE_TURN"
@@ -462,10 +478,11 @@ class Game:
             self.__health = False
     
     def ending(self):
-        self.__move = True
+        self.__move_combat = True
         self.__up = False
-        walk_out = self.__player.draw_walk_out(self.__player)
+        walk_out = self.__player.draw_walk_out()
         if walk_out:
+            print(self.__scene, self.__before)
             self.reset()
     
     # 3.Combat scene
@@ -480,11 +497,10 @@ class Game:
         self.enter_stage()
 
         # Some certain skills require player to move
-        if self.__move:
-            self.__player.draw_walk_left()
-            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
+        if self.__move_combat:
+            self.__player.draw_walk_in_combat()
         else:
-            self.__screen.blit(self.__player.draw_idle_combat(), (self.__player.x, self.__player.y))
+            self.__player.draw_idle_in_combat()
     
         # Player's turn
         if self.__player_turn:
@@ -630,6 +646,7 @@ class Game:
                 done = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
                 if done and self.__combat:
                     self.__scene_manager = "COMBAT"
+                    self.__before = None
 
                 elif done and not self.__combat:
                     self.__scene_manager = "NORMAL"

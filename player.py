@@ -6,6 +6,7 @@ import random
 
 class Player:
     def __init__(self, screen, name: str):
+        self.screen = screen
         self.ui = AllUI(screen)
         self.name = name
         self.max_health = 500 
@@ -14,14 +15,13 @@ class Player:
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 10
+        self.damage = 1000
         self.evasion = 0.2
         self.weapon = None
         self.skill1_status = False
         self.skill2_status = False
         self.skill3_status = False
         self.skill4_status = False
-
         self.attacks = {"ATTACK": self.draw_attack,
                         "RUN": self.draw_walk_out}
 
@@ -29,12 +29,6 @@ class Player:
         self.x = 366
         self.y = 460
         self.speed = Configs.get('SPEED')
-
-        # for storing animation
-        self.animation_down = []
-        self.animation_up = []
-        self.animation_left = []
-        self.animation_right = []
 
         # for animating
         self.size = 3
@@ -44,13 +38,20 @@ class Player:
         self.frame = 0
         self.pstate = "idle"
         self.p_pos = None
-
+        
+        # for storing animation
+        self.direction = "DOWN"
+        self.walk_animations = {"LEFT": [],
+                                "RIGHT": [],
+                                "UP": [],
+                                "DOWN": []}
         self.borders = {"HALL": self.check_lim_hall,
                        "PLAIN": self.check_lim_plain,
                        "SHOP": self.check_lim_shop,
                        "DESERT": self.check_lim_desert,
                        "SNOW": self.check_lim_snow,
                        "CAVE": self.check_lim_cave}
+        self.create_walk()
 
     def draw_enter_animation(self):
         if self.x != 540:
@@ -222,75 +223,41 @@ class Player:
         else:
             self.speed = Configs.get('SPEED')
     
-    def draw_idle_combat(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('LEFT')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
+    def create_walk(self):
+        move = ["DOWN", "LEFT", "UP", "RIGHT"]
+        for j in range(len(move)):
+            sprite_sheet_image = pg.image.load(Configs.player_animation(move[j])).convert_alpha()
+            sprite_sheet = SpriteSheet(sprite_sheet_image)
+            if len(self.walk_animations[move[j]]) <= 0:
+                if move[j] == "RIGHT":
+                    for i in range(self.animation_steps):
+                        self.walk_animations[move[j]].append(sprite_sheet.get_walk((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
+                else:
+                    for i in range(self.animation_steps):
+                        self.walk_animations[move[j]].append(sprite_sheet.get_walk((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA'), j))
 
-        return sprite_sheet.get_image2((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
+    def draw_walk(self):
+        current_time = pg.time.get_ticks()
+        if current_time - self.last_up >= self.cool_down:
+            self.frame += 1
+            self.last_up = current_time
+            if self.frame >= len(self.walk_animations[self.direction]):
+                self.frame = 0
+
+        self.screen.blit(self.walk_animations[self.direction][self.frame], (self.x, self.y))  
     
-    def draw_walk_down(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('DOWN')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
-
+    def draw_walk_in_combat(self):
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
             self.frame += 1
             self.last_up = current_time
-            if self.frame >= len(self.animation_down):
+            if self.frame >= len(self.walk_animations["LEFT"]):
                 self.frame = 0
 
-        if len(self.animation_down) <= 0:
-            for i in range(self.animation_steps):
-                self.animation_down.append(sprite_sheet.get_image1((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
+        self.screen.blit(self.walk_animations["LEFT"][self.frame], (self.x, self.y)) 
+
+    def draw_idle_in_combat(self):
+        self.screen.blit(self.walk_animations["LEFT"][0], (self.x, self.y)) 
     
-    def draw_walk_left(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('LEFT')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
-
-        if len(self.animation_left) <= 0:
-            for i in range(self.animation_steps):
-                self.animation_left.append(sprite_sheet.get_image2((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-
-        current_time = pg.time.get_ticks()
-        if current_time - self.last_up >= self.cool_down:
-            self.frame += 1
-            self.last_up = current_time
-            if self.frame >= len(self.animation_left):
-                self.frame = 0
-
-    def draw_walk_up(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('UP')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
-
-        if len(self.animation_up) <= 0:
-            for i in range(self.animation_steps):
-                self.animation_up.append(sprite_sheet.get_image3((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-
-        current_time = pg.time.get_ticks()
-        if current_time - self.last_up >= self.cool_down:
-            self.frame += 1
-            self.last_up = current_time
-            if self.frame >= len(self.animation_up):
-                self.frame = 0
-
-    def draw_walk_right(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('RIGHT')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
-
-        if len(self.animation_right) <= 0:
-            for i in range(self.animation_steps):
-                self.animation_right.append(sprite_sheet.get_image4((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA')))
-
-        current_time = pg.time.get_ticks()
-        if current_time - self.last_up >= self.cool_down:
-            self.frame += 1
-            self.last_up = current_time
-            if self.frame >= len(self.animation_right):
-                self.frame = 0
-
     def draw_idle(self):
-        sprite_sheet_image = pg.image.load(Configs.player_animation('IDLE')).convert_alpha()
-        sprite_sheet = SpriteSheet(sprite_sheet_image)
-        
-        return sprite_sheet.get_idle((0, 0), 0, 24, 24, self.size, Configs.get('MAGENTA'))
-    
+        self.screen.blit(self.walk_animations[self.direction][0], (self.x, self.y)) 

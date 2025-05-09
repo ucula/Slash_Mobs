@@ -78,38 +78,6 @@ class AllUI:
         else:
             self.curtain = 0
             return True
-    
-    # Combat series
-    # def draw_enter_animation(self, player):
-    #     if player.x != 540:
-    #         player.x -= 10
-    #         return True
-    #     return False
-    
-    # def draw_walk_out(self, player):
-    #     if player.x > 0:
-    #         player.x -= 10
-    #         return False
-    #     return True
-    
-    # def draw_attack(self, player):
-    #     if self.p_pos is None:
-    #         self.p_pos = player.x
-    #         self.pstate = "forward"
-
-    #     if self.pstate == "forward":
-    #         player.x -= self.speed
-    #         if player.x <= 310:
-    #             self.pstate = "backward"
-
-    #     elif self.pstate == "backward":
-    #         player.x += self.speed
-    #         if player.x >= self.p_pos:
-    #             player.x = self.p_pos
-    #             self.pstate = "idle"
-    #             self.p_pos = None
-    #             return False
-    #     return True
 
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
@@ -142,7 +110,7 @@ class AllUI:
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 114))
         text1, rect1 = AllUI.animate_text_center(f"You earned {drops[0]} coins", "BLACK", 420, 25)
         text2, rect2 = AllUI.animate_text_center(f"You earned {drops[1]} exp", "BLACK", 420, 50)
-        text3, rect3 = AllUI.animate_text_center(f"Press \"SPACE\" to continue" "BLACK", 420, 75)
+        text3, rect3 = AllUI.animate_text_center(f"Press \"SPACE\" to continue", "BLACK", 420, 75)
         text4, rect4 = AllUI.animate_text_center(f"{player.name} level up!", "BLACK", 420, 100)
 
         self.__screen.blit(text1, rect1)
@@ -176,7 +144,7 @@ class AllUI:
        
         atk_text, atk_rect = AllUI.animate_text_center("Attack (Z)", "WHITE", 100, 487.5)
         run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)
-        defend_text, defend_rect = AllUI.animate_text_center("Defend (D)", "WHITE",100, 562.5)
+        defend_text, defend_rect = AllUI.animate_text_center("Defend (D)", "WHITE", 100, 562.5)
         item_text, item_rect = AllUI.animate_text_center("Item (I)", "WHITE",300, 562.5)
 
         skill1_text, skill1_rect = AllUI.animate_text_center("Locked", "WHITE", 500, 487.5)
