@@ -65,18 +65,17 @@ class Game:
         self.__engage_ready = False
         self.__combat = False
         self.__move = True
-        self.__damage = None
 
         # for player
+        self.__player_turn = False
+        self.__pstate = "IDLE"
+        self.__pselect = None
         self.__up = False
         self.__health = False
-        self.__pstate = "IDLE"
-        self.__player_turn = False
-        self.__pskill = {"ATTACK": self.__ui.draw_attack}
 
         # for monster
-        self.__mstate = "IDLE"
         self.__mob_turn = False
+        self.__mstate = "IDLE"
         self.__mob_select = None
         self.__evade = None
         self.__already_place_mob = False
@@ -361,20 +360,12 @@ class Game:
     # Simple walk-in intro when combat triggered
     def enter_stage(self):
         if self.__enter_combat:
-            if not self.__ui.draw_enter_animation(self.__player):
+            if not self.__player.draw_enter_animation():
                 self.__player_turn = True
                 self.__pstate = "IDLE"
                 self.__enter_combat = False
                 self.__health = True
                 self.__move = False
-
-    # Animate any player's skill
-    def p_action(self):
-        self.__move = True
-        animating = self.__pskill[self.__pstate](self.__player)
-        if not animating:
-            self.__pstate = "CALCULATING"
-            self.__evade = self.__mobs.roll_evasion()
 
     # Random skill for mobs based on fixed probability
     def m_pick_skill(self):
@@ -389,7 +380,22 @@ class Game:
             self.__ui.start_pos = None
             self.__time_lock = False
         else:
-            self.__ui.draw_mob_skill_display(self.__mob_select)
+            self.__ui.draw_skill_display(self.__mob_select)
+
+    # Animate any player's skill
+    def p_action(self):
+        self.__move = True
+        print("action")
+        animating = self.__player.attacks[self.__pselect]()
+        print(animating)
+        if not animating:
+            print("done")
+            self.move = False
+            if self.__pselect == "RUN":
+                self.reset()
+            elif self.__pselect != "RUN":
+                self.__pstate = "CALCULATING"
+                self.__evade = self.__mobs.roll_evasion()
 
     def m_action(self):
         animating = self.__mobs.skill[self.__mob_select](self.__player)
@@ -458,7 +464,7 @@ class Game:
     def ending(self):
         self.__move = True
         self.__up = False
-        walk_out = self.__ui.draw_walk_out(self.__player)
+        walk_out = self.__player.draw_walk_out(self.__player)
         if walk_out:
             self.reset()
     
@@ -485,9 +491,8 @@ class Game:
             if self.__pstate == "IDLE":
                 self.__ui.draw_gui_combat()
 
-            elif self.__pstate == "RUN":
-                self.__move = True
-                self.reset()
+            elif self.__pstate == "ATTACKING":
+                self.p_action()
 
             elif self.__pstate == "CALCULATING":
                 self.p_calculate_stage()
@@ -500,8 +505,6 @@ class Game:
 
             elif self.__pstate == "ENDING":
                 self.ending()
-            else:
-                self.p_action()
         
         # Mob's turn
         if self.__mob_turn:
@@ -514,10 +517,8 @@ class Game:
                     
             elif self.__mstate == "ATTACKING":
                 self.m_action()
-                # print(self.damage)
 
             elif self.__mstate == "CALCULATING":
-                # print(self.damage)
                 self.m_calculate_stage()
 
             elif self.__mstate == "CHANGE_TURN":
@@ -526,10 +527,6 @@ class Game:
         # Show healh bar for player in combat
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
-            """
-            TODO
-            add check player health = 0, if so kill the player and reset progress/(or smth else)
-            """
         
     def manage_item(self, item):
         tmp = item.name
@@ -610,11 +607,14 @@ class Game:
             if self.__player_turn and self.__pstate == "IDLE":
                 if e.type == pg.KEYDOWN:
                     if e.key == pg.K_z:
-                        self.__pstate = "ATTACK"
+                        self.__pselect = "ATTACK"
+                        print(1)
                     elif e.key == pg.K_r:
-                        self.__pstate = "RUN"
+                        self.__pselect = "RUN"
+                        print(2)
                     elif e.key == pg.K_d:
-                        self.__pstate = "DEFEND"
+                        self.__pselect = "DEFEND"
+                    self.__pstate = "ATTACKING"
             
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:

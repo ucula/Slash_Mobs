@@ -206,7 +206,7 @@ class Monster_TMP:
     # Skill series          
     def hunter_instinct(self, a):
         self.create_aura()
-        self.ui.draw_mob_skill_display(f"{self.name}'s damage increased by 1.5x!")
+        self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
         self.s_damage = False
         self.damage *= 1.5
@@ -316,7 +316,7 @@ class Dark_Goblin(Monster_TMP):
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
     def hunter_instinct(self, a):
-        self.ui.draw_mob_skill_display(f"{self.name}'s damage increased by 2x!")
+        self.ui.draw_skill_display(f"{self.name}'s damage increased by 2x!")
         dmg = 0
         self.s_damage = False
         self.damage *= 2

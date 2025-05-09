@@ -80,36 +80,36 @@ class AllUI:
             return True
     
     # Combat series
-    def draw_enter_animation(self, player):
-        if player.x != 540:
-            player.x -= 10
-            return True
-        return False
+    # def draw_enter_animation(self, player):
+    #     if player.x != 540:
+    #         player.x -= 10
+    #         return True
+    #     return False
     
-    def draw_walk_out(self, player):
-        if player.x > 0:
-            player.x -= 10
-            return False
-        return True
+    # def draw_walk_out(self, player):
+    #     if player.x > 0:
+    #         player.x -= 10
+    #         return False
+    #     return True
     
-    def draw_attack(self, player):
-        if self.p_pos is None:
-            self.p_pos = player.x
-            self.pstate = "forward"
+    # def draw_attack(self, player):
+    #     if self.p_pos is None:
+    #         self.p_pos = player.x
+    #         self.pstate = "forward"
 
-        if self.pstate == "forward":
-            player.x -= self.speed
-            if player.x <= 310:
-                self.pstate = "backward"
+    #     if self.pstate == "forward":
+    #         player.x -= self.speed
+    #         if player.x <= 310:
+    #             self.pstate = "backward"
 
-        elif self.pstate == "backward":
-            player.x += self.speed
-            if player.x >= self.p_pos:
-                player.x = self.p_pos
-                self.pstate = "idle"
-                self.p_pos = None
-                return False
-        return True
+    #     elif self.pstate == "backward":
+    #         player.x += self.speed
+    #         if player.x >= self.p_pos:
+    #             player.x = self.p_pos
+    #             self.pstate = "idle"
+    #             self.p_pos = None
+    #             return False
+    #     return True
 
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
@@ -157,7 +157,7 @@ class AllUI:
         health_text, health_rect = AllUI.animate_text_center(f"Health: {player.health:.0f}/{player.max_health:.0f}", "RED", 700, 412.5)     
         self.__screen.blit(health_text, health_rect)
 
-    def draw_mob_skill_display(self, message=None):
+    def draw_skill_display(self, message=None):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
         text = self.__font.render(message, True, Configs.get("BLACK"))

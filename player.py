@@ -22,6 +22,9 @@ class Player:
         self.skill3_status = False
         self.skill4_status = False
 
+        self.attacks = {"ATTACK": self.draw_attack,
+                        "RUN": self.draw_walk_out}
+
         # spawnpoint
         self.x = 366
         self.y = 460
@@ -39,6 +42,8 @@ class Player:
         self.last_up = pg.time.get_ticks()
         self.cool_down = 100
         self.frame = 0
+        self.pstate = "idle"
+        self.p_pos = None
 
         self.borders = {"HALL": self.check_lim_hall,
                        "PLAIN": self.check_lim_plain,
@@ -47,6 +52,38 @@ class Player:
                        "SNOW": self.check_lim_snow,
                        "CAVE": self.check_lim_cave}
 
+    def draw_enter_animation(self):
+        if self.x != 540:
+            self.x -= 10
+            return True
+        return False
+    
+    def draw_walk_out(self):
+        if self.x > 0:
+            self.x -= 10
+            return False
+        return True
+    
+    def draw_attack(self):
+        print("attack")
+        if self.p_pos is None:
+            self.p_pos = self.x
+            self.pstate = "forward"
+
+        if self.pstate == "forward":
+            self.x -= 20
+            if self.x <= 310:
+                self.pstate = "backward"
+
+        elif self.pstate == "backward":
+            self.x += 20
+            if self.x >= self.p_pos:
+                self.x = self.p_pos
+                self.pstate = "idle"
+                self.p_pos = None
+                return False
+        return True
+    
     def reset_stats(self):
         self.max_health = 20
         self.health = self.max_health
