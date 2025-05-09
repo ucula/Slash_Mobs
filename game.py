@@ -20,7 +20,7 @@ class Game:
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0, 0.3, 0],
                            "DESERT": [0, 1, 0],
-                           "SNOW": [0, 0, 0.3],
+                           "SNOW": [0, 1, 0],
                            "CAVE": [0.4, 0, 0]}
         self.__mobs = None
 
@@ -40,11 +40,12 @@ class Game:
         # Normal scene
         self.__before = None
 
+        # self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
-        # self.__scene = "DESERT"
+        self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        self.__scene = "CAVE"
+        # self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -73,6 +74,7 @@ class Game:
         self.__pselect = None
         self.__up = False
         self.__health = False
+        self.__revert_stat = False
 
         # for monster
         self.__mob_turn = False
@@ -80,6 +82,7 @@ class Game:
         self.__mob_select = None
         self.__evade = None
         self.__already_place_mob = False
+        self.__is_skill_animating = False
         
     # Reset Combat
     def reset(self):
@@ -319,7 +322,6 @@ class Game:
     def create_mob(self):
         if self.__scene in self.__hostile_areas and self.__mobs is None:
             self.__mobs = self.random_mob()
-
         self.__mobs.draw_monster()
         self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
@@ -331,11 +333,12 @@ class Game:
             self.__mobs.x = x
             self.__mobs.y = y
             self.__already_place_mob = True
-        self.__mobs.draw_monster()
-        self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
-
+        if not self.__is_skill_animating:
+            self.__mobs.draw_monster()
+            self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
     # Non-combat
     def normal_scene(self):
+        self.__player.save()
         # BG
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
@@ -387,7 +390,6 @@ class Game:
     def m_pick_skill(self):
         if self.__mob_select is None:
             self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)[0]
-            # print(Configs.monster_combat(self.__mobs.name)[0]+105, Configs.monster_combat(self.__mobs.name)[1]+150)sss
 
     # Display what skill mob chose to attack  player
     def m_show_skill(self):
@@ -400,22 +402,22 @@ class Game:
 
     # Animate any player's skill
     def p_action(self):
-        self.__move_combat = True
-        print("action")
+        if self.__pselect != "DEFEND":
+            self.__move_combat = True
         animating = self.__player.attacks[self.__pselect]()
-        print(animating)
         if not animating:
-            print("done")
             self.move = False
             if self.__pselect == "RUN":
                 self.reset()
+            elif self.__pselect == "DEFEND":
+                self.__pstate = "CHANGE_TURN"
             elif self.__pselect != "RUN":
                 self.__pstate = "CALCULATING"
                 self.__evade = self.__mobs.roll_evasion()
 
     def m_action(self):
         animating = self.__mobs.skill[self.__mob_select](self.__player)
-        # print(animating, dmg)
+        self.__is_skill_animating = self.__mobs.bool_tmp
         if not animating:
             if self.__mob_select == "RUN":
                 self.reset()
@@ -442,10 +444,10 @@ class Game:
     def p_change_turn(self):
         self.__player_turn = False
         self.__mob_turn = True
-        self.__pstate = "IDLE"
         self.__time_lock = False
-        if not self.__evade:
+        if not self.__evade and self.__pselect != "DEFEND":
             self.__mobs.health -= self.__player.damage
+        self.__pstate = "IDLE"
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
             self.__mob_drops = (self.__mobs.coin, self.__mobs.exp)
@@ -464,6 +466,9 @@ class Game:
         self.__time_lock = False
         self.__player_turn = True
         self.__mob_turn = False
+        if self.__revert_stat:
+            self.__player.return_stats()
+            self.__revert_stat = False
         if self.__player.health <= 0:
             self.reset()
             self.__player.reset_stats()
@@ -482,7 +487,6 @@ class Game:
         self.__up = False
         walk_out = self.__player.draw_walk_out()
         if walk_out:
-            print(self.__scene, self.__before)
             self.reset()
     
     # 3.Combat scene
@@ -492,7 +496,7 @@ class Game:
         self.__screen.blit(bg, (0, 0))
         if self.__mobs is not None:
             self.create_mob_incombat()
-    
+
         # Enter animation
         self.enter_stage()
 
@@ -604,12 +608,11 @@ class Game:
                                 self.__player.weapon.return_stats(self.__player)
                             self.__player.weapon = item
                             self.__just_buy = True
-                            # print(self.__player.weapon.name)
                             self.close_shop()
 
                         elif item is not None and type is not None:
                             self.manage_item(item)
-                        # self.close_shop()
+
             # Ready up
             if self.__engage_ready:
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
@@ -624,12 +627,11 @@ class Game:
                 if e.type == pg.KEYDOWN:
                     if e.key == pg.K_z:
                         self.__pselect = "ATTACK"
-                        print(1)
                     elif e.key == pg.K_r:
                         self.__pselect = "RUN"
-                        print(2)
                     elif e.key == pg.K_d:
                         self.__pselect = "DEFEND"
+                        self.__revert_stat = True
                     self.__pstate = "ATTACKING"
             
             if self.__pstate == "SUMMARY" :

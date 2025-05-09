@@ -7,6 +7,10 @@ class Item_TMP:
         self.type = type
         self.save = ()
     
+    @staticmethod
+    def draw_item(screen, image, x, y):
+        screen.blit(image, (x, y))
+    
 class Potion(Item_TMP):
     def __init__(self, price=2, name="Potion", type="item"):
         super().__init__(price, name, type)

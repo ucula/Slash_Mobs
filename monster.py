@@ -36,6 +36,7 @@ class Monster_TMP:
         self.s_damage = False
         self.a_damage = False
         self.atk_tmp = 0
+        self.bool_tmp = False
 
         # Display info
         self.ui = AllUI(screen)
@@ -45,6 +46,7 @@ class Monster_TMP:
         self.encounter_dist = 25
         
         # For animating
+        self.animating = None
         self.effects = []
         self.animation = []
         self.animation_steps = steps
@@ -80,6 +82,53 @@ class Monster_TMP:
                 return False
         return True
     
+    def draw_skill_attack(self, player, lim):
+        self.atk_tmp = self.damage
+        if self.m_pos is None:
+            self.m_pos = self.x
+            self.mstate = "forward"
+
+        if self.mstate == "forward":
+            self.x += self.speed
+            if self.x >= player.x - 150:
+                self.speed = 0
+                self.bool_tmp = True
+                self.animating = self.draw_skill_animation(lim)
+                if not self.animating:
+                    self.mstate = "backward"
+
+        if self.mstate == "backward":
+            self.bool_tmp = False
+            self.speed = 20
+            self.x -= self.speed
+            if self.x <= self.m_pos:
+                self.x = self.m_pos
+                self.mstate = "idle"
+                self.m_pos = None
+                return False
+        print(self.x, self.y)
+        return True
+
+    def draw_skill_animation(self, lim):
+        current_time = pg.time.get_ticks()
+        if not self.time_lock:
+            self.start = current_time
+            self.time_lock = True
+        if current_time - self.start >= lim:
+            self.frame2 += 1
+            self.time_lock = False
+        if self.frame2 >= len(self.effects):
+            self.frame2 = 0
+            self.effects.clear()
+            return False
+        x = Configs.monster_combat(self.name)[0]
+        y = Configs.monster_combat(self.name)[0]
+        offsetx = Configs.effect_offset(self.name)[0]
+        offsety = Configs.effect_offset(self.name)[1]
+        self.screen.blit(self.effects[self.frame2], 
+                        (x+offsetx, y+offsety   ))
+        return True
+
     def draw_monster_flee(self, a):
         if self.x > -50:
             self.x -= 10
@@ -203,6 +252,18 @@ class Monster_TMP:
                 for i in range(4):
                     self.effects.append(sprite_sheet.get_effects((0, 0), i, 144, 144, 2, Configs.get('BLACK'), j))
 
+    def create_crunch(self):
+        sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
+        sprite_sheet1 = SpriteSheet(sprite_sheet_image1)
+        sprite_sheet_image2 = pg.image.load(Configs.effects(self.name)).convert_alpha()
+        sprite_sheet2 = SpriteSheet(sprite_sheet_image2)
+
+        if len(self.effects) <= 0:
+            for i in range(16):
+                self.effects.append(sprite_sheet1.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
+            for i in range(9):
+                self.effects.append(sprite_sheet2.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
+
     # Skill series          
     def hunter_instinct(self, a):
         self.create_aura()
@@ -228,7 +289,7 @@ class Monster_TMP:
     def thunder(self, player):
         self.create_thunder()
         self.s_damage = True
-        dmg = player.max_health*0.12
+        dmg = player.max_health*0.1
         self.atk_tmp = dmg
         if not self.draw_effects('THUNDER', lim=50, target=player):
             return False
@@ -251,7 +312,16 @@ class Monster_TMP:
         if not self.draw_effects(eff='DOOM', lim=50, target=player):
             return False
         return True
-
+    
+    def crunch(self, player):
+        self.create_crunch()
+        self.s_damage = True
+        dmg = self.damage//(self.health/10)
+        self.atk_tmp = dmg
+        if not self.draw_skill_attack(player, lim=50):
+            return False
+        return True
+    
     # Etc series
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
@@ -342,7 +412,8 @@ class Blue_worm(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'FIRE': self.fire}
+                       'FIRE': self.fire,
+                       'CRUNCH': self.crunch}
         # self.attack_rate = 0.5
         # self.run_rate = 0.1
         # self.crunch_rate = 0.4
@@ -351,8 +422,17 @@ class Blue_worm(Monster_TMP):
         self.attack_rate = 0
         self.run_rate = 0
         self.crunch_rate = 0.4
-        self.fire_rate = 0.1
-        self.skill_chances = [self.attack_rate, self.run_rate, self.fire_rate]
+        self.fire_rate = 0
+        self.skill_chances = [self.attack_rate, self.run_rate, self.fire_rate, self.crunch_rate]
+    
+    def fire(self, player):
+        self.create_fire()
+        self.s_damage = True
+        dmg = player.max_health*0.2
+        self.atk_tmp = dmg
+        if not self.draw_effects('FIRE', lim=50, target=player):
+            return False
+        return True
 
 class Purple_worm(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=70, damage=8, level=5, evasion=0.4,

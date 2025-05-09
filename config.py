@@ -63,10 +63,15 @@ class Configs:
                  "FIRE": "final_prog2/assets/fire.png",
                  "THUNDER": "final_prog2/assets/thunder.png",
                  "GRAVITY": "final_prog2/assets/gravity.png",
-                 "DOOM": "final_prog2/assets/doom.png"}
+                 "DOOM": "final_prog2/assets/doom.png",
+                 "BLUE": "final_prog2/assets/blue_attack.png",
+                 "PURPLE": "final_prog2/assets/purple_attack.png", 
+                 "VAMPIRE1": "final_prog2/assets/vampire1_attack.png"}
     
     __EFFECTS_OFFSET = {'GOBLIN': (105, 150),
                     'DARK': (50, 80),
+                    'BLUE': (230, 120),
+                    'PURPLE': (0, 0),
                     'FIRE': (-60, -130),
                     'THUNDER': (-47, -240),
                     'GRAVITY': (-60, -120),
@@ -134,7 +139,7 @@ class Configs:
         return cls.__MONS_COMBAT_CORDS[key]
     
     @classmethod
-    def monster_ui(cls, key):
+    def monster_damage(cls, key):
         return cls.__MONS_UI_COORDS[key]
     
     @classmethod

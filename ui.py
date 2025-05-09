@@ -81,8 +81,8 @@ class AllUI:
 
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
-        x = Configs.monster_ui(monster.name)[0]
-        y = Configs.monster_ui(monster.name)[1]
+        x = Configs.monster_damage(monster.name)[0]
+        y = Configs.monster_damage(monster.name)[1]
         if turn == "player":
             if evade:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))

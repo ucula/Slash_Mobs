@@ -15,16 +15,20 @@ class Player:
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 1000
+        self.damage = 0
         self.evasion = 0.2
         self.weapon = None
         self.skill1_status = False
         self.skill2_status = False
         self.skill3_status = False
         self.skill4_status = False
+        self.steal_chances = {"Potion": 0.6,
+                             "Hi-Potion": 0.1,
+                             "Loot bag": 0.3}
         self.attacks = {"ATTACK": self.draw_attack,
-                        "RUN": self.draw_walk_out}
-
+                        "RUN": self.draw_walk_out,
+                        "DEFEND": self.defend}
+        self.save_stats = {"Evasion": None}
         # spawnpoint
         self.x = 366
         self.y = 460
@@ -53,6 +57,23 @@ class Player:
                        "CAVE": self.check_lim_cave}
         self.create_walk()
 
+    def defend(self):
+        self.save_stats["Evasion"] = self.evasion
+        self.evasion = 1
+
+    def save(self):
+        self.save_stats = {"Max_hp": self.max_health,
+                           "Atk": self.damage,
+                           "Evasion": self.evasion}
+                           
+    def return_stats(self):
+        if self.max_health != self.save_stats["Max_hp"]:
+            self.max_health = self.save_stats["Max_hp"]
+        if self.damage != self.save_stats["Atk"]:
+            self.damage = self.save_stats["Atk"]
+        if self.evasion != self.save_stats["Evasion"]:
+            self.evasion = self.save_stats["Evasion"]
+        
     def draw_enter_animation(self):
         if self.x != 540:
             self.x -= 10
@@ -66,7 +87,6 @@ class Player:
         return True
     
     def draw_attack(self):
-        print("attack")
         if self.p_pos is None:
             self.p_pos = self.x
             self.pstate = "forward"
