@@ -18,10 +18,10 @@ class Game:
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
-                           "DESERT": [0.4, 0.3, 0.4],
-                           "SNOW": [0.4, 0.3, 0.3],
-                           "CAVE": [0.4, 0.3, 0.3]}
+        self.__mob_rate = {"PLAIN": [0, 0.3, 0],
+                           "DESERT": [0, 1, 0],
+                           "SNOW": [0, 0, 0.3],
+                           "CAVE": [0.4, 0, 0]}
         self.__mobs = None
 
         # for main loop
@@ -39,7 +39,7 @@ class Game:
         self.__scene_manager = "NORMAL"
         # Normal scene
         self.__before = None
-        self.__scene = "HALL"
+        self.__scene = "DESERT"
         self.__enter_scene = False
         self.__enable_walk = True
         self.__shop = False
@@ -59,6 +59,7 @@ class Game:
         self.__engage_ready = False
         self.__combat = False
         self.__move = True
+        self.__damage = None
 
         # for player
         self.__up = False
@@ -193,8 +194,9 @@ class Game:
         if self.__enter_scene:
             # Hall
             if scene == "HALL":
-                self.__player.x = 390
-                self.__player.y = 550
+                print("in")
+                self.__player.x = 366
+                self.__player.y = 460
             # Plain
             if scene == "PLAIN":
                 if before == "HALL":
@@ -328,7 +330,7 @@ class Game:
         if not self.__scene_manager == "CHANGING":
             if self.__scene in self.__hostile_areas: 
                 self.create_mob()
-                if self.__mobs.in_range(self.__player, self.__mobs):
+                if self.__mobs.in_range(self.__player):
                     self.__engage_ready = True
                 else:
                     self.__engage_ready = False
@@ -336,15 +338,17 @@ class Game:
             self.__player.weapon.up_stats(self.__player)
             self.__just_buy = False
 
-        if self.__shop:
-            self.__shopee.draw_menu(self.__player)
-
+        # Status window
         if self.__status:   
             self.__ui.draw_status_window(self.__player)
         
+        # tips for shop scene
         if self.__help:
             if self.__scene == "SHOP":
                 self.__ui.draw_help(shop=True)
+                # Shop menu
+                if self.__shop:
+                    self.__shopee.draw_menu(self.__player)
             else:
                 self.__ui.draw_help()
 
@@ -370,6 +374,7 @@ class Game:
     def m_pick_skill(self):
         if self.__mob_select is None:
             self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)[0]
+            # print(Configs.monster_combat(self.__mobs.name)[0]+105, Configs.monster_combat(self.__mobs.name)[1]+150)sss
 
     # Display what skill mob chose to attack  player
     def m_show_skill(self):
@@ -382,6 +387,7 @@ class Game:
 
     def m_action(self):
         animating = self.__mobs.skill[self.__mob_select](self.__player)
+        # print(animating, dmg)
         if not animating:
             if self.__mob_select == "RUN":
                 self.reset()
@@ -389,7 +395,6 @@ class Game:
             elif self.__mob_select != "RUN":
                 self.__mstate = "CALCULATING"
                 self.__evade = self.__player.roll_evasion()   
-                    
 
     def p_calculate_stage(self):
         self.__move = False
@@ -398,11 +403,12 @@ class Game:
             self.__pstate = "CHANGE_TURN"
 
     def m_calculate_stage(self):
-        if self.__mobs.s_damage:
+        if self.__mobs.a_damage or self.__mobs.s_damage:
             self.__ui.draw_damage("mob", self.__player, self.__mobs, self.__evade)
+            
         if not self.delay(self.__turn_delay):
-            if not self.__evade and self.__mobs.s_damage:
-                self.__player.health -= self.__mobs.damage
+            if not self.__evade and (self.__mobs.a_damage or self.__mobs.s_damage):
+                self.__player.health -= self.__mobs.atk_tmp
             self.__mstate = "CHANGE_TURN"
     
     def p_change_turn(self):
@@ -423,7 +429,8 @@ class Game:
             self.__up = self.__player.level_up()
     
     def m_change_turn(self):
-        self.__mobs.s_damage = True
+        self.__mobs.a_damage = False
+        self.__mobs.s_damage = False
         self.__mstate = "IDLE"
         self.__mob_select = None
         self.__time_lock = False
@@ -431,9 +438,8 @@ class Game:
         self.__mob_turn = False
         if self.__player.health <= 0:
             self.reset()
+            self.__player.reset_stats()
             self.__pstate = None
-            self.__player.health = 0.5 * self.__player.max_health
-            self.__player.coin *= 0.5
             self.__scene = "HALL"
             self.__before = None
             self.__enter_scene = True
@@ -461,6 +467,13 @@ class Game:
         # Enter animation
         self.enter_stage()
 
+        # Some certain skills require player to move
+        if self.__move:
+            self.__player.draw_walk_left()
+            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
+        else:
+            self.__screen.blit(self.__player.draw_idle_combat(), (self.__player.x, self.__player.y))
+    
         # Player's turn
         if self.__player_turn:
             if self.__pstate == "IDLE":
@@ -481,7 +494,6 @@ class Game:
 
             elif self.__pstate == "ENDING":
                 self.ending()
-    
             else:
                 self.p_action()
         
@@ -496,8 +508,10 @@ class Game:
                     
             elif self.__mstate == "ATTACKING":
                 self.m_action()
+                # print(self.damage)
 
             elif self.__mstate == "CALCULATING":
+                # print(self.damage)
                 self.m_calculate_stage()
 
             elif self.__mstate == "CHANGE_TURN":
@@ -511,13 +525,6 @@ class Game:
             add check player health = 0, if so kill the player and reset progress/(or smth else)
             """
         
-        # Some certain skills require player to move
-        if self.__move:
-            self.__player.draw_walk_left()
-            self.__screen.blit(self.__player.animation_left[self.__player.frame], (self.__player.x, self.__player.y))
-        else:
-            self.__screen.blit(self.__player.draw_idle_combat(), (self.__player.x, self.__player.y))
-    
     def manage_item(self, item):
         tmp = item.name
         if tmp == "Potion":
@@ -560,6 +567,7 @@ class Game:
 
             # Shop menu
             if self.__scene == "SHOP":
+                # On-off shop switches
                 if self.__enable_walk:
                     if e.type == pg.KEYDOWN and e.key == pg.K_e and not self.__status:
                         self.open_shop()
@@ -567,21 +575,20 @@ class Game:
                 elif not self.__enable_walk and not self.__status:
                     if e.type == pg.KEYDOWN and e.key == pg.K_e:
                         self.close_shop()
-        
+
+                # Buy item
                 if self.__shop and e.type == pg.KEYDOWN:
                     if e.key in (pg.K_1, pg.K_2, pg.K_3, pg.K_4, pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9):
-                        item, type = self.__shopee.buy(self.__player, e.key)
-                        if item is None and type is None:
-                            print("You cant buy that")
-                            
-                        elif type == "weapon":
+                        item, type = self.__shopee.buy(self.__player, e.key) 
+                        if type == "weapon":
                             if self.__player.weapon is not None:
                                 self.__player.weapon.return_stats(self.__player)
                             self.__player.weapon = item
                             self.__just_buy = True
-                            print(self.__player.weapon.name)
+                            # print(self.__player.weapon.name)
                             self.close_shop()
-                        else:
+
+                        elif item is not None and type is not None:
                             self.manage_item(item)
                         # self.close_shop()
             # Ready up

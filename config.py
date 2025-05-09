@@ -60,7 +60,18 @@ class Configs:
                         }
     
     __EFFECTS = {"AURA": "final_prog2/assets/aura.png",
-                 "FIRE": "final_prog2/assets/fire.png"}
+                 "FIRE": "final_prog2/assets/fire.png",
+                 "THUNDER": "final_prog2/assets/thunder.png",
+                 "GRAVITY": "final_prog2/assets/gravity.png",
+                 "DOOM": "final_prog2/assets/doom.png"}
+    
+    __EFFECTS_OFFSET = {'GOBLIN': (105, 150),
+                    'DARK': (50, 80),
+                    'FIRE': (-60, -130),
+                    'THUNDER': (-47, -240),
+                    'GRAVITY': (-60, -120),
+                    'DOOM': (-100, -220)
+                    }
 
     __MONS = {'SLIME': "final_prog2/assets/slime.png",
               'GOBLIN': "final_prog2/assets/goblin.png",
@@ -92,7 +103,12 @@ class Configs:
         'UP': "final_prog2/assets/char.png",
         'DOWN': "final_prog2/assets/char.png"
     }
-
+    
+    # (border_color, bg_color, initial, terminal, width, height, offset, border)
+    __UI_POS = {"HELP": ('BLACK', 'CREAMY', 0, 0, 250, 60, 3, 5),
+                "HEALTH": ('WHITE', 'BLACK', 600, 375, 200, 75, 3, 5),
+                "STATUS": ('BLACK', 'CREAMY', 200, 200, 400, 300, 3, 5)}
+    
     @classmethod
     def monster(cls, key):
         return cls.__MONS[key]
@@ -124,3 +140,11 @@ class Configs:
     @classmethod
     def effects(cls, key):
         return cls.__EFFECTS[key]
+    
+    @classmethod
+    def effect_offset(cls, key):
+        return cls.__EFFECTS_OFFSET[key]
+    
+    @classmethod
+    def ui_pos(cls, key):
+        return  cls.__UI_POS[key]

@@ -22,10 +22,29 @@ class AllUI:
         self.box_y = 450
         self.box_pos = (0, self.box_y, 800, Configs.get('WIN_SIZE_H') - self.box_y)
 
-        self.btn_border = 2
-        self.btn_width = 200
-        self.btn_height = 75
-        self.btn = [0, 450, self.btn_width, self.btn_height]
+        self.box_border = 2
+        self.box_width = 200
+        self.box_height = 75
+        self.btn = [0, 450, self.box_width, self.box_height]
+
+    @staticmethod
+    def animate_text_center(message, color, x, y):
+        font = pg.font.Font(None, 30)
+        text = font.render(message, True, Configs.get(color))
+        rect = text.get_rect(center=(x, y))
+        return text, rect
+    
+    @staticmethod
+    def animate_text_topleft(message, color, x, y):
+        font = pg.font.Font(None, 30)
+        text = font.render(message, True, Configs.get(color))
+        rect = text.get_rect(topleft=(x, y))
+        return text, rect
+
+    @staticmethod
+    def create_box(screen, settings):
+        pg.draw.rect(screen, Configs.get(settings[0]), (settings[2], settings[3], settings[4], settings[5]), settings[7])
+        pg.draw.rect(screen, Configs.get(settings[1]), (settings[2]+settings[6], settings[3]+settings[6], settings[4]-2*settings[6], settings[5]-2*settings[6]))
 
     def delay(self, limit):
         current_time = pg.time.get_ticks()
@@ -36,39 +55,21 @@ class AllUI:
             return False
         return True
 
-    # Done
     def draw_bg(self, scene):
         image = pg.image.load(Configs.background(scene)).convert()
         return image
 
-    def draw_help(self, shop=None, battle=None):
-        coords = [0, 250, 0, 60]
-        offset = 3
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (coords[0], coords[2], coords[1], coords[3]), 5)
-        pg.draw.rect(self.__screen, Configs.get('CREAMY'), (coords[0]+offset, coords[2]+offset, coords[1]-2*offset, coords[3]-2*offset))
-        
-        help_text = self.__font.render(f"Press \"I\" to open status", True, Configs.get("BLACK"))
-        help_rect = help_text.get_rect(topleft=(10, 10))
-        shop_text = self.__font.render(f"Press \"E\" to open shop", True, Configs.get("BLACK"))
-        shop_rect = help_text.get_rect(topleft=(10, 30))
-
+    # Normal scene series
+    def draw_help(self, shop=None):
+        settings = Configs.ui_pos("HELP")
+        AllUI.create_box(self.__screen, settings)
+        help_text, help_rect = AllUI.animate_text_topleft(message=f"Press \"I\" to open status", color='BLACK', x=10, y=10)
+        shop_text, shop_rect = AllUI.animate_text_topleft(message=f"Press \"E\" to open shop", color='BLACK', x=10, y=30)
         if shop:
             self.__screen.blit(shop_text, shop_rect)
         self.__screen.blit(help_text, help_rect)
 
-    # Done
-    def draw_enter_animation(self, player):
-        if player.x != 540:
-            player.x -= 10
-            return True
-        return False
-    # Done
-    def draw_walk_out(self, player):
-        if player.x > 0:
-            player.x -= 10
-            return False
-        return True
-    # Done
+    # Cut scene series
     def draw_screen_transition(self, range):
         if self.curtain < range:
             pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, self.curtain, 600))
@@ -77,7 +78,20 @@ class AllUI:
         else:
             self.curtain = 0
             return True
-    # Done
+    
+    # Combat series
+    def draw_enter_animation(self, player):
+        if player.x != 540:
+            player.x -= 10
+            return True
+        return False
+    
+    def draw_walk_out(self, player):
+        if player.x > 0:
+            player.x -= 10
+            return False
+        return True
+    
     def draw_attack(self, player):
         if self.p_pos is None:
             self.p_pos = player.x
@@ -97,19 +111,6 @@ class AllUI:
                 return False
         return True
 
-    # Done
-    def draw_instinct(self, a):
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
-        text = self.__font.render(f"Mob's damage increases by 1.5x", True, Configs.get("BLACK"))
-        rect = text.get_rect(center=(420, 25))
-        self.__screen.blit(text, rect)
-
-        if not self.delay(self.display_delay):
-            self.time_lock = False
-            return False
-        return True
-    # Done
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
         x = Configs.monster_ui(monster.name)[0]
@@ -117,80 +118,66 @@ class AllUI:
         if turn == "player":
             if evade:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))
-                text2 = font.render(f"MISS", True, Configs.get("GRAY"))
+                text2 = font.render(f"MISS", True, Configs.get("RED"))
             else:
                 text1 = font.render(f"{player.damage:.0f}", True, Configs.get("BLACK"))
-                text2 = font.render(f"{player.damage:.0f}", True, Configs.get("GRAY"))
-            rect1 = text1.get_rect(bottomright=(x, y))
-            rect2 = text2.get_rect(bottomright=(x+4, y))
+                text2 = font.render(f"{player.damage:.0f}", True, Configs.get("RED"))
+            rect1 = text1.get_rect(midtop=(x, y))
+            rect2 = text2.get_rect(midtop=(x+4, y))
         elif turn == "mob":
             if evade:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))
-                text2 = font.render(f"MISS", True, Configs.get("GRAY"))
+                text2 = font.render(f"MISS", True, Configs.get("RED"))
             else:
-                text1 = font.render(f"{monster.damage:.0f}", True, Configs.get("BLACK"))
-                text2 = font.render(f"{monster.damage:.0f}", True, Configs.get("GRAY"))
+                text1 = font.render(f"{monster.atk_tmp:.0f}", True, Configs.get("BLACK"))
+                text2 = font.render(f"{monster.atk_tmp:.0f}", True, Configs.get("RED"))
             rect1 = text1.get_rect(center=(player.x+35, player.y-10))
             rect2 = text2.get_rect(center=(player.x+39, player.y-10))
 
         self.__screen.blit(text1, rect1)
         self.__screen.blit(text2, rect2)
-    # Done
+
     def draw_summary(self, drops, player, up):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 120), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 114))
-        text1 = self.__font.render(f"You earned {drops[0]} coins", True, Configs.get("BLACK"))
-        text2 = self.__font.render(f"You earned {drops[1]} exp", True, Configs.get("BLACK"))
-        text3 = self.__font.render(f"Press \"SPACE\" to continue", True, Configs.get("BLACK"))
-        text4 = self.__font.render(f"{player.name} level up!", True, Configs.get("BLACK"))
-    
-        rect1 = text1.get_rect(center=(420, 25))
-        rect2 = text2.get_rect(center=(420, 50))
-        rect3 = text3.get_rect(center=(420, 100))
-        rect4 = text4.get_rect(center=(420, 75))
+        text1, rect1 = AllUI.animate_text_center(f"You earned {drops[0]} coins", "BLACK", 420, 25)
+        text2, rect2 = AllUI.animate_text_center(f"You earned {drops[1]} exp", "BLACK", 420, 50)
+        text3, rect3 = AllUI.animate_text_center(f"Press \"SPACE\" to continue" "BLACK", 420, 75)
+        text4, rect4 = AllUI.animate_text_center(f"{player.name} level up!", "BLACK", 420, 100)
 
         self.__screen.blit(text1, rect1)
         self.__screen.blit(text2, rect2)
         self.__screen.blit(text3, rect3)
         if up:
             self.__screen.blit(text4, rect4)
-    # Done
-    def draw_health_bar(self, player):
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 375, self.btn_width, self.btn_height), 5)
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (603, 378, self.btn_width-6, self.btn_height-6))
-        health_text = self.__font.render(f"Health: {player.health:.0f}/{player.max_health:.0f}", True, Configs.get("RED"))
-        health_rect = health_text.get_rect(center=(700, 412.5))
 
+    def draw_health_bar(self, player):
+        settings = Configs.ui_pos("HEALTH")
+        AllUI.create_box(self.__screen, settings)
+        health_text, health_rect = AllUI.animate_text_center(f"Health: {player.health:.0f}/{player.max_health:.0f}", "RED", 700, 412.5)     
         self.__screen.blit(health_text, health_rect)
-    # Done
+
     def draw_mob_skill_display(self, message=None):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 50), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 44))
         text = self.__font.render(message, True, Configs.get("BLACK"))
         rect = text.get_rect(center=(420, 25))
         self.__screen.blit(text, rect)
-    # Done
+
     def draw_gui_combat(self):
         pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), self.box_pos)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (0, 450, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (200, 450, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (400, 450, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 450, self.btn_width, self.btn_height), self.btn_border)
+        posx = 200
+        for i in range(4):
+            pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 450, self.box_width, self.box_height), self.box_border)
 
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (0, 525, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (200, 525, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (400, 525, self.btn_width, self.btn_height), self.btn_border)
-        pg.draw.rect(self.__screen, Configs.get('WHITE'), (600, 525, self.btn_width, self.btn_height), self.btn_border)
-
-    
-        atk_text = self.__font.render("Attack (Z)", True, Configs.get("WHITE"))
-        atk_rect = atk_text.get_rect(center=(100, 487.5))
+        for i in range(4):
+            pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
+       
+        atk_text, atk_rect = AllUI.animate_text_center("Attack (Z)", "WHITE", 100, 487.5)
+        run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE",300, 487.5)
         self.__screen.blit(atk_text, atk_rect)
-
-        atk_text = self.__font.render("Run (R)", True, Configs.get("WHITE"))
-        atk_rect = atk_text.get_rect(center=(300, 487.5))
-        self.__screen.blit(atk_text, atk_rect)
+        self.__screen.blit(run_text, run_rect)
 
     # Done
     def draw_status_window(self, player):
@@ -201,35 +188,23 @@ class AllUI:
         c1 = (x1 + x2)/2
         c2 = (y1 + y2)/2
         offset = 30
-        pg.draw.rect(self.__screen, Configs.get('BLACK'), (x1, y1, x2, y2), 5)
-        pg.draw.rect(self.__screen, Configs.get('CREAMY'), (x1+3, y1+3, x2-6, y2-6))
+        settings = Configs.ui_pos("STATUS")
+        AllUI.create_box(self.__screen, settings)
 
-        name_text = self.__font.render(f"Name: {player.name}", True, Configs.get("BLACK"))
-        name_rect = name_text.get_rect(topleft=(c1, c2))
+        name_text, name_rect = AllUI.animate_text_topleft(message=f"Name: {player.name}", color="BLACK", x=c1, y=c2)
+        lvl_text, lvl_rect = AllUI.animate_text_topleft(message=f"Level: {player.level}", color="BLACK", x=c1, y=c2+offset)
+        health_text, health_rect = AllUI.animate_text_topleft(message=f"Health: {player.health:.0f}/{player.max_health:.0f}", color="BLACK", x=c1, y=c2+(2*offset))
+        atk_text, atk_rect = AllUI.animate_text_topleft(message=f"Attack: {player.damage:.0f}", color="BLACK", x=c1, y=c2+(3*offset))
+        eva_text, eva_rect = AllUI.animate_text_topleft(message=f"Evasion: {(player.evasion * 100):.0f}%", color="BLACK", x=c1, y=c2+(4*offset))
+        exp_text, exp_rect = AllUI.animate_text_topleft(message=f"Exp: {player.exp:.0f}/{player.exp_threshold:.0f}", color="BLACK", x=c1, y=c2+(5*offset))
+        coin_text, coin_rect = AllUI.animate_text_topleft(message=f"Coin: {player.coin:.0f}", color="BLACK", x=c1, y=c2+(6*offset))
+
         self.__screen.blit(name_text, name_rect)
-
-        lvl_text = self.__font.render(f"Level: {player.level}", True, Configs.get("BLACK"))
-        lvl_rect = lvl_text.get_rect(topleft=(c1, c2+offset))
-        self.__screen.blit(lvl_text, lvl_rect)
-
-        health_text = self.__font.render(f"Health: {player.health:.0f}/{player.max_health:.0f}", True, Configs.get("BLACK"))
-        health_rect = health_text.get_rect(topleft=(c1, c2+(2*offset)))
+        self.__screen.blit(lvl_text, lvl_rect) 
         self.__screen.blit(health_text, health_rect)
-
-        atk_text = self.__font.render(f"Attack: {player.damage:.0f}", True, Configs.get("BLACK"))
-        atk_rect = atk_text.get_rect(topleft=(c1, c2+(3*offset)))
-        self.__screen.blit(atk_text, atk_rect)
-
-        eva_text = self.__font.render(f"Evasion: {(player.evasion * 100):.0f}%", True, Configs.get("BLACK"))
-        eva_rect = eva_text.get_rect(topleft=(c1, c2+(4*offset))) 
+        self.__screen.blit(atk_text, atk_rect)  
         self.__screen.blit(eva_text, eva_rect)
-
-        exp_text = self.__font.render(f"Exp: {player.exp:.0f}/{player.exp_threshold:.0f}", True, Configs.get("BLACK"))
-        exp_rect = exp_text.get_rect(topleft=(c1, c2+(5*offset)))
         self.__screen.blit(exp_text, exp_rect)
-
-        coin_text = self.__font.render(f"Coin: {player.coin:.0f}", True, Configs.get("BLACK"))
-        coin_rect = coin_text.get_rect(topleft=(c1, c2+(6*offset)))
         self.__screen.blit(coin_text, coin_rect)
 
         player.draw_walk_down()

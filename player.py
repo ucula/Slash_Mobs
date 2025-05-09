@@ -8,20 +8,20 @@ class Player:
     def __init__(self, screen, name: str):
         self.ui = AllUI(screen)
         self.name = name
-        self.health = 20
-        self.max_health = 20
+        self.max_health = 500 
+        self.health = self.max_health
         self.level = 1
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 0
+        self.damage = 10
         self.evasion = 0.2
         self.skill1_status = False
         self.skill2_status = False
         self.weapon = None
 
-        self.x = 390
-        self.y = 500
+        self.x = 366
+        self.y = 460
         self.speed = Configs.get('SPEED')
 
         # for storing animation
@@ -43,6 +43,22 @@ class Player:
                        "DESERT": self.check_lim_desert,
                        "SNOW": self.check_lim_snow,
                        "CAVE": self.check_lim_cave}
+
+    def reset_stats(self):
+        self.max_health = 20
+        self.health = self.max_health
+        self.level = 1
+        self.exp = 0
+        self.exp_threshold = 30
+        self.coin = 0
+        self.damage = 10
+        self.evasion = 0.2
+        self.skill1_status = False
+        self.skill2_status = False
+        self.weapon = None
+
+        self.x = 366
+        self.y = 460
 
     def level_up(self):
         if self.exp >= self.exp_threshold:
