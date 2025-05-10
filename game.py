@@ -13,16 +13,11 @@ class Game:
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
-        # self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
-        #                    "DESERT": [0.4, 0.3, 0.3],
-        #                    "SNOW": [0.3, 0.4, 0.3],
-        #                    "CAVE": [0.4, 0.3, 0.3]}
-        
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
-                           "DESERT": [0, 1, 0],
-                           "SNOW": [1, 0, 0],
-                           "CAVE": [0, 1, 0]}
-
+                           "DESERT": [0.4, 0.3, 0.3],
+                           "SNOW": [0.3, 0.4, 0.3],
+                           "CAVE": [0.4, 0.3, 0.3]}
+     
         self.__player = Player(self.__screen, name="Ucula")
         self.__item = Item_TMP()
         self.__ui = AllUI(self.__screen)
@@ -47,12 +42,12 @@ class Game:
         # Normal scene
         self.__before = None
 
-        # self.__scene = "HALL"
+        self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        self.__scene = "CAVE"
+        # self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -368,7 +363,7 @@ class Game:
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
         self.start_point(self.__scene, self.__before)
-
+        self.__ui.draw_guide(self.__scene)
         if self.__enable_walk:
             self.character_animate(self.__scene)
 

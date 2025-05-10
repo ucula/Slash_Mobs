@@ -12,29 +12,29 @@ class Player:
         self.name = name
 
         # Base stats
-        # self.max_health = 20
-        # self.health = self.max_health
-        # self.level = 1
-        # self.exp = 0
-        # self.exp_threshold = 5
-        # self.coin = 10
-        # self.damage = 7
-        # self.evasion = 0.2
-        # self.weapon = None
-        # self.dmg_up = 3
-        # self.health_up = 5
-
-        self.max_health = 2000
+        self.max_health = 20
         self.health = self.max_health
-        self.level = 100
+        self.level = 1
         self.exp = 0
-        self.exp_threshold = 500
-        self.coin = 1000
-        self.damage = 100
+        self.exp_threshold = 5
+        self.coin = 10
+        self.damage = 7
         self.evasion = 0.2
         self.weapon = None
         self.dmg_up = 3
         self.health_up = 5
+
+        # self.max_health = 2000
+        # self.health = self.max_health
+        # self.level = 100
+        # self.exp = 0
+        # self.exp_threshold = 500
+        # self.coin = 1000
+        # self.damage = 100
+        # self.evasion = 0.2
+        # self.weapon = None
+        # self.dmg_up = 3
+        # self.health_up = 5
         
         # Steal skill
         self.skill1_unlock = False

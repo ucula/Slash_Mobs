@@ -113,7 +113,38 @@ class AllUI:
             AllUI.animate_text_topleft(self.__screen, message=f"Weapon: None", color="BLACK", x=c1, y=c2+(7*offset))
         elif player.weapon is not None:
             AllUI.animate_text_topleft(self.__screen, message=f"Weapon: {player.weapon.name}", color="BLACK", x=c1, y=c2+(7*offset))
+    
+    def draw_guide(self, scene):
+        if scene == "HALL":
+            AllUI.animate_text_center(self.__screen, "Plain", "BLACK", 400, 580)
+            AllUI.animate_text_center(self.__screen, "Plain", "WHITE", 400+2, 580)
+        elif scene == "PLAIN":
+            AllUI.animate_text_center(self.__screen, "Hall", "WHITE", 500, 100)
+            AllUI.animate_text_center(self.__screen, "Hall", "BLACK", 500+2, 100)
 
+            AllUI.animate_text_center(self.__screen, "Desert", "WHITE", 50, 300)
+            AllUI.animate_text_center(self.__screen, "Desert", "BLACK", 50+2, 300)
+
+            AllUI.animate_text_center(self.__screen, "Shop", "WHITE", 750, 300)
+            AllUI.animate_text_center(self.__screen, "Shop", "BLACK", 750+2, 300)
+        elif scene == "DESERT":
+            AllUI.animate_text_center(self.__screen, "Plain", "WHITE", 750, 300)
+            AllUI.animate_text_center(self.__screen, "Plain", "BLACK", 750+2, 300)
+
+            AllUI.animate_text_center(self.__screen, "Snow", "WHITE", 50, 300)
+            AllUI.animate_text_center(self.__screen, "Snow", "BLACK", 50+2, 300)
+        elif scene == "SNOW":
+            AllUI.animate_text_center(self.__screen, "Desert", "WHITE", 750, 300)
+            AllUI.animate_text_center(self.__screen, "Desert", "BLACK", 750+2, 300)
+
+            AllUI.animate_text_center(self.__screen, "Cave", "WHITE", 480, 100)
+            AllUI.animate_text_center(self.__screen, "Cave", "BLACK", 480+2, 100)
+        elif scene == "CAVE":
+            AllUI.animate_text_center(self.__screen, "Snow", "WHITE", 400, 580)
+            AllUI.animate_text_center(self.__screen, "Snow", "BLACK", 400+2, 580)
+        elif scene == "SHOP":
+            AllUI.animate_text_center(self.__screen, "Plain", "WHITE", 400, 580)
+            AllUI.animate_text_center(self.__screen, "Plain", "BLACK", 400+2, 580)
     """
     :Combat series:
     """
