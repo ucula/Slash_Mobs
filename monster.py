@@ -192,38 +192,14 @@ class Monster_TMP:
         if self.prep_size != 300:
             self.prep_size += 50
         if self.prep_size == 300:
-            name = self.font.render(f"Name: {self.name}", True, Configs.get("BLACK"))
-            name_rect = name.get_rect(topleft=(270, 200))
-
-            lvl = self.font.render(f"Level: {self.level}", True, Configs.get("BLACK"))
-            lvl_rect = lvl.get_rect(topleft=(270, 200+(1*self.text_offset)))
-
-            health = self.font.render(f"Health: {self.health}", True, Configs.get("BLACK"))
-            health_rect = health.get_rect(topleft=(270, 200+(2*self.text_offset)))
-
-            dmg = self.font.render(f"Damage: {self.damage}", True, Configs.get("BLACK"))
-            dmg_rect = dmg.get_rect(topleft=(270, 200+(3*self.text_offset)))
-
-            eva = self.font.render(f"Evasion: {self.evasion*100}%", True, Configs.get("BLACK"))
-            eva_rect = eva.get_rect(topleft=(270, 200+(4*self.text_offset)))
-
-            exp = self.font.render(f"Exp drop: {self.exp}", True, Configs.get("BLACK"))
-            exp_rect = exp.get_rect(topleft=(270, 200+(5*self.text_offset)))
-
-            coin = self.font.render(f"Coin drop: {self.coin}", True, Configs.get("BLACK"))
-            coin_rect = coin.get_rect(topleft=(270, 200+(6*self.text_offset)))
-
-            help = self.font.render("Press \"SPACE\" to fight", True, Configs.get("BLACK"))
-            help_rect = help.get_rect(topleft=(270, 200+(7*self.text_offset)))
-
-            self.screen.blit(name, name_rect)
-            self.screen.blit(lvl, lvl_rect)
-            self.screen.blit(health, health_rect)
-            self.screen.blit(dmg, dmg_rect)
-            self.screen.blit(eva, eva_rect)
-            self.screen.blit(exp, exp_rect)
-            self.screen.blit(coin, coin_rect)
-            self.screen.blit(help, help_rect)
+            AllUI.animate_text_topleft(self.screen, f"Name: {self.name}", "BLACK", 270, 200)
+            AllUI.animate_text_topleft(self.screen, f"Level: {self.level}", "BLACK", 270, 200+(1*self.text_offset))
+            AllUI.animate_text_topleft(self.screen, f"Health: {self.health}", "BLACK", 270, 200+(2*self.text_offset))
+            AllUI.animate_text_topleft(self.screen, f"Damage: {self.damage}", "BLACK", 270, 200+(3*self.text_offset))
+            AllUI.animate_text_topleft(self.screen, f"Evasion: {self.evasion*100}%", "BLACK", 270, 200+(4*self.text_offset))
+            AllUI.animate_text_topleft(self.screen, f"Exp drop: {self.exp}", "BLACK", 270, 200+(5*self.text_offset))
+            AllUI.animate_text_topleft(self.screen, f"Coin drop: {self.coin}", "BLACK", 270, 200+(6*self.text_offset))
+            AllUI.animate_text_center(self.screen, "Press \"SPACE\" to fight", "BLACK", 400, 450)
 
     # Create skill series
     def create_aura(self):
@@ -333,7 +309,8 @@ class Monster_TMP:
     def fire(self, player):
         self.create_fire()
         self.is_damage = True
-        dmg = player.max_health*0.1
+        range = random.randint(0, round(self.exp*2))
+        dmg = self.damage + range
         self.atk_tmp = dmg
         if not self.draw_effects('FIRE', lim=50, target=player):
             self.effects.clear()
@@ -343,7 +320,8 @@ class Monster_TMP:
     def thunder(self, player):
         self.create_thunder()
         self.is_damage = True
-        dmg = player.max_health*0.1
+        range = random.randint(0, round(self.coin*2))
+        dmg = self.damage + range
         self.atk_tmp = dmg
         if not self.draw_effects('THUNDER', lim=50, target=player):
             self.effects.clear()
@@ -373,7 +351,7 @@ class Monster_TMP:
     def crunch(self, player):
         self.create_crunch()
         self.is_damage = True
-        dmg = self.damage//(self.health/10)
+        dmg = self.damage//(self.health/20)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=50):
             self.effects.clear()
@@ -412,7 +390,7 @@ class Monster_TMP:
     def slash(self, player):
         self.create_slash()
         self.is_damage = True
-        dmg = self.damage//(self.health/10)
+        dmg = self.damage//(self.health/30)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=50):
             self.effects.clear()
@@ -488,8 +466,8 @@ class Monster_TMP:
         self.already_save = False
 
 class Slime(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=8, damage=1, level=1, evasion=0,
-                 steps=6, size=1, pixel=128, exp=2, coin=2):
+    def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=8, damage=2, level=1, evasion=0,
+                 steps=6, size=1, pixel=128, exp=6, coin=2):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin) 
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee}
@@ -498,7 +476,7 @@ class Slime(Monster_TMP):
                             'RUN': 0}
 
 class Goblin(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=20, damage=7, level=2, evasion=0.2,
+    def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=16, damage=3, level=2, evasion=0.1,
                  steps=3, size=1, pixel=300, exp=10, coin=5):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -509,7 +487,7 @@ class Goblin(Monster_TMP):
                             'INSTINCT': 0.2}
         
 class Dark_Goblin(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=3, evasion=0.2,
+    def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=28, damage=2, level=3, evasion=0.2,
                  steps=3, size=3, pixel=64, exp=15, coin=8):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -537,7 +515,7 @@ class Dark_Goblin(Monster_TMP):
         return True
 
 class Scorpion(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=55, damage=10, level=4, evasion=0,
+    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=40, damage=8, level=7, evasion=0,
                  steps=3, size=1, pixel=64, exp=25, coin=15):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -548,8 +526,8 @@ class Scorpion(Monster_TMP):
                             }   
 
 class Blue_worm(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="BLUE", health=70, damage=8, level=5, evasion=0.2,
-                 steps=9, size=2, pixel=90, exp=30, coin=15):
+    def __init__(self, screen, x_off, y_off, x, y, name="BLUE", health=70, damage=4, level=10, evasion=0.2,
+                 steps=9, size=2, pixel=90, exp=35, coin=11):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -573,8 +551,8 @@ class Blue_worm(Monster_TMP):
         return True
 
 class Purple_worm(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=70, damage=8, level=5, evasion=0.2,
-                 steps=9, size=2, pixel=90, exp=30, coin=10):
+    def __init__(self, screen, x_off, y_off, x, y, name="PURPLE", health=70, damage=4, level=10, evasion=0.2,
+                 steps=9, size=2, pixel=90, exp=35, coin=11):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -588,7 +566,7 @@ class Purple_worm(Monster_TMP):
                             'CRUNCH': 0.2}
 
 class Minotaur1(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=8, evasion=0.1,
+    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=15, evasion=0.1,
                  steps=5, size=1, pixel=128, exp=50, coin=25):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -604,8 +582,8 @@ class Minotaur1(Monster_TMP):
                             'EVIL SWORD': 1}
     
 class Minotaur2(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR2", health=200, damage=15, level=8, evasion=0.1,
-                 steps=5, size=1, pixel=128, exp=30, coin=10):
+    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR2", health=150, damage=13, level=17, evasion=0.1,
+                 steps=5, size=1, pixel=128, exp=65, coin=25):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -620,8 +598,8 @@ class Minotaur2(Monster_TMP):
                             'EVIL SWORD': 1}
 
 class Minotaur3(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=100, damage=10, level=8, evasion=0.3,
-                 steps=5, size=1, pixel=128, exp=25, coin=20):
+    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=90, damage=10, level=16, evasion=0.3,
+                 steps=5, size=1, pixel=128, exp=30, coin=40):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -638,8 +616,8 @@ class Minotaur3(Monster_TMP):
                             'EVIL SWORD': 1}
 
 class Vampire1(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE1", health=200, damage=30, level=10, evasion=0.2,
-                 steps=5, size=1, pixel=128, exp=100, coin=50):
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE1", health=200, damage=25, level=25, evasion=0.2,
+                 steps=5, size=1, pixel=128, exp=90, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -650,7 +628,7 @@ class Vampire1(Monster_TMP):
         
         self.skill_chances = {'ATTACK': 0.4,
                             'RUN': 0,
-                            'DOOM': 0.01,
+                            'DOOM': 0.05,
                             'FIRE': 0.2,
                             'CRUNCH': 0.4,
                             'EVIL SWORD': 1}
@@ -672,7 +650,7 @@ class Vampire1(Monster_TMP):
     def crunch(self, player):
         self.create_crunch()
         self.is_damage = True
-        dmg = self.damage//(self.health/10)
+        dmg = self.damage//(self.health/40)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=75):
             self.effects.clear()
@@ -680,8 +658,8 @@ class Vampire1(Monster_TMP):
         return True
 
 class Vampire2(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=10, evasion=0.4,
-                 steps=5, size=1, pixel=128, exp=100, coin=50):
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=230, damage=30, level=26, evasion=0.4,
+                 steps=5, size=1, pixel=128, exp=120, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -692,15 +670,15 @@ class Vampire2(Monster_TMP):
         
         self.skill_chances = {'ATTACK': 0.3,
                             'RUN': 0,
-                            'DOOM': 0.01,
+                            'DOOM': 0.05,
                             'THUNDER': 0.3,
                             'HASTE': 0.4,
                             'EVIL SWORD': 1
                             }     
 
 class Vampire3(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=100, damage=5, level=12, evasion=0.7,
-                 steps=5, size=1, pixel=128, exp=100, coin=200):
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=5, level=30, evasion=0.7,
+                 steps=5, size=1, pixel=128, exp=100, coin=100):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
@@ -712,7 +690,7 @@ class Vampire3(Monster_TMP):
         self.skill_chances = {'ATTACK': 0.1,
                             'RUN': 0,
                             'CURSE': 1,
-                            'DOOM': 0.01,
+                            'DOOM': 0.1,
                             'DEMI': 0.5,
                             'HALF': 0.3
                             }

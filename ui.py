@@ -159,11 +159,11 @@ class AllUI:
         y = Configs.monster_damage(monster.name)[1]
         if turn == "player":
             if evade:
-                AllUI.animate_text_midtop(self.__screen, f"MISS", 'BLACK', x, y, font)
-                AllUI.animate_text_midtop(self.__screen, f"MISS", 'RED', x+4, y, font)
+                AllUI.animate_text_center(self.__screen, f"MISS", 'BLACK', x, y, font)
+                AllUI.animate_text_center(self.__screen, f"MISS", 'RED', x+4, y, font)
             else:
-                AllUI.animate_text_midtop(self.__screen, f"{player.atk_tmp:.0f}", 'BLACK', x, y, font)
-                AllUI.animate_text_midtop(self.__screen, f"{player.atk_tmp:.0f}", 'RED', x+4, y, font)
+                AllUI.animate_text_center(self.__screen, f"{player.atk_tmp:.0f}", 'BLACK', x, y, font)
+                AllUI.animate_text_center(self.__screen, f"{player.atk_tmp:.0f}", 'RED', x+4, y, font)
         elif turn == "mob":
             if evade:
                 AllUI.animate_text_center(self.__screen, f"MISS", 'BLACK', player.x+35, player.y-10, font)

@@ -46,18 +46,18 @@ class Configs:
                             'PURPLE': (130, 250)
                             }
     
-    __MONS_UI_COORDS = {'SLIME': (210, 290),
-                        'GOBLIN': (240, 255),
-                        'DARK': (210, 280),
+    __MONS_UI_COORDS = {'SLIME': (202, 290),
+                        'GOBLIN': (230, 255),
+                        'DARK': (202, 280),
                         'VAMPIRE1': (210, 280),
                         'VAMPIRE2': (210, 280),
                         'VAMPIRE3': (210, 280),
-                        'MINOTAUR1': (210, 280),
-                        'MINOTAUR2': (210, 280),
-                        'MINOTAUR3': (230, 260),
-                        'SCORPION': (235, 275),
-                        'BLUE': (220, 280),
-                        'PURPLE': (220, 280)
+                        'MINOTAUR1': (220, 260),
+                        'MINOTAUR2': (220, 260),
+                        'MINOTAUR3': (220, 260),
+                        'SCORPION': (228, 275),
+                        'BLUE': (225, 275),
+                        'PURPLE': (225, 275)
                         }
     
     __EFFECTS = {"AURA": "final_prog2/assets/effects/aura.png",

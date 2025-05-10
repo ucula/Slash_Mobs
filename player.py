@@ -12,13 +12,25 @@ class Player:
         self.name = name
 
         # Base stats
-        self.max_health = 1000
+        # self.max_health = 20
+        # self.health = self.max_health
+        # self.level = 1
+        # self.exp = 0
+        # self.exp_threshold = 5
+        # self.coin = 10
+        # self.damage = 7
+        # self.evasion = 0.2
+        # self.weapon = None
+        # self.dmg_up = 3
+        # self.health_up = 5
+
+        self.max_health = 2000
         self.health = self.max_health
-        self.level = 1
+        self.level = 100
         self.exp = 0
-        self.exp_threshold = 1
+        self.exp_threshold = 500
         self.coin = 1000
-        self.damage = 7
+        self.damage = 100
         self.evasion = 0.2
         self.weapon = None
         self.dmg_up = 3
@@ -149,20 +161,9 @@ class Player:
     """
     Reset stats back to when the game started
     """
-    def reset_stats(self):
-        self.max_health = 20
-        self.health = self.max_health
-        self.level = 1
-        self.exp = 0
-        self.exp_threshold = 30
-        self.coin = 0
-        self.damage = 7
-        self.evasion = 0.2
-        self.skill1_unlock = False
-        self.skill2_unlock = False
-        self.skill3_unlock = False
-        self.skill4_unlock = False
-        self.weapon = None
+    def half_stats(self):
+        self.health = self.max_health // 2
+        self.coin = self.coin // 2
         self.x = 366
         self.y = 460
 
@@ -379,8 +380,8 @@ class Player:
         self.create_fire()
         self.is_heal = False
         self.is_damage = True
-        range = random.randint(0, round(self.level*2))
-        dmg = self.damage + range
+        range = random.randint(10, round(self.level)*3)
+        dmg = range
         self.atk_tmp = dmg
         if not self.draw_effects('P_FIRE', lim=50, target=mobs):
             return False
@@ -390,7 +391,7 @@ class Player:
         self.create_thunder()
         self.is_heal = False
         self.is_damage = True
-        dmg = self.max_health*0.1
+        dmg = self.damage//(self.health/20)
         self.atk_tmp = dmg
         if not self.draw_effects('P_THUNDER', lim=50, target=mobs):
             return False

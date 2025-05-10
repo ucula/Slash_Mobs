@@ -13,10 +13,15 @@ class Game:
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
-        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
-                           "DESERT": [0.4, 0.3, 0.3],
-                           "SNOW": [0.3, 0.4, 0.3],
-                           "CAVE": [0.4, 0.3, 0.3]}
+        # self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
+        #                    "DESERT": [0.4, 0.3, 0.3],
+        #                    "SNOW": [0.3, 0.4, 0.3],
+        #                    "CAVE": [0.4, 0.3, 0.3]}
+        
+        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.3],
+                           "DESERT": [0, 1, 0],
+                           "SNOW": [1, 0, 0],
+                           "CAVE": [0, 1, 0]}
 
         self.__player = Player(self.__screen, name="Ucula")
         self.__item = Item_TMP()
@@ -45,9 +50,9 @@ class Game:
         # self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
-        self.__scene = "DESERT"
+        # self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        # self.__scene = "CAVE"
+        self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -522,7 +527,7 @@ class Game:
             self.__revert_stat = False
         if self.__player.health <= 0:
             self.reset()
-            self.__player.reset_stats()
+            self.__player.half_stats()
             self.__pstate = None
             self.__scene = "HALL"
             self.__before = None

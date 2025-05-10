@@ -2,7 +2,7 @@ class Item_TMP:
     def __init__(self, price=None, name=None, type=None):
         self.price = price
         self.name = name
-        self.count = 5
+        self.count = 1
         self.type = type
         self.heal = 0
 
@@ -33,21 +33,21 @@ class X_Potion(Item_TMP):
         self.heal = 125
 
 class Battle_drum(Item_TMP):
-    def __init__(self, price=4, name="Battle drum", type="misc"):
+    def __init__(self, price=20, name="Battle drum", type="misc"):
         super().__init__(price, name, type)
 
     def up_stats(self, player=None):
         player.damage *= 2
 
 class Bomb(Item_TMP):
-    def __init__(self, price=8, name="Bomb", type="misc"):
+    def __init__(self, price=10, name="Bomb", type="misc"):
         super().__init__(price, name, type)
     
     def damage(self, monster=None):
         monster.health -= monster.health*0.5
 
 class Greed_bag(Item_TMP):
-    def __init__(self, price=8, name="Bag of greed", type="misc"):
+    def __init__(self, price=10, name="Bag of greed", type="misc"):
         super().__init__(price, name, type)
 
 class Sword(Item_TMP):
