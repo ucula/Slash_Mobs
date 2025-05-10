@@ -17,7 +17,7 @@ class Player:
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 0
-        self.damage = 7
+        self.damage = 70000
         self.evasion = 0.2
         self.weapon = None
         

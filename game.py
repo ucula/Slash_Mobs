@@ -12,16 +12,17 @@ class Game:
         pg.display.set_caption("Slash Mobs!")
         self.__screen = pg.display.set_mode((Configs.get('WIN_SIZE_W'), Configs.get('WIN_SIZE_H')))
         self.__clock = pg.time.Clock()
+        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
+                           "DESERT": [0.4, 0.3, 0.3],
+                           "SNOW": [0.3, 0.4, 0.3],
+                           "CAVE": [0.4, 0.3, 0.3]}
 
         self.__player = Player(self.__screen, name="Ucula")
 
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
-        self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
-                           "DESERT": [0.4, 0.3, 0.3],
-                           "SNOW": [0.3, 0.4, 0.3],
-                           "CAVE": [0.4, 0.3, 0.3]}
+        
         self.__mobs = None
 
         # for main loop
@@ -41,11 +42,11 @@ class Game:
         self.__before = None
 
         # self.__scene = "HALL"
-        self.__scene = "SHOP"
+        # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        # self.__scene = "CAVE"
+        self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -517,7 +518,7 @@ class Game:
     def ending(self):
         self.__move_combat = True
         self.__up = False
-        walk_out = self.__player.draw_walk_out()
+        walk_out = self.__player.run()
         if walk_out:
             self.__player.return_stats(evade=True, damage=True)
             self.reset()

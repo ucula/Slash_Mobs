@@ -16,7 +16,7 @@ class Shop:
         self.bomb = item.Bomb()
         self.battle_drum = item.Battle_drum()
         self.greed = item.Greed_bag()
-        self.longsword = item.Longsword()
+        self.longsword = item.Sword()
         self.hammer = item.Hammer()
         self.knife = item.Knife()
 
@@ -58,9 +58,7 @@ class Shop:
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.battle_drum.name} {self.battle_drum.price}$ (7)", "BLACK", 105, 382.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.greed.name} {self.greed.price}$ (8)", "BLACK", 305, 382.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.bomb.name} {self.bomb.price}$ (9)", "BLACK", 505, 382.5)
-
         self.icons()
-        
 
     def icons(self):
         for j in range(3):

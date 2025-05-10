@@ -652,7 +652,7 @@ class Vampire1(Monster_TMP):
         
         self.skill_chances = {'ATTACK': 0.4,
                             'RUN': 0,
-                            'DOOM': 0.001,
+                            'DOOM': 0.01,
                             'FIRE': 0.2,
                             'CRUNCH': 0.4,
                             'EVIL SWORD': 1}
@@ -692,11 +692,11 @@ class Vampire2(Monster_TMP):
                        'HASTE': self.haste,
                        'EVIL SWORD': self.evil_sword}
         
-        self.skill_chances = {'ATTACK': 0.2,
+        self.skill_chances = {'ATTACK': 0.3,
                             'RUN': 0,
-                            'DOOM': 0.001,
-                            'THUNDER': 0.2,
-                            'HASTE': 0.8,
+                            'DOOM': 0.01,
+                            'THUNDER': 0.3,
+                            'HASTE': 0.4,
                             'EVIL SWORD': 1
                             }     
 
@@ -714,7 +714,7 @@ class Vampire3(Monster_TMP):
         self.skill_chances = {'ATTACK': 0.1,
                             'RUN': 0,
                             'CURSE': 1,
-                            'DOOM': 0.001,
+                            'DOOM': 0.01,
                             'DEMI': 0.5,
                             'HALF': 0.3
                             }

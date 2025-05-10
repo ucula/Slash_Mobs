@@ -44,8 +44,8 @@ class Greed_bag(Item_TMP):
     def __init__(self, price=8, name="Loot bag", type="item"):
         super().__init__(price, name, type)
 
-class Longsword(Item_TMP):
-    def __init__(self, price=50, name="Longsword", type="weapon"):
+class Sword(Item_TMP):
+    def __init__(self, price=50, name="Sword", type="weapon"):
         super().__init__(price, name, type)
 
     def up_stats(self, player=None):

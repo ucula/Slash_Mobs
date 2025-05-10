@@ -60,19 +60,19 @@ class Configs:
                         'PURPLE': (220, 280)
                         }
     
-    __EFFECTS = {"AURA": "final_prog2/assets/aura.png",
-                 "FIRE": "final_prog2/assets/fire.png",
-                 "THUNDER": "final_prog2/assets/thunder.png",
-                 "GRAVITY": "final_prog2/assets/gravity.png",
-                 "DOOM": "final_prog2/assets/doom.png",
-                 "BLUE": "final_prog2/assets/blue_attack.png",
-                 "PURPLE": "final_prog2/assets/purple_attack.png", 
-                 "VAMPIRE1": "final_prog2/assets/vampire1_attack.png",
-                 "MINOTAUR1": "final_prog2/assets/minotaur1_attack.png",
-                 "MINOTAUR2": "final_prog2/assets/minotaur2_attack.png",
-                 'EVIL': "final_prog2/assets/evil.png",
-                 'HASTE': "final_prog2/assets/haste.png",
-                 'CURSE': "final_prog2/assets/curse.png"}
+    __EFFECTS = {"AURA": "final_prog2/assets/effects/aura.png",
+                 "FIRE": "final_prog2/assets/effects/fire.png",
+                 "THUNDER": "final_prog2/assets/effects/thunder.png",
+                 "GRAVITY": "final_prog2/assets/effects/gravity.png",
+                 "DOOM": "final_prog2/assets/effects/doom.png",
+                 "BLUE": "final_prog2/assets/effects/blue_attack.png",
+                 "PURPLE": "final_prog2/assets/effects/purple_attack.png", 
+                 "VAMPIRE1": "final_prog2/assets/effects/vampire1_attack.png",
+                 "MINOTAUR1": "final_prog2/assets/effects/minotaur1_attack.png",
+                 "MINOTAUR2": "final_prog2/assets/effects/minotaur2_attack.png",
+                 'EVIL': "final_prog2/assets/effects/evil.png",
+                 'HASTE': "final_prog2/assets/effects/haste.png",
+                 'CURSE': "final_prog2/assets/effects/curse.png"}
     
     __EFFECTS_OFFSET = {'AURA_GOBLIN': (105, 150),
                     'AURA_DARK': (50, 80),
@@ -93,35 +93,35 @@ class Configs:
                     'CURSE': (-37,-37)
                     }
 
-    __MONS = {'SLIME': "final_prog2/assets/slime.png",
-              'GOBLIN': "final_prog2/assets/goblin.png",
-              'DARK': "final_prog2/assets/dark.png",
-              'VAMPIRE1': "final_prog2/assets/vampire1.png",
-              'VAMPIRE2': "final_prog2/assets/vampire2.png",
-              'VAMPIRE3': "final_prog2/assets/vampire3.png",
-              'MINOTAUR1': "final_prog2/assets/minotaur1.png",
-              'MINOTAUR2': "final_prog2/assets/minotaur2.png",
-              'MINOTAUR3': "final_prog2/assets/minotaur3.png",
-              'SCORPION': "final_prog2/assets/scorpion.png",
-              'BLUE': "final_prog2/assets/blue.png",
-              'PURPLE': "final_prog2/assets/purple.png" 
+    __MONS = {'SLIME': "final_prog2/assets/mobs/slime.png",
+              'GOBLIN': "final_prog2/assets/mobs/goblin.png",
+              'DARK': "final_prog2/assets/mobs/dark.png",
+              'VAMPIRE1': "final_prog2/assets/mobs/vampire1.png",
+              'VAMPIRE2': "final_prog2/assets/mobs/vampire2.png",
+              'VAMPIRE3': "final_prog2/assets/mobs/vampire3.png",
+              'MINOTAUR1': "final_prog2/assets/mobs/minotaur1.png",
+              'MINOTAUR2': "final_prog2/assets/mobs/minotaur2.png",
+              'MINOTAUR3': "final_prog2/assets/mobs/minotaur3.png",
+              'SCORPION': "final_prog2/assets/mobs/scorpion.png",
+              'BLUE': "final_prog2/assets/mobs/blue.png",
+              'PURPLE': "final_prog2/assets/mobs/purple.png" 
               }
               
     __BG = {
-        'HALL': "final_prog2/assets/hall.jpg",
-        'PLAIN': "final_prog2/assets/plain.jpg",
-        'SHOP': "final_prog2/assets/shop.jpg",
-        'DESERT': "final_prog2/assets/desert.jpg",
-        'SNOW': "final_prog2/assets/snow.jpg",
-        'CAVE': "final_prog2/assets/cave.jpg"
+        'HALL': "final_prog2/assets/bg/hall.jpg",
+        'PLAIN': "final_prog2/assets/bg/plain.jpg",
+        'SHOP': "final_prog2/assets/bg/shop.jpg",
+        'DESERT': "final_prog2/assets/bg/desert.jpg",
+        'SNOW': "final_prog2/assets/bg/snow.jpg",
+        'CAVE': "final_prog2/assets/bg/cave.jpg"
     }
 
     __PLAYER = {
-        'IDLE': "final_prog2/assets/char.png",  
-        'LEFT': "final_prog2/assets/char.png",
-        'RIGHT': "final_prog2/assets/char2.png",
-        'UP': "final_prog2/assets/char.png",
-        'DOWN': "final_prog2/assets/char.png"
+        'IDLE': "final_prog2/assets/player/char.png",  
+        'LEFT': "final_prog2/assets/player/char.png",
+        'RIGHT': "final_prog2/assets/player/char2.png",
+        'UP': "final_prog2/assets/player/char.png",
+        'DOWN': "final_prog2/assets/player/char.png"
     }
     
     # (border_color, bg_color, initial, terminal, width, height, offset, border)
@@ -132,15 +132,15 @@ class Configs:
                 "SHOP": ('BLACK', 'CREAMY', 100, 100, 600, 400, 3, 5),
                 "COIN_BOX": ('BLACK', 'CREAMY', 600, 0, 800, 60, 3, 5)}
     
-    __ITEM = {"sword": "final_prog2/assets/longsword.png",
-              "knife": "final_prog2/assets/knife.png",
-              "hammer": "final_prog2/assets/hammer.png",
-              "potion": "final_prog2/assets/potion.png",
-              "hpotion": "final_prog2/assets/hpotion.png",
-              "xpotion": "final_prog2/assets/xpotion.png",
-              "drum": "final_prog2/assets/drum.png",
-              "greed": "final_prog2/assets/greed.png",
-              "bomb": "final_prog2/assets/bomb.png"
+    __ITEM = {"sword": "final_prog2/assets/items/longsword.png",
+              "knife": "final_prog2/assets/items/knife.png",
+              "hammer": "final_prog2/assets/items/hammer.png",
+              "potion": "final_prog2/assets/items/potion.png",
+              "hpotion": "final_prog2/assets/items/hpotion.png",
+              "xpotion": "final_prog2/assets/items/xpotion.png",
+              "drum": "final_prog2/assets/items/drum.png",
+              "greed": "final_prog2/assets/items/greed.png",
+              "bomb": "final_prog2/assets/items/bomb.png"
               }
 
     @classmethod
