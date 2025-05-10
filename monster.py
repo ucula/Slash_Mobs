@@ -423,14 +423,7 @@ class Monster_TMP:
     
     def curse(self, player):
         self.create_curse()
-        player.run_lock = True
-        player.defend_lock = True
-        player.item_lock = True
-        player.skill1_lock = True
-        player.skill2_lock = True
-        player.skill3_lock = True
-        player.skill4_lock = True
-
+        player.all_lock = True
         self.is_damage = False
         dmg = 0
         self.atk_tmp = dmg
@@ -663,7 +656,7 @@ class Vampire1(Monster_TMP):
                             'DOOM': 0.001,
                             'FIRE': 0.2,
                             'CRUNCH': 0.4,
-                            'LOCK': 1}
+                            'EVIL SWORD': 1}
     
     def create_crunch(self):
         sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()

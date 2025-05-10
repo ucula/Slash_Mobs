@@ -1,6 +1,7 @@
 from config import Configs
 import item 
 import pygame as pg
+from spritesheet import SpriteSheet
 
 class Shop:
     def __init__(self, screen):
@@ -13,7 +14,7 @@ class Shop:
         self.battle_drum = item.Battle_drum()
         self.greed = item.Greed_bag()
         self.longsword = item.Longsword()
-        self.mace = item.Mace()
+        self.hammer = item.Hammer()
         self.knife = item.Knife()
         # print(self.knife)
         
@@ -46,10 +47,11 @@ class Shop:
         box1_text = self.__font.render(f"{self.longsword.name} {self.longsword.price}$ (1)", True, Configs.get("BLACK"))
         box1_rect = coin_text.get_rect(topleft=(105, 116.5))
 
+
         box2_text = self.__font.render(f"{self.knife.name} {self.knife.price}$ (2)", True, Configs.get("BLACK"))
         box2_rect = coin_text.get_rect(topleft=(305, 116.5))
 
-        box3_text = self.__font.render(f"{self.mace.name} {self.mace.price}$ (3)", True, Configs.get("BLACK"))
+        box3_text = self.__font.render(f"{self.hammer.name} {self.hammer.price}$ (3)", True, Configs.get("BLACK"))
         box3_rect = coin_text.get_rect(topleft=(505, 116.5))
 
         box4_text = self.__font.render(f"{self.potion.name} {self.potion.price}$ (4)", True, Configs.get("BLACK"))
@@ -81,13 +83,51 @@ class Shop:
         self.__screen.blit(box8_text, box8_rect)
         self.__screen.blit(box9_text, box9_rect)
     
+    def sword_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+        item.Item_TMP.draw_item()
+
+    def knife_icon(self):
+        image = pg.image.load(Configs.item("knife")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def hammer_icon(self):
+        image = pg.image.load(Configs.item("hammer")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def potion_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def hpotion_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def xpotion_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def drum_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def greed_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+    def bomb_icon(self):
+        image = pg.image.load(Configs.item("sword")).convert_alpha()
+        image = SpriteSheet(image)
+
+
     def buy(self, player, select=None):
         if select == 49:
             self.select = self.longsword
         elif select == 50:
             self.select = self.knife
         elif select == 51:
-            self.select = self.mace
+            self.select = self.hammer
         elif select == 52:
             self.select = self.potion
         elif select == 53:

@@ -127,8 +127,20 @@ class Configs:
     # (border_color, bg_color, initial, terminal, width, height, offset, border)
     __UI_POS = {"HELP": ('BLACK', 'CREAMY', 0, 0, 250, 60, 3, 5),
                 "HEALTH": ('WHITE', 'BLACK', 600, 375, 200, 75, 3, 5),
-                "STATUS": ('BLACK', 'CREAMY', 200, 200, 400, 300, 3, 5)}
+                "STATUS": ('BLACK', 'CREAMY', 200, 200, 400, 300, 3, 5),
+                "SKILL_DISPLAY": ("BLACK", "WHITE", 0, 0, 800, 50, 3, 5)}
     
+    __ITEM = {"sword": "final_prog2/assets/longsword.png",
+              "knife": "final_prog2/assets/knife.png",
+              "hammer": "final_prog2/assets/hammer.png",
+              "potion": "final_prog2/assets/potion.png",
+              "hpotion": "final_prog2/assets/hpotion.png",
+              "xpotion": "final_prog2/assets/xpotion.png",
+              "drum": "final_prog2/assets/drum.png",
+              "greed": "final_prog2/assets/greed.png",
+              "bomb": "final_prog2/assets/bomb.png"
+              }
+
     @classmethod
     def monster(cls, key):
         return cls.__MONS[key]
@@ -167,4 +179,8 @@ class Configs:
     
     @classmethod
     def ui_pos(cls, key):
-        return  cls.__UI_POS[key]
+        return cls.__UI_POS[key]
+    
+    @classmethod
+    def item(cls, key):
+        return cls.__ITEM[key]

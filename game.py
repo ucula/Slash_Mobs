@@ -21,7 +21,7 @@ class Game:
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
                            "SNOW": [0.3, 0.4, 0.3],
-                           "CAVE": [0, 0, 1]}
+                           "CAVE": [0.4, 0.3, 0.3]}
         self.__mobs = None
 
         # for main loop
@@ -671,24 +671,24 @@ class Game:
                     if e.key == pg.K_z:
                         self.__pselect = "ATTACK"
                         self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_r and not self.__player.run_lock:
+                    elif e.key == pg.K_r and not self.__player.run_lock and not self.__player.all_lock:
                         self.__pselect = "RUN"
                         self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_d and not self.__player.defend_lock:
+                    elif e.key == pg.K_d and not self.__player.all_lock:
                         self.__pselect = "DEFEND"
                         self.__revert_stat = True
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.skill1_lock:
+                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.all_lock:
                         self.__pselect = "STEAL"
                         self.__player.steal_count += 1
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.skill2_lock:
+                    elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.all_lock:
                         self.__pselect = "FIRE"
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.skill3_lock:
+                    elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.all_lock:
                         self.__pselect = "THUNDER"
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.skill4_lock:
+                    elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.all_lock:
                         self.__pselect = "INSTINCT"
                         self.__pstate = "ATTACKING"
                         self.__revert_stat = True

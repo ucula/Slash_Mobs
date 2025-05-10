@@ -11,11 +11,11 @@ class Player:
         self.name = name
         self.max_health = 1000
         self.health = self.max_health
-        self.level = 0
+        self.level = 100
         self.exp = 0
         self.exp_threshold = 30
-        self.coin = 0
-        self.damage = 1
+        self.coin = 99999
+        self.damage =7
         self.evasion = 0.2
         self.weapon = None
         self.skill1_unlock = False
@@ -36,12 +36,7 @@ class Player:
         self.already_boost = False
 
         self.run_lock = False
-        self.item_lock = False
-        self.defend_lock = False
-        self.skill1_lock = False
-        self.skill2_lock = False
-        self.skill3_lock = False
-        self.skill4_lock = False
+        self.all_lock = False   
 
         self.state = None
 
