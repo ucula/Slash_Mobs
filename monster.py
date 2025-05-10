@@ -164,8 +164,8 @@ class Monster_TMP:
             return False
         
         if target is None:
-            offsetx = Configs.effect_offset(self.name)[0]
-            offsety = Configs.effect_offset(self.name)[1]
+            offsetx = Configs.effect_offset(eff)[0]
+            offsety = Configs.effect_offset(eff)[1]
             self.screen.blit(self.effects[self.frame2], 
                             (self.x+offsetx, self.y+offsety))
             
@@ -280,7 +280,11 @@ class Monster_TMP:
                 self.effects.append(sprite_sheet2.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
 
     def create_haste(self):
-        pass
+        sprite_sheet_image = pg.image.load(Configs.effects("HASTE")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for i in range(15):
+                self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 64, 2, Configs.get('BLACK'), 1))
 
     def create_slash(self):
         sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
@@ -313,7 +317,7 @@ class Monster_TMP:
             self.damage = round(self.damage)
             self.already_boost = True
         self.atk_tmp = dmg
-        if not self.draw_effects('AURA', lim=150):
+        if not self.draw_effects('AURA_GOBLIN', lim=150):
             self.effects.clear()
             self.already_boost = False
             return False
@@ -370,6 +374,7 @@ class Monster_TMP:
         return True
     
     def haste(self, a):
+        self.create_haste()
         if not self.already_save:
             self.save(haste=True)
             self.already_save = True
@@ -379,7 +384,7 @@ class Monster_TMP:
         self.state = 'HASTE'
         self.skill_chances['HASTE'] = 0
 
-        if not self.draw_effects(eff='HASTE', lim=50):
+        if not self.draw_effects(eff='HASTE', lim=20):
             self.effects.clear()
             return False
         return True
@@ -489,7 +494,7 @@ class Dark_Goblin(Monster_TMP):
             self.already_boost = True
         # print(self.damage)
         self.atk_tmp = dmg
-        if not self.draw_effects('AURA', lim=150):
+        if not self.draw_effects('AURA_DARK', lim=150):
             self.effects.clear()
             self.already_boost = False
             return False
@@ -574,7 +579,7 @@ class Minotaur2(Monster_TMP):
         
         self.skill_chances = {'ATTACK': 0.1,
                             'RUN': 0,
-                            'SLASH': 0.4,
+                            'SLASH': 0,
                             'HASTE': 0.9,
                             'EVIL SWORD': 1}
 
