@@ -396,7 +396,7 @@ class Game:
     # Random skill for mobs based on fixed probability
     def m_pick_skill(self):
         if self.__mob_select is None:
-            self.__mob_select = random.choices(list(self.__mobs.skill.keys()), self.__mobs.skill_chances)[0]
+            self.__mob_select = random.choices(list(self.__mobs.skill_chances.keys()), list(self.__mobs.skill_chances.values()))[0]
 
     # Display what skill mob chose to attack  player
     def m_show_skill(self):

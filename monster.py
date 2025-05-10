@@ -350,13 +350,12 @@ class Monster_TMP:
         if not self.already_save:
             self.save()
             self.already_save = True
-        print("haste")
         self.is_damage = False
         dmg = 0
         self.atk_tmp = dmg
         self.state = 'HASTE'
-        self.haste_rate = 0
-        self.skill_chances = [self.attack_rate, self.run_rate, self.haste_rate]
+        self.skill_chances['HASTE'] = 0
+
         if not self.draw_effects(eff='HASTE', lim=50):
             self.effects.clear()
             return False
@@ -383,12 +382,12 @@ class Monster_TMP:
 
     def save(self):
         self.save_stats['State'] = None
-        self.save_stats['Haste_rate'] = self.haste_rate
+        self.save_stats['Haste_rate'] = self.skill_chances['HASTE']
         self.save_stats['Chances'] = self.skill_chances    
 
     def return_stats(self):
         self.state = self.save_stats['State']
-        self.haste_rate = self.save_stats['Haste_rate']
+        self.skill_chances['HASTE'] = self.save_stats['Haste_rate']
         self.skill_chances = self.save_stats['Chances']
         self.already_save = False
 
@@ -398,9 +397,9 @@ class Slime(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin) 
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee}
-        self.attack_rate = 0.7
-        self.run_rate = 0.3
-        self.skill_chances = [self.attack_rate, self.run_rate]
+        
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0}
 
 class Goblin(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="GOBLIN", health=20, damage=7, level=2, evasion=0.1,
@@ -409,12 +408,9 @@ class Goblin(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
-        self.attack_rate = 0.7 # 0.7
-        self.run_rate = 0.1 # 0.1
-        self.hunter_instinct_rate = 0.3 # 0.3
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
-    
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'INSTINCT': 0.9}
         
 class Dark_Goblin(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=3, evasion=0.3,
@@ -423,11 +419,10 @@ class Dark_Goblin(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
-        self.attack_rate = 0.4 # 0.4
-        self.run_rate = 0 # 0
-        self.hunter_instinct_rate = 0.6 # 0.6 
 
-        self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'INSTINCT': 0.9}
     
     def hunter_instinct(self, a):
         self.create_aura()
@@ -452,9 +447,10 @@ class Scorpion(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee}
-        self.attack_rate =  0.9
-        self.run_rate = 0.1 
-        self.skill_chances = [self.attack_rate, self.run_rate]
+
+        self.skill_chances = {'ATTACK': 0.9,
+                            'RUN': 0.1
+                            }   
 
 class Blue_worm(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="BLUE", health=70, damage=8, level=5, evasion=0.3,
@@ -466,11 +462,10 @@ class Blue_worm(Monster_TMP):
                        'CRUNCH': self.crunch
                        }
 
-        self.attack_rate = 0.3
-        self.run_rate = 0.1
-        self.crunch_rate = 0.4
-        self.fire_rate = 0.2
-        self.skill_chances = [self.attack_rate, self.run_rate, self.fire_rate, self.crunch_rate]
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'FIRE': 0.9,
+                            'CRUNCH': 0.2}
     
     def fire(self, player):
         self.create_fire()
@@ -491,11 +486,11 @@ class Purple_worm(Monster_TMP):
                        'THUNDER': self.thunder,
                        'CRUNCH': self.crunch
                        }
-        self.attack_rate = 0.3
-        self.run_rate = 0.1
-        self.thunder_rate = 0.4
-        self.crunch_rate = 0.2
-        self.skill_chances = [self.attack_rate, self.run_rate, self.thunder_rate, self.crunch_rate]
+        
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'THUNDER': 0.9,
+                            'CRUNCH': 0.2}
 
 class Minotaur1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=8, evasion=0.2,
@@ -504,15 +499,10 @@ class Minotaur1(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'GRAVITY': self.gravity}
-        # self.attack_rate = 0.6
-        # self.run_rate = 0.1
-        # self.gravity_rate = 0.3
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.gravity_rate = 0.3
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.gravity_rate]
+    
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'HASTE': 0.9}
     
 class Minotaur2(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR2", health=200, damage=15, level=8, evasion=0.2,
@@ -521,11 +511,10 @@ class Minotaur2(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        "HASTE": self.haste}
-        self.attack_rate =  0.1
-        self.run_rate = 0
-        self.haste_rate = 0.9
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.haste_rate]
+        
+        self.skill_chances = {'ATTACK': 0.1,
+                            'RUN': 0,
+                            'HASTE': 0.9}
 
 class Minotaur3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=100, damage=10, level=8, evasion=0.4,
@@ -534,14 +523,10 @@ class Minotaur3(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'GRAVITY': self.gravity}
-        # self.attack_rate = 0.5
-        # self.run_rate = 0.1
-        # self.gravity_rate = 0.4
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.gravity_rate = 0.3
-        self.skill_chances = [self.attack_rate, self.run_rate, self.gravity_rate]
+        
+        self.skill_chances = {'ATTACK': 0,
+                            'RUN': 0,
+                            'GRAVITY': 0.4}
 
 class Vampire1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE1", health=200, damage=30, level=10, evasion=0.4,
@@ -553,17 +538,11 @@ class Vampire1(Monster_TMP):
                        'FIRE': self.fire,
                        'CRUNCH': self.crunch}
         
-        # self.attack_rate = 0.79#  0.7 
-        # self.run_rate = 0.05 # 0.05 
-        # self.doom_rate = 0.01
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.doom_rate = 0
-        self.fire_rate = 0
-        self.crunch_rate = 0.1
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.doom_rate, self.fire_rate, self.crunch_rate]
+        self.skill_chances = {'ATTACK': 0,
+                            'RUN': 0,
+                            'DOOM': 0,
+                            'FIRE': 1,
+                            'CRUNCH': 0}
     
     def create_crunch(self):
         sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
@@ -596,15 +575,12 @@ class Vampire2(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        "DOOM": self.doom}
-        # self.attack_rate = 0.7 #  0.7 
-        # self.run_rate = 0.05 # 0.05 
-        # self.doom_rate = 0.001
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.doom_rate = 0.01
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.doom_rate]      
+        
+        self.skill_chances = {'ATTACK': 0,
+                            'RUN': 0,
+                            'DOOM': 0,
+                            'FIRE': 1,
+                            'CRUNCH': 0}     
 
 class Vampire3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=30, level=10, evasion=0.4,
@@ -613,12 +589,9 @@ class Vampire3(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        "DOOM": self.doom}
-        # self.attack_rate = .7 #  0.7 
-        # self.run_rate = 0.05 # 0.05 
-        # self.doom_rate = 0.5
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.doom_rate = 0.01
-
-        self.skill_chances = [self.attack_rate, self.run_rate, self.doom_rate]
+        
+        self.skill_chances = {'ATTACK': 0,
+                            'RUN': 0,
+                            'DOOM': 0,
+                            'FIRE': 1,
+                            'CRUNCH': 0}
