@@ -77,7 +77,10 @@ class Configs:
                     'FIRE': (-60, -130),
                     'THUNDER': (-47, -240),
                     'GRAVITY': (-60, -120),
-                    'DOOM': (-100, -220)
+                    'DOOM': (-100, -220),
+                    'P_FIRE': (130, 230),
+                    'P_THUNDER': (130, 230),
+                    'P_INSTINCT': (130, 230)
                     }
 
     __MONS = {'SLIME': "final_prog2/assets/slime.png",

@@ -11,7 +11,7 @@ class Player:
         self.name = name
         self.max_health = 500 
         self.health = self.max_health
-        self.level = 5
+        self.level = 20
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
@@ -29,21 +29,30 @@ class Player:
         self.attacks = {"ATTACK": self.draw_attack,
                         "RUN": self.draw_walk_out,
                         "DEFEND": self.defend}
-        self.save_stats = None
+        self.save_stats = {}
         self.tmp = None
+        self.s_damage = False
+        self.a_damage = False
+        self.atk_tmp = 0
+        self.already_boost = False
+
         # spawnpoint
         self.x = 366
         self.y = 460
         self.speed = Configs.get('SPEED')
 
         # for animating
+        self.time_lock = False
+        self.start = 0
         self.size = 3
         self.animation_steps = 2
         self.last_up = pg.time.get_ticks()
         self.cool_down = 100
         self.frame = 0
+        self.frame2 = 0
         self.pstate = "idle"
         self.p_pos = None
+        self.effects = []
         
         # for storing animation
         self.direction = "DOWN"
@@ -60,36 +69,126 @@ class Player:
         self.create_walk()
         self.check_unlock_skill()
 
-    def defend(self):
-        self.save_stats["Evasion"] = self.evasion
+    def draw_effects(self, eff, lim, target=None):
+        current_time = pg.time.get_ticks()
+        if not self.time_lock:
+            self.start = current_time
+            self.time_lock = True
+        if current_time - self.start >= lim:
+            self.frame2 += 1
+            self.time_lock = False
+        if self.frame2 >= len(self.effects):
+            self.frame2 = 0
+            self.effects.clear()
+            return False
+        
+        if target is None:
+            # offsetx = Configs.effect_offset(self.name)[0]
+            # offsety = Configs.effect_offset(self.name)[1]
+            self.screen.blit(self.effects[self.frame2], 
+                            (self.x, self.y))
+            
+        elif target is not None:
+            offsetx = Configs.effect_offset(eff)[0]
+            offsety = Configs.effect_offset(eff)[1]
+            self.screen.blit(self.effects[self.frame2], 
+                            (offsetx, offsety))
+        return True
+    
+    def create_aura(self):
+        sprite_sheet_image = pg.image.load(Configs.effects("AURA")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for _ in range(2):
+                for i in range(5):
+                    self.effects.append(sprite_sheet.get_effects((0, 0), i, 30, 30, 3, Configs.get('BLACK')))
+
+    def create_fire(self):
+        sprite_sheet_image = pg.image.load(Configs.effects("FIRE")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for j in range(4):
+                for i in range(4):
+                    self.effects.append(sprite_sheet.get_effects((0, 0), i, 96, 96, 2, Configs.get('BLACK'), j))
+
+    def create_thunder(self):
+        sprite_sheet_image = pg.image.load(Configs.effects("THUNDER")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for i in range(10):
+                self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 128, 2.5, Configs.get('BLACK')))
+
+    def hunter_instinct(self, a):
+        self
+        self.create_aura()
+        self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
+        dmg = 0
+        self.s_damage = False
+        self.a_damage = False
+        if not self.already_boost:
+            self.damage *= 1.5
+            self.damage = round(self.damage)
+            self.already_boost = True
+        print(self.damage)
+        self.atk_tmp = dmg
+        if not self.draw_effects('AURA', lim=150):
+            self.already_boost = False
+            return False
+        return True
+    
+    def fire(self, mobs):
+        self.create_fire()
+        self.s_damage = True
+        self.a_damage = False
+        dmg = self.max_health*0.1
+        self.atk_tmp = dmg
+        if not self.draw_effects('FIRE', lim=50, target=mobs):
+            return False
+        return True
+
+    def thunder(self, mobs):
+        self.create_thunder()
+        self.s_damage = True
+        self.a_damage = False
+        dmg = self.max_health*0.1
+        self.atk_tmp = dmg
+        if not self.draw_effects('THUNDER', lim=50, target=mobs):
+            return False
+        return True
+    
+    def defend(self, a):
         self.evasion = 1
 
     def save(self):
-        self.save_stats = {"Max_hp": self.max_health,
-                           "Atk": self.damage,
-                           "Evasion": self.evasion}
+        self.save_stats["Evasion"] = self.evasion
+        self.save_stats["Damage"] = self.damage
                            
-    def return_stats(self):
-        if self.max_health != self.save_stats["Max_hp"]:
-            self.max_health = self.save_stats["Max_hp"]
-        if self.damage != self.save_stats["Atk"]:
-            self.damage = self.save_stats["Atk"]
-        if self.evasion != self.save_stats["Evasion"]:
-            self.evasion = self.save_stats["Evasion"]
-        
+    def return_stats(self, evade=False, damage=False):
+        if damage and evade:
+            if self.damage != self.save_stats["Damage"]:
+                self.damage = self.save_stats["Damage"]
+            if self.evasion != self.save_stats["Evasion"]:
+                self.evasion = self.save_stats["Evasion"]
+        elif evade:
+            if self.evasion != self.save_stats["Evasion"]:
+                self.evasion = self.save_stats["Evasion"]
+    
     def draw_enter_animation(self):
         if self.x != 540:
             self.x -= 10
             return True
         return False
     
-    def draw_walk_out(self):
+    def draw_walk_out(self, a=None):
         if self.x > 0:
             self.x -= 10
             return False
         return True
     
-    def draw_attack(self):
+    def draw_attack(self, a=None):
+        self.atk_tmp = self.damage
+        self.s_damage = False
+        self.a_damage = True
         if self.p_pos is None:
             self.p_pos = self.x
             self.pstate = "forward"
@@ -137,7 +236,9 @@ class Player:
             return True
         return False
 
-    def steal(self):
+    def steal(self, a=None):
+        self.s_damage = False
+        self.a_damage = False
         animating = self.draw_attack()
         if not animating:
             self.tmp = random.choices(list(self.steal_chances.keys()), list(self.steal_chances.values()))[0]
@@ -150,10 +251,13 @@ class Player:
             self.attacks["STEAL"] = self.steal
         if self.level >= 10:
             self.skill2_unlock = True
+            self.attacks["FIRE"] = self.fire
         if self.level >= 15:
             self.skill3_unlock = True
+            self.attacks["THUNDER"] = self.thunder
         if self.level >= 20:
             self.skill4_unlock = True
+            self.attacks["INSTINCT"] = self.hunter_instinct
         
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]

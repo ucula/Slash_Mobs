@@ -37,7 +37,8 @@ class Monster_TMP:
         self.a_damage = False
         self.atk_tmp = 0
         self.bool_tmp = False
-
+        self.already_boost = False
+        
         # Display info
         self.ui = AllUI(screen)
         self.font = pg.font.Font(None, 30)
@@ -126,7 +127,7 @@ class Monster_TMP:
         offsetx = Configs.effect_offset(self.name)[0]
         offsety = Configs.effect_offset(self.name)[1]
         self.screen.blit(self.effects[self.frame2], 
-                        (x+offsetx, y+offsety   ))
+                        (x+offsetx, y+offsety))
         return True
 
     def draw_monster_flee(self, a):
@@ -270,10 +271,14 @@ class Monster_TMP:
         self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
         self.s_damage = False
-        self.damage *= 1.5
-        self.damage = round(self.damage)
+        if not self.already_boost:
+            self.damage *= 1.5
+            self.damage = round(self.damage)
+            self.already_boost = True
+        print(self.damage)
         self.atk_tmp = dmg
         if not self.draw_effects('AURA', lim=150):
+            self.already_boost = False
             return False
         return True
             
