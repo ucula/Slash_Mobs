@@ -9,12 +9,12 @@ class Player:
         self.screen = screen
         self.ui = AllUI(screen)
         self.name = name
-        self.max_health = 500
+        self.max_health = 20
         self.health = self.max_health
-        self.level = 20
+        self.level = 1
         self.exp = 0
         self.exp_threshold = 30
-        self.coin = 1000
+        self.coin = 0
         self.damage = 10
         self.evasion = 0.2
         self.weapon = None

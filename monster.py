@@ -274,7 +274,6 @@ class Monster_TMP:
             self.damage *= 1.5
             self.damage = round(self.damage)
             self.already_boost = True
-        print(self.damage)
         self.atk_tmp = dmg
         if not self.draw_effects('AURA', lim=150):
             self.already_boost = False
@@ -366,9 +365,6 @@ class Goblin(Monster_TMP):
         self.run_rate = 0.1 # 0.1
         self.hunter_instinct_rate = 0.3 # 0.3
 
-        # self.attack_rate = 0
-        # self.run_rate = 0
-        # self.hunter_instinct_rate = 0.3
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
         
@@ -382,10 +378,6 @@ class Dark_Goblin(Monster_TMP):
         self.attack_rate = 0.4 # 0.4
         self.run_rate = 0 # 0
         self.hunter_instinct_rate = 0.6 # 0.6 
-
-        # self.attack_rate = 0
-        # self.run_rate = 0
-        # self.hunter_instinct_rate = 0.3
 
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
@@ -421,17 +413,13 @@ class Blue_worm(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'FIRE': self.fire,
-                       'CRUNCH': self.crunch}
-        # self.attack_rate = 0.5
-        # self.run_rate = 0.1
-        # self.crunch_rate = 0.4
-        # self.fire_rate = 0.1
+                       'FIRE': self.fire
+                       }
 
-        self.attack_rate = 0
-        self.run_rate = 0
+        self.attack_rate = 0.3
+        self.run_rate = 0.1
         self.crunch_rate = 0.4
-        self.fire_rate = 0
+        self.fire_rate = 0.2
         self.skill_chances = [self.attack_rate, self.run_rate, self.fire_rate, self.crunch_rate]
     
     def fire(self, player):
@@ -450,15 +438,12 @@ class Purple_worm(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'THUNDER': self.thunder,
-                       'CRUNCH': self.crunch}
-        # self.attack_rate = 0.5 #0.5
-        # self.run_rate = 0.1 #0.1
-        # self.thunder_rate = 0.4
-
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.thunder_rate = 0
-        self.crunch_rate = 0.4
+                       'CRUNCH': self.crunch
+                       }
+        self.attack_rate = 0.3
+        self.run_rate = 0.1
+        self.thunder_rate = 0.4
+        self.crunch_rate = 0.2
         self.skill_chances = [self.attack_rate, self.run_rate, self.thunder_rate, self.crunch_rate]
 
 class Minotaur1(Monster_TMP):

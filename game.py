@@ -19,7 +19,7 @@ class Game:
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
-                           "DESERT": [0, 0, 1],
+                           "DESERT": [0.4, 0.3, 0.3],
                            "SNOW": [0, 0, 1],
                            "CAVE": [0, 0, 1]}
         self.__mobs = None
@@ -40,10 +40,10 @@ class Game:
         # Normal scene
         self.__before = None
 
-        # self.__scene = "HALL"
+        self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
-        self.__scene = "DESERT"
+        # self.__scene = "DESERT"
         # self.__scene = "SNOW"
         # self.__scene = "CAVE"
 
