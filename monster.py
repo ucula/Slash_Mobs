@@ -440,6 +440,26 @@ class Monster_TMP:
             return False
         return True
     
+    def demi(self, player):
+        self.create_gravity()
+        self.is_damage = True
+        dmg = player.health // 4
+        self.atk_tmp = dmg
+        if not self.draw_effects(eff='GRAVITY', lim=20, target=player):
+            self.effects.clear()
+            return False
+        return True
+    
+    def half(self, player):
+        self.create_gravity()
+        self.is_damage = True
+        dmg = player.health // 2
+        self.atk_tmp = dmg
+        if not self.draw_effects(eff='GRAVITY', lim=20, target=player):
+            self.effects.clear()
+            return False
+        return True
+    
     # Etc series
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
@@ -638,11 +658,11 @@ class Vampire1(Monster_TMP):
                        'CRUNCH': self.crunch,
                        'EVIL SWORD': self.evil_sword}
         
-        self.skill_chances = {'ATTACK': 0,
+        self.skill_chances = {'ATTACK': 0.4,
                             'RUN': 0,
                             'DOOM': 0.001,
-                            'FIRE': 1,
-                            'CRUNCH': 0,
+                            'FIRE': 0.2,
+                            'CRUNCH': 0.4,
                             'LOCK': 1}
     
     def create_crunch(self):
@@ -670,7 +690,7 @@ class Vampire1(Monster_TMP):
         return True
 
 class Vampire2(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=10, evasion=0.2,
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=10, evasion=0.4,
                  steps=5, size=1, pixel=128, exp=100, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -689,18 +709,20 @@ class Vampire2(Monster_TMP):
                             }     
 
 class Vampire3(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=30, level=10, evasion=0.2,
-                 steps=5, size=1, pixel=128, exp=100, coin=50):
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=100, damage=5, level=12, evasion=0.7,
+                 steps=5, size=1, pixel=128, exp=100, coin=200):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'CURSE': self.curse,
                        'DOOM': self.doom,
-                       'GRAVITY': self.gravity}
+                       'DEMI': self.demi,
+                       'HALF': self.half}
         
-        self.skill_chances = {'ATTACK': 0,
+        self.skill_chances = {'ATTACK': 0.1,
                             'RUN': 0,
                             'CURSE': 1,
-                            'DOOM': 0,
-                            'GRAVITY': 00
+                            'DOOM': 0.001,
+                            'DEMI': 0.5,
+                            'HALF': 0.3
                             }
