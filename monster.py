@@ -31,12 +31,27 @@ class Monster_TMP:
         self.evasion = evasion
         self.exp = exp
         self.coin = coin
+        self.state = None
+        self.action_count = 0
+        self.turn_count = 0
+
+        # Skill rate
+        self.attack_rate = 0
+        self.run_rate = 0
+        self.hunter_instinct_rate = 0
+        self.crunch_rate = 0
+        self.fire_rate = 0
+        self.thunder_rate = 0
+        self.gravity_rate = 0
+        self.doom_rate = 0
+        self.save_stats = {}
 
         # Check attack (could be made better)
         self.is_damage = False
         self.atk_tmp = 0
         self.bool_tmp = False
         self.already_boost = False
+        self.already_save = False
 
         # Display info
         self.ui = AllUI(screen)
@@ -276,6 +291,7 @@ class Monster_TMP:
             self.already_boost = True
         self.atk_tmp = dmg
         if not self.draw_effects('AURA', lim=150):
+            self.effects.clear()
             self.already_boost = False
             return False
         return True
@@ -286,6 +302,7 @@ class Monster_TMP:
         dmg = player.max_health*0.1
         self.atk_tmp = dmg
         if not self.draw_effects('FIRE', lim=50, target=player):
+            self.effects.clear()
             return False
         return True
 
@@ -295,6 +312,7 @@ class Monster_TMP:
         dmg = player.max_health*0.1
         self.atk_tmp = dmg
         if not self.draw_effects('THUNDER', lim=50, target=player):
+            self.effects.clear()
             return False
         return True
 
@@ -304,6 +322,7 @@ class Monster_TMP:
         dmg = player.coin*0.3
         self.atk_tmp = dmg
         if not self.draw_effects(eff='GRAVITY', lim=50, target=player):
+            self.effects.clear()
             return False
         return True
     
@@ -313,6 +332,7 @@ class Monster_TMP:
         dmg = player.health - 1
         self.atk_tmp = dmg
         if not self.draw_effects(eff='DOOM', lim=25, target=player):
+            self.effects.clear()
             return False
         return True
     
@@ -322,6 +342,23 @@ class Monster_TMP:
         dmg = self.damage//(self.health/10)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=50):
+            self.effects.clear()
+            return False
+        return True
+    
+    def haste(self, a):
+        if not self.already_save:
+            self.save()
+            self.already_save = True
+        print("haste")
+        self.is_damage = False
+        dmg = 0
+        self.atk_tmp = dmg
+        self.state = 'HASTE'
+        self.haste_rate = 0
+        self.skill_chances = [self.attack_rate, self.run_rate, self.haste_rate]
+        if not self.draw_effects(eff='HASTE', lim=50):
+            self.effects.clear()
             return False
         return True
     
@@ -343,6 +380,17 @@ class Monster_TMP:
         b = player.y - (self.y + self.y_offset)
         distance = math.hypot(a, b)
         return distance 
+
+    def save(self):
+        self.save_stats['State'] = None
+        self.save_stats['Haste_rate'] = self.haste_rate
+        self.save_stats['Chances'] = self.skill_chances    
+
+    def return_stats(self):
+        self.state = self.save_stats['State']
+        self.haste_rate = self.save_stats['Haste_rate']
+        self.skill_chances = self.save_stats['Chances']
+        self.already_save = False
 
 class Slime(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="SLIME", health=8, damage=1, level=1, evasion=0.1,
@@ -393,6 +441,7 @@ class Dark_Goblin(Monster_TMP):
         print(self.damage)
         self.atk_tmp = dmg
         if not self.draw_effects('AURA', lim=150):
+            self.effects.clear()
             self.already_boost = False
             return False
         return True
@@ -413,7 +462,8 @@ class Blue_worm(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'FIRE': self.fire
+                       'FIRE': self.fire,
+                       'CRUNCH': self.crunch
                        }
 
         self.attack_rate = 0.3
@@ -424,10 +474,11 @@ class Blue_worm(Monster_TMP):
     
     def fire(self, player):
         self.create_fire()
-        self.s_damage = True
+        self.is_damage = True
         dmg = player.max_health*0.2
         self.atk_tmp = dmg
         if not self.draw_effects('FIRE', lim=50, target=player):
+            self.effects.clear()
             return False
         return True
 
@@ -469,15 +520,12 @@ class Minotaur2(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'GRAVITY': self.gravity}
-        # self.attack_rate =  0.6
-        # self.run_rate = 0
-        # self.gravity_rate = 0.4
-
-        self.attack_rate = 0
+                       "HASTE": self.haste}
+        self.attack_rate =  0.1
         self.run_rate = 0
-        self.gravity_rate = 0.3
-        self.skill_chances = [self.attack_rate, self.run_rate, self.gravity_rate]
+        self.haste_rate = 0.9
+
+        self.skill_chances = [self.attack_rate, self.run_rate, self.haste_rate]
 
 class Minotaur3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=100, damage=10, level=8, evasion=0.4,
@@ -537,6 +585,7 @@ class Vampire1(Monster_TMP):
         dmg = self.damage//(self.health/10)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=75):
+            self.effects.clear()
             return False
         return True
 

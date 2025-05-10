@@ -20,7 +20,7 @@ class Game:
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
-                           "SNOW": [0, 0, 1],
+                           "SNOW": [0, 1, 0],
                            "CAVE": [0, 0, 1]}
         self.__mobs = None
 
@@ -40,11 +40,11 @@ class Game:
         # Normal scene
         self.__before = None
 
-        self.__scene = "HALL"
+        # self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
-        # self.__scene = "SNOW"
+        self.__scene = "SNOW"
         # self.__scene = "CAVE"
 
         self.__enter_scene = False
@@ -296,30 +296,32 @@ class Game:
         select = random.choices(mob_set, self.__mob_rate[self.__scene])[0]
         pos_x, pos_y = self.gen_cords()
         # print("call")
+        offsetx = Configs.monster_offsets(select)[0]
+        offsety = Configs.monster_offsets(select)[1]
         if select == "SLIME":
-            tmp_mob = monster.Slime(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Slime(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "GOBLIN":
-            tmp_mob = monster.Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Goblin(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "DARK":
-            tmp_mob = monster.Dark_Goblin(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Dark_Goblin(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "VAMPIRE1":
-            tmp_mob = monster.Vampire1(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Vampire1(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "VAMPIRE2":
-            tmp_mob = monster.Vampire2(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Vampire2(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "VAMPIRE3":
-            tmp_mob = monster.Vampire3(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Vampire3(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "MINOTAUR1":
-            tmp_mob = monster.Minotaur1(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Minotaur1(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "MINOTAUR2":
-            tmp_mob = monster.Minotaur2(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Minotaur2(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "MINOTAUR3":
-            tmp_mob = monster.Minotaur3(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Minotaur3(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "BLUE":
-            tmp_mob = monster.Blue_worm(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Blue_worm(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "PURPLE":
-            tmp_mob = monster.Purple_worm(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Purple_worm(self.__screen, offsetx, offsety, pos_x, pos_y)
         elif select == "SCORPION":
-            tmp_mob = monster.Scorpion(self.__screen, Configs.monster_offsets(select)[0], Configs.monster_offsets(select)[1], pos_x, pos_y)
+            tmp_mob = monster.Scorpion(self.__screen, offsetx, offsety, pos_x, pos_y)
         return tmp_mob  
     
     # Done
@@ -456,15 +458,26 @@ class Game:
         if not self.delay(self.__turn_delay):
             if not self.__evade and self.__mobs.is_damage:
                 self.__player.health -= self.__mobs.atk_tmp
-            self.__mstate = "CHANGE_TURN"
+
+            if self.__mobs.state == "HASTE" and self.__mobs.action_count < 1:
+                # print(self.__mobs.turn_count)
+                self.__mob_select = None
+                self.__mstate = "IDLE"
+                self.__mobs.action_count += 1
+                self.__time_lock = False
+                if self.__mobs.turn_count >= 4:
+                    self.__mobs.return_stats()
+                    self.__mobs.turn_count = 0
+            else:
+                self.__mobs.action_count = 0
+                self.__mobs.turn_count += 1
+                self.__mstate = "CHANGE_TURN"
     
     def p_change_turn(self):
         self.__player.is_damage = False
         self.__player_turn = False
         self.__mob_turn = True
         self.__time_lock = False
-        # if not self.__evade and self.__pselect != "DEFEND" and self.__pselect != "STEAL":
-        #     self.__mobs.health -= self.__player.damage
         self.__pstate = "IDLE"
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
