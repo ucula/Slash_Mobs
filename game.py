@@ -68,6 +68,10 @@ class Game:
         self.__combat = False
         self.__move_combat = True
         self.__move_normal = False
+        self.__open_item = False
+
+        # For item menu
+        self.inde = 0
 
         # for player
         self.__player_turn = False
@@ -546,7 +550,10 @@ class Game:
         # Player's turn
         if self.__player_turn:
             if self.__pstate == "IDLE":
-                self.__ui.draw_gui_combat(self.__player)
+                if not self.__open_item:
+                    self.__ui.draw_gui_combat(self.__player)
+                else:
+                    self.__ui.draw_item_menu()
 
             elif self.__pstate == "ATTACKING":
                 self.p_action()
@@ -669,30 +676,45 @@ class Game:
             # Player skill checker
             if self.__player_turn and self.__pstate == "IDLE":
                 if e.type == pg.KEYDOWN:
-                    if e.key == pg.K_z:
-                        self.__pselect = "ATTACK"
-                        self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_r and not self.__player.run_lock and not self.__player.all_lock:
-                        self.__pselect = "RUN"
-                        self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_d and not self.__player.all_lock:
-                        self.__pselect = "DEFEND"
-                        self.__revert_stat = True
-                        self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.all_lock:
-                        self.__pselect = "STEAL"
-                        self.__player.steal_count += 1
-                        self.__pstate = "ATTACKING"
-                    elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.all_lock:
-                        self.__pselect = "FIRE"
-                        self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.all_lock:
-                        self.__pselect = "THUNDER"
-                        self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.all_lock:
-                        self.__pselect = "INSTINCT"
-                        self.__pstate = "ATTACKING"
-                        self.__revert_stat = True
+                    if not self.__open_item:
+                        if e.key == pg.K_z:
+                            self.__pselect = "ATTACK"
+                            self.__pstate = "ATTACKING"
+                        elif e.key == pg.K_r and not self.__player.run_lock and not self.__player.all_lock:
+                            self.__pselect = "RUN"
+                            self.__pstate = "ATTACKING"
+                        elif e.key == pg.K_d and not self.__player.all_lock:
+                            self.__pselect = "DEFEND"
+                            self.__revert_stat = True
+                            self.__pstate = "ATTACKING"
+                        elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.all_lock:
+                            self.__pselect = "STEAL"
+                            self.__player.steal_count += 1
+                            self.__pstate = "ATTACKING"
+                        elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.all_lock:
+                            self.__pselect = "FIRE"
+                            self.__pstate = "ATTACKING"
+                        elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.all_lock:
+                            self.__pselect = "THUNDER"
+                            self.__pstate = "ATTACKING"
+                        elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.all_lock:
+                            self.__pselect = "INSTINCT"
+                            self.__pstate = "ATTACKING"
+                            self.__revert_stat = True
+                        elif e.key == pg.K_i:
+                            self.__open_item = True
+
+                    elif self.__open_item:
+                        if e.key == pg.K_i:
+                            self.__open_item = False
+                        elif e.key == pg.K_w:
+                            self.index += 1
+                        elif e.key == pg.K_s:
+                            self.index -= 1
+                        elif e.key == pg.K_a:
+                            self.index += 2
+                        elif e.key == pg.K_d:
+                            self.index -= 2
                         
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:

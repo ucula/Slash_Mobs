@@ -117,6 +117,20 @@ class AllUI:
     """
     :Combat series:
     """
+    def draw_item_menu(self):
+        pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
+        pg.draw.rect(self.__screen, Configs.get('BLACK'), self.box_pos)
+        posx = 200
+        for i in range(4):
+            pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 450, self.box_width, self.box_height), self.box_border)
+
+        for i in range(4):
+            pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
+
+    def draw_selector(self, index):
+        # if index
+        pass
+
     # Draw damage above player and mob's head after damage calculation
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
