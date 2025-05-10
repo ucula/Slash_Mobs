@@ -21,7 +21,7 @@ class Game:
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
                            "SNOW": [0, 1, 0],
-                           "CAVE": [0, 0, 1]}
+                           "CAVE": [0, 1, 0]}
         self.__mobs = None
 
         # for main loop
@@ -44,8 +44,8 @@ class Game:
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
-        self.__scene = "SNOW"
-        # self.__scene = "CAVE"
+        # self.__scene = "SNOW"
+        self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -523,7 +523,7 @@ class Game:
     # 3.Combat scene
     def combat_scene(self):
         if not self.__already_save:
-            print(self.__player.save_stats)
+            # print(self.__player.save_stats)
             self.__player.save()
             self.__already_save = True
         self.start_point(combat=1)

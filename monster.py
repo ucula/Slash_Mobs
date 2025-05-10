@@ -121,7 +121,7 @@ class Monster_TMP:
                 self.mstate = "idle"
                 self.m_pos = None
                 return False
-        print(self.x, self.y)
+        # print(self.x, self.y)
         return True
 
     def draw_skill_animation(self, lim):
@@ -276,7 +276,7 @@ class Monster_TMP:
         if len(self.effects) <= 0:
             for i in range(16):
                 self.effects.append(sprite_sheet1.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
-            for i in range(9):
+            for i in range(3):
                 self.effects.append(sprite_sheet2.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
 
     # Skill series          
@@ -433,7 +433,7 @@ class Dark_Goblin(Monster_TMP):
             self.damage *= 2
             self.damage = round(self.damage)
             self.already_boost = True
-        print(self.damage)
+        # print(self.damage)
         self.atk_tmp = dmg
         if not self.draw_effects('AURA', lim=150):
             self.effects.clear()
@@ -462,10 +462,10 @@ class Blue_worm(Monster_TMP):
                        'CRUNCH': self.crunch
                        }
 
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 0,
                             'RUN': 0,
-                            'FIRE': 0.9,
-                            'CRUNCH': 0.2}
+                            'FIRE': 0.5,
+                            'CRUNCH': 0.5}
     
     def fire(self, player):
         self.create_fire()
@@ -487,10 +487,10 @@ class Purple_worm(Monster_TMP):
                        'CRUNCH': self.crunch
                        }
         
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 0,
                             'RUN': 0,
-                            'THUNDER': 0.9,
-                            'CRUNCH': 0.2}
+                            'THUNDER': 0.5,
+                            'CRUNCH': 0.5}
 
 class Minotaur1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=8, evasion=0.2,
@@ -574,13 +574,16 @@ class Vampire2(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       "DOOM": self.doom}
+                       "DOOM": self.doom,
+                       "THUNDER":self.thunder,
+                       'HASTE': self.haste}
         
-        self.skill_chances = {'ATTACK': 0,
+        self.skill_chances = {'ATTACK': 0.2,
                             'RUN': 0,
                             'DOOM': 0,
-                            'FIRE': 1,
-                            'CRUNCH': 0}     
+                            'THUNDER': 0.2,
+                            'HASTE': 0.8
+                            }     
 
 class Vampire3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=30, level=10, evasion=0.4,
@@ -593,5 +596,4 @@ class Vampire3(Monster_TMP):
         self.skill_chances = {'ATTACK': 0,
                             'RUN': 0,
                             'DOOM': 0,
-                            'FIRE': 1,
-                            'CRUNCH': 0}
+                            }
