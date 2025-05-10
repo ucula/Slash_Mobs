@@ -143,12 +143,7 @@ class AllUI:
             pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
 
         atk_text, atk_rect = AllUI.animate_text_center("Attack (Z)", "WHITE", 100, 487.5)
-
-        if not player.run_lock:
-            run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)
-        else:
-            run_text, run_rect = AllUI.animate_text_center("CURSED", "RED", 300, 487.5)
-
+        run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)  
         defend_text, defend_rect = AllUI.animate_text_center("Defend (D)", "WHITE", 100, 562.5)
         item_text, item_rect = AllUI.animate_text_center("Item (I)", "WHITE",300, 562.5)
 
@@ -167,6 +162,22 @@ class AllUI:
         skill4_text, skill4_rect = AllUI.animate_text_center("Locked", "WHITE", 700, 562.5)
         if player.skill4_unlock:
             skill4_text, skill4_rect = AllUI.animate_text_center("Instinct (B)", "WHITE", 700, 562.5)
+
+        # Cursed
+        if player.run_lock:
+            run_text, run_rect = AllUI.animate_text_center("CURSED", "RED", 300, 487.5)  
+        if player.item_lock:
+            item_text, item_rect = AllUI.animate_text_center("CURSED", "RED",300, 562.5)
+        if player.defend_lock:
+            defend_text, defend_rect = AllUI.animate_text_center("CURSED", "RED", 100, 562.5)
+        if player.skill1_lock:
+            skill1_text, skill1_rect = AllUI.animate_text_center("CURSED", "RED", 500, 487.5)
+        if player.skill2_lock:
+            skill2_text, skill2_rect = AllUI.animate_text_center("CURSED", "RED", 500, 562.5)
+        if player.skill3_lock:
+            skill3_text, skill3_rect = AllUI.animate_text_center("CURSED", "RED", 700, 487.5)
+        if player.skill4_lock:
+            skill4_text, skill4_rect = AllUI.animate_text_center("CURSED", "RED", 700, 562.5)
 
         self.__screen.blit(atk_text, atk_rect)
         self.__screen.blit(run_text, run_rect)

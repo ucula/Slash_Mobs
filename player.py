@@ -11,11 +11,11 @@ class Player:
         self.name = name
         self.max_health = 1000
         self.health = self.max_health
-        self.level = 1
+        self.level = 0
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 0
-        self.damage = 0
+        self.damage = 1000
         self.evasion = 0.2
         self.weapon = None
         self.skill1_unlock = False
@@ -34,7 +34,15 @@ class Player:
         self.is_damage = False
         self.atk_tmp = 0
         self.already_boost = False
+
         self.run_lock = False
+        self.item_lock = False
+        self.defend_lock = False
+        self.skill1_lock = False
+        self.skill2_lock = False
+        self.skill3_lock = False
+        self.skill4_lock = False
+
         self.state = None
 
         # spawnpoint
@@ -70,6 +78,15 @@ class Player:
                        "CAVE": self.check_lim_cave}
         self.create_walk()
         self.check_unlock_skill()
+
+    def unlock(self):
+        self.run_lock = False
+        self.item_lock = False
+        self.defend_lock = False
+        self.skill1_lock = False
+        self.skill2_lock = False
+        self.skill3_lock = False
+        self.skill4_lock = False
 
     def draw_effects(self, eff, lim, target=None):
         current_time = pg.time.get_ticks()

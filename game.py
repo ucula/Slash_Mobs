@@ -21,7 +21,7 @@ class Game:
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
                            "SNOW": [0.3, 0.4, 0.3],
-                           "CAVE": [0, 1, 0]}
+                           "CAVE": [0, 0, 1]}
         self.__mobs = None
 
         # for main loop
@@ -44,8 +44,8 @@ class Game:
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
-        self.__scene = "SNOW"
-        # self.__scene = "CAVE"
+        # self.__scene = "SNOW"
+        self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -105,7 +105,7 @@ class Game:
         self.__player.direction = 'DOWN'
         self.__player.steal_count = 0
         self.__already_save = False
-        self.__player.run_lock = False
+        self.__player.unlock()
         self.__player.return_stats(evade=True, damage=True)
    
     # Delays
@@ -117,6 +117,7 @@ class Game:
         if current_time - self.__start_time >= limit:
             return False
         return True
+    
     # Done
     def character_animate(self, scene):
         self.__player.borders[scene]()
@@ -673,21 +674,21 @@ class Game:
                     elif e.key == pg.K_r and not self.__player.run_lock:
                         self.__pselect = "RUN"
                         self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_d:
+                    elif e.key == pg.K_d and not self.__player.defend_lock:
                         self.__pselect = "DEFEND"
                         self.__revert_stat = True
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x:
+                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.skill1_lock:
                         self.__pselect = "STEAL"
                         self.__player.steal_count += 1
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill2_unlock and e.key == pg.K_c:
+                    elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.skill2_lock:
                         self.__pselect = "FIRE"
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_v:
+                    elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.skill3_lock:
                         self.__pselect = "THUNDER"
                         self.__pstate = "ATTACKING"
-                    elif self.__player.skill1_unlock and e.key == pg.K_b:
+                    elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.skill4_lock:
                         self.__pselect = "INSTINCT"
                         self.__pstate = "ATTACKING"
                         self.__revert_stat = True

@@ -71,7 +71,8 @@ class Configs:
                  "MINOTAUR1": "final_prog2/assets/minotaur1_attack.png",
                  "MINOTAUR2": "final_prog2/assets/minotaur2_attack.png",
                  'EVIL': "final_prog2/assets/evil.png",
-                 'HASTE': "final_prog2/assets/haste.png"}
+                 'HASTE': "final_prog2/assets/haste.png",
+                 'CURSE': "final_prog2/assets/curse.png"}
     
     __EFFECTS_OFFSET = {'AURA_GOBLIN': (105, 150),
                     'AURA_DARK': (50, 80),
@@ -88,7 +89,8 @@ class Configs:
                     'MINOTAUR1': (230, 90),
                     'MINOTAUR2': (230, 90),
                     'EVIL': (-100, -100),
-                    'HASTE': (0,0)
+                    'HASTE': (0,0),
+                    'CURSE': (-37,-37)
                     }
 
     __MONS = {'SLIME': "final_prog2/assets/slime.png",
