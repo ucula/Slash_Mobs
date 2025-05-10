@@ -14,11 +14,11 @@ class Player:
         # Base stats
         self.max_health = 1000
         self.health = self.max_health
-        self.level = 10
+        self.level = 20
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 70000
+        self.damage = 1000
         self.evasion = 0.2
         self.weapon = None
         
@@ -26,9 +26,9 @@ class Player:
         self.skill1_unlock = False
         self.steal_count = 0
         # Steal chances 
-        self.steal_chances = {"Potion": 0.5,
-                             "Hi-Potion": 0.2,
-                             "Loot bag": 0.3}
+        self.steal_chances = {"Potion": 0, #0.5
+                             "Hi-Potion": 0.2, #0.2
+                             "Bag of greed": 0} # 0.3
         # Fire (% damage)
         self.skill2_unlock = False
         # Thunder (% damage)
@@ -47,13 +47,19 @@ class Player:
                         "HEAL": self.heal,
                         "MISC": self.misc}
         
+        self.miscs = {"Battle drum": self.drum,
+                      "Bag of greed": self.greed,
+                      "Bomb": self.bomb}
+        
         self.save_stats = {}
         self.is_damage = False
+        self._is_heal = True
         self.already_boost = False
 
         # for exchanging
         self.tmp = None
         self.atk_tmp = 0
+        self.double = False
 
         # spawnpoint
         self.x = 366
@@ -89,8 +95,8 @@ class Player:
         self.check_unlock_skill()
 
         self.items = {'Potion': item.Potion(),
-                      'H-potion': item.Hi_Potion(),
-                      "X-potion": item.X_Potion(),
+                      'Hi-Potion': item.Hi_Potion(),
+                      "X-Potion": item.X_Potion(),
                       "Battle drum": item.Battle_drum(),
                       "Bag of greed": item.Greed_bag(),
                       "Bomb": item.Bomb()}
@@ -114,6 +120,10 @@ class Player:
         if self.level >= 20:
             self.skill4_unlock = True
             self.attacks["INSTINCT"] = self.hunter_instinct
+    
+    def check_health(self):
+        if self.health > self.max_health:
+            self.health = self.max_health
 
     """
     Save some stats that is meant to be reversed at the end of battle 
@@ -223,14 +233,21 @@ class Player:
     def create_heal(self):
         pass
 
+    def create_greed(self):
+        pass
+
+    def create_bomb(self):
+        pass
+
     """
     :Skill series:
 
     Skill functions for player with their unique skill calculation and ability
     """
     # Control how player moves by using player_state(p_state)
-    def attack(self, a=None):
+    def attack(self, mobs=None, index=None):
         self.atk_tmp = self.damage
+        self.is_heal = False
         self.is_damage = True
         if self.p_pos is None:
             self.p_pos = self.x
@@ -250,40 +267,94 @@ class Player:
                 return False
         return True
     
-    def run(self, a=None):
+    def run(self, mobs=None, index=None):
+        self.is_heal = False
         if self.x > 0:
             self.x -= 10
             return False
         return True
     
-    def defend(self, a):
+    def defend(self, mobs=None, index=None):
+        self.is_heal = False
         self.is_damage = False
         self.evasion = 1
 
     # Requires unlock
-    def steal(self, a=None):
+    def steal(self, mobs=None, index=None):
         self.is_damage = False
+        self.is_heal = False
         animating = self.attack()
         if not animating:
             self.tmp = random.choices(list(self.steal_chances.keys()), list(self.steal_chances.values()))[0]
             return False
         return True
     
-    def heal(self):
-        if 1 != 2:
+    def heal(self, mobs=None, index=None):
+        self.create_aura()
+        dmg = list(self.items.values())[index].heal
+        self.is_damage = False
+        self.is_heal = True
+        if not self.already_boost:
+            self.damage *= 1.5
+            self.damage = round(self.damage)
+            self.already_boost = True
+        self.atk_tmp = dmg
+        if not self.draw_effects('P_INSTINCT', lim=150):
+            self.already_boost = False
             return False
-        return True
+        return True 
     
-    def misc(self):
-        if 1 != 2:
+    def misc(self, mobs=None, index=None):
+        misc_name = list(self.items.keys())[index]
+        done = self.miscs[misc_name](mobs)
+        if done:
+            return True
+        return False 
+    
+    def drum(self, mobs=None):
+        self.create_aura()
+        self.ui.draw_skill_display(f"{self.name}'s damage increased by 2x!")
+        dmg = 0
+        self.is_heal = False
+        self.is_damage = False
+        if not self.already_boost:
+            self.damage *= 2
+            self.damage = round(self.damage)
+            self.already_boost = True
+        self.atk_tmp = dmg
+        if not self.draw_effects('P_INSTINCT', lim=150):
+            self.already_boost = False
             return False
-        return True
-    
+        return True 
+
+    def greed(self, mobs=None):
+        self.create_aura()
+        self.ui.draw_skill_display("Mob drops are now x2!")
+        dmg = 0
+        self.is_heal = False
+        self.is_damage = False
+        self.double = True
+        self.atk_tmp = dmg
+        if not self.draw_effects('P_INSTINCT', lim=150):
+            return False
+        return True 
+
+    def bomb(self, mobs=None):
+        self.create_fire()
+        dmg = 50
+        self.is_heal = False
+        self.is_damage = True
+        self.atk_tmp = dmg
+        if not self.draw_effects('P_FIRE', lim=100, target=mobs):
+            return False
+        return True 
+
     """
     All player's skills with their own damage calculation system
     """
-    def fire(self, mobs):
+    def fire(self, mobs=None, index=None):
         self.create_fire()
+        self.is_heal = False
         self.is_damage = True
         range = random.randint(0, round(self.level*2))
         dmg = self.damage + range
@@ -292,8 +363,9 @@ class Player:
             return False
         return True
 
-    def thunder(self, mobs):
+    def thunder(self, mobs=None, index=None):
         self.create_thunder()
+        self.is_heal = False
         self.is_damage = True
         dmg = self.max_health*0.1
         self.atk_tmp = dmg
@@ -301,10 +373,11 @@ class Player:
             return False
         return True
     
-    def hunter_instinct(self, a):
+    def hunter_instinct(self, mobs=None, index=None):
         self.create_aura()
         self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
+        self.is_heal = False
         self.is_damage = False
         if not self.already_boost:
             self.damage *= 1.5
@@ -461,6 +534,7 @@ class Player:
         if self.frame2 >= len(self.effects):
             self.frame2 = 0
             self.effects.clear()
+            self.time_lock = False
             return False
         
         if target is None:

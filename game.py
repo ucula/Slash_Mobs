@@ -19,7 +19,7 @@ class Game:
                            "CAVE": [0.4, 0.3, 0.3]}
 
         self.__player = Player(self.__screen, name="Ucula")
-        self.__item = Item_TMP
+        self.__item = Item_TMP()
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
@@ -86,12 +86,14 @@ class Game:
         self.__is_skill_animating = False
     
     def manage_item(self, item=None, name=None):
+        print("use")
         if name is None:
             name = item.name
 
         for item in list(self.__player.items.keys()):
             if name == item:
                 self.__player.items[name].count += 1
+                print(self.__player.items[name].count)
 
     # Reset Combat
     def reset(self):
@@ -421,7 +423,7 @@ class Game:
     def p_action(self):
         if self.__pselect != "DEFEND":
             self.__move_combat = True
-        animating = self.__player.attacks[self.__pselect](self.__mobs)
+        animating = self.__player.attacks[self.__pselect](self.__mobs, self.__index)
         if not animating:
             self.move = False
             if self.__pselect == "RUN":
@@ -455,10 +457,16 @@ class Game:
         elif self.__pselect != "STEAL":
             if self.__player.is_damage:
                 self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
+            elif self.__player.is_heal:
+                self.__ui.draw_heal(self.__player)
 
             if not self.delay(self.__turn_delay):
                 if not self.__evade and self.__player.is_damage:
                     self.__mobs.health -= self.__player.atk_tmp
+                elif self.__player.is_heal:
+                    self.__player.health += self.__player.atk_tmp
+                    self.__player.check_health()
+
                 self.__pstate = "CHANGE_TURN"
 
     def m_calculate_stage(self):
@@ -468,9 +476,7 @@ class Game:
         if not self.delay(self.__turn_delay):
             if not self.__evade and self.__mobs.is_damage:
                 self.__player.health -= self.__mobs.atk_tmp
-
             if self.__mobs.state == "HASTE" and self.__mobs.action_count < 1:
-                # print(self.__mobs.turn_count)
                 self.__mob_select = None
                 self.__mstate = "IDLE"
                 self.__mobs.action_count += 1
@@ -491,7 +497,11 @@ class Game:
         self.__pstate = "IDLE"
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
-            self.__mob_drops = (self.__mobs.coin, self.__mobs.exp)
+            if self.__player.double:
+                self.__mob_drops = (2*self.__mobs.coin, 2*self.__mobs.exp)
+            else:
+                self.__mob_drops = (self.__mobs.coin, self.__mobs.exp)
+            self.__player.double = False
             self.__mobs = None
             self.__mob_turn = False
             self.__player_turn = True
@@ -585,16 +595,12 @@ class Game:
                     
             elif self.__mstate == "ATTACKING":
                 self.m_action()
-                print(self.__player.run_lock)
 
             elif self.__mstate == "CALCULATING":
                 self.m_calculate_stage()
-                # print(self.__player.run_lock)
 
             elif self.__mstate == "CHANGE_TURN":
-                # print(self.__player.run_lock)
                 self.m_change_turn()
-                print(self.__player.run_lock)
 
         # Show healh bar for player in combat
         if self.__health:
@@ -680,10 +686,10 @@ class Game:
                         elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.all_lock:
                             self.__pselect = "FIRE"
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill1_unlock and e.key == pg.K_v and not self.__player.all_lock:
+                        elif self.__player.skill3_unlock and e.key == pg.K_v and not self.__player.all_lock:
                             self.__pselect = "THUNDER"
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill1_unlock and e.key == pg.K_b and not self.__player.all_lock:
+                        elif self.__player.skill4_unlock and e.key == pg.K_b and not self.__player.all_lock:
                             self.__pselect = "INSTINCT"
                             self.__pstate = "ATTACKING"
                             self.__revert_stat = True
@@ -710,6 +716,7 @@ class Game:
                                 else:
                                     self.__pselect = "MISC"
                                 self.__pstate = "ATTACKING"
+                                self.__open_item = False
                         
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:

@@ -1,8 +1,8 @@
 class Item_TMP:
-    def __init__(self, price, name, type):
+    def __init__(self, price=None, name=None, type=None):
         self.price = price
         self.name = name
-        self.count = 1
+        self.count = 5
         self.type = type
         self.heal = 0
 
@@ -12,9 +12,9 @@ class Item_TMP:
 
     def use(self, player, index):
         item = list(player.items.values())[index]
-        if self.count < 1:
+        if item.count <= 0:
             return False, None 
-        self.count -= 1
+        item.count -= 1
         return True, item
     
 class Potion(Item_TMP):
@@ -25,12 +25,12 @@ class Potion(Item_TMP):
 class Hi_Potion(Item_TMP):
     def __init__(self, price=10, name="Hi-Potion", type="heal"):
         super().__init__(price, name, type)
-        self.heal = 100
+        self.heal = 50
 
 class X_Potion(Item_TMP):
     def __init__(self, price=25, name="X-Potion", type="heal"):
         super().__init__(price, name, type)
-        self.heal = 500
+        self.heal = 125
 
 class Battle_drum(Item_TMP):
     def __init__(self, price=4, name="Battle drum", type="misc"):

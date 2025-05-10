@@ -120,7 +120,6 @@ class Monster_TMP:
                 self.mstate = "idle"
                 self.m_pos = None
                 return False
-        # print(self.x, self.y)
         return True
 
     def draw_skill_animation(self, lim):
@@ -530,7 +529,6 @@ class Dark_Goblin(Monster_TMP):
             self.damage *= 2
             self.damage = round(self.damage)
             self.already_boost = True
-        # print(self.damage)
         self.atk_tmp = dmg
         if not self.draw_effects('AURA_DARK', lim=150):
             self.effects.clear()
