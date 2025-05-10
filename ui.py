@@ -90,7 +90,7 @@ class AllUI:
         AllUI.create_box(self.__screen, settings)    
         if shop:
             AllUI.animate_text_topleft(self.__screen,message=f"Press \"E\" to open shop", color='BLACK', x=10, y=30)
-        AllUI.animate_text_topleft(self.__screen, message=f"Press \"I\" to open status", color='BLACK', x=10, y=10)
+        AllUI.animate_text_topleft(self.__screen, message=f"Press \"Q\" to open status", color='BLACK', x=10, y=10)
 
     # Status window for normal scene
     def draw_status_window(self, player):
@@ -247,31 +247,31 @@ class AllUI:
 
         AllUI.animate_text_center(self.__screen, "Attack (Z)", "WHITE", 100, 487.5)
         if not player.all_lock:
-            AllUI.animate_text_center(self.__screen, "Defend (D)", "WHITE", 100, 562.5)
-            AllUI.animate_text_center(self.__screen, "Item (I)", "WHITE",300, 562.5)
+            AllUI.animate_text_center(self.__screen, "Defend (C)", "WHITE", 100, 562.5)
+            AllUI.animate_text_center(self.__screen, "Item (V)", "WHITE",300, 562.5)
 
             if player.run_lock:
                 AllUI.animate_text_center(self.__screen, "CURSED", "RED", 300, 487.5)
             else:
-                AllUI.animate_text_center(self.__screen, "Run (R)", "WHITE", 300, 487.5)  
+                AllUI.animate_text_center(self.__screen, "Run (X)", "WHITE", 300, 487.5)  
 
             if player.skill1_unlock:
-                AllUI.animate_text_center(self.__screen, f"Steal (X) ({player.steal_count}/2)", "WHITE", 500, 487.5)
+                AllUI.animate_text_center(self.__screen, f"Steal (A) ({player.steal_count}/2)", "WHITE", 500, 487.5)
             else:
                 AllUI.animate_text_center(self.__screen, "Locked", "WHITE", 500, 487.5)
 
             if player.skill2_unlock:
-                AllUI.animate_text_center(self.__screen, "Fire (C)", "WHITE", 500, 562.5)
+                AllUI.animate_text_center(self.__screen, "Fire (D)", "WHITE", 500, 562.5)
             else:
                 AllUI.animate_text_center(self.__screen, "Locked", "WHITE", 500, 562.5)
 
             if player.skill3_unlock:
-                AllUI.animate_text_center(self.__screen, "Thunder (V)", "WHITE", 700, 487.5)
+                AllUI.animate_text_center(self.__screen, "Thunder (S)", "WHITE", 700, 487.5)
             else:
                 AllUI.animate_text_center(self.__screen, "Locked", "WHITE", 700, 487.5)
 
             if player.skill4_unlock:
-                AllUI.animate_text_center(self.__screen, "Instinct (B)", "WHITE", 700, 562.5)
+                AllUI.animate_text_center(self.__screen, "Instinct (F)", "WHITE", 700, 562.5)
             else:
                 AllUI.animate_text_center(self.__screen, "Locked", "WHITE", 700, 562.5)
 

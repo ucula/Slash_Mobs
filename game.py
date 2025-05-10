@@ -624,11 +624,11 @@ class Game:
             
             # Status window
             if self.__scene_manager == "NORMAL" and self.__enable_walk and not self.__shop:
-                if e.type == pg.KEYDOWN and e.key == pg.K_i:
+                if e.type == pg.KEYDOWN and e.key == pg.K_q:
                     self.__status = True
                     self.__enable_walk = False
             elif self.__scene_manager == "NORMAL" and not self.__enable_walk and not self.__shop:
-                if e.type == pg.KEYDOWN and e.key == pg.K_i:
+                if e.type == pg.KEYDOWN and e.key == pg.K_q:
                     self.__status = False
                     self.__enable_walk = True
 
@@ -673,28 +673,28 @@ class Game:
                         if e.key == pg.K_z:
                             self.__pselect = "ATTACK"
                             self.__pstate = "ATTACKING"
-                        elif e.key == pg.K_r and not self.__player.run_lock and not self.__player.all_lock:
+                        elif e.key == pg.K_x and not self.__player.run_lock and not self.__player.all_lock:
                             self.__pselect = "RUN"
                             self.__pstate = "ATTACKING"
-                        elif e.key == pg.K_d and not self.__player.all_lock:
+                        elif e.key == pg.K_c and not self.__player.all_lock:
                             self.__pselect = "DEFEND"
                             self.__revert_stat = True
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x and not self.__player.all_lock:
+                        elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_a and not self.__player.all_lock:
                             self.__pselect = "STEAL"
                             self.__player.steal_count += 1
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill2_unlock and e.key == pg.K_c and not self.__player.all_lock:
+                        elif self.__player.skill2_unlock and e.key == pg.K_s and not self.__player.all_lock:
                             self.__pselect = "FIRE"
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill3_unlock and e.key == pg.K_v and not self.__player.all_lock:
+                        elif self.__player.skill3_unlock and e.key == pg.K_d and not self.__player.all_lock:
                             self.__pselect = "THUNDER"
                             self.__pstate = "ATTACKING"
-                        elif self.__player.skill4_unlock and e.key == pg.K_b and not self.__player.all_lock:
+                        elif self.__player.skill4_unlock and e.key == pg.K_f and not self.__player.all_lock:
                             self.__pselect = "INSTINCT"
                             self.__pstate = "ATTACKING"
                             self.__revert_stat = True
-                        elif e.key == pg.K_i:
+                        elif e.key == pg.K_v:
                             self.__open_item = True
 
                     elif self.__open_item:

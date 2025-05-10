@@ -14,7 +14,7 @@ class Player:
         # Base stats
         self.max_health = 20
         self.health = self.max_health
-        self.level = 1
+        self.level = 100
         self.exp = 0
         self.exp_threshold = 5
         self.coin = 10

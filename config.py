@@ -46,9 +46,9 @@ class Configs:
                             'PURPLE': (130, 250)
                             }
     
-    __MONS_UI_COORDS = {'SLIME': (202, 290),
-                        'GOBLIN': (230, 255),
-                        'DARK': (202, 280),
+    __MONS_UI_COORDS = {'SLIME': (210, 300),
+                        'GOBLIN': (230, 270),
+                        'DARK': (210, 285),
                         'VAMPIRE1': (210, 280),
                         'VAMPIRE2': (210, 280),
                         'VAMPIRE3': (210, 280),
