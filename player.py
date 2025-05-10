@@ -34,6 +34,8 @@ class Player:
         self.is_damage = False
         self.atk_tmp = 0
         self.already_boost = False
+        self.run_lock = False
+        self.state = None
 
         # spawnpoint
         self.x = 366
@@ -49,6 +51,7 @@ class Player:
         self.cool_down = 100
         self.frame = 0
         self.frame2 = 0
+
         self.pstate = "idle"
         self.p_pos = None
         self.effects = []

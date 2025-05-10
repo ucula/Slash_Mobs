@@ -141,9 +141,14 @@ class AllUI:
 
         for i in range(4):
             pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
-       
+
         atk_text, atk_rect = AllUI.animate_text_center("Attack (Z)", "WHITE", 100, 487.5)
-        run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)
+
+        if not player.run_lock:
+            run_text, run_rect = AllUI.animate_text_center("Run (R)", "WHITE", 300, 487.5)
+        else:
+            run_text, run_rect = AllUI.animate_text_center("CURSED", "RED", 300, 487.5)
+
         defend_text, defend_rect = AllUI.animate_text_center("Defend (D)", "WHITE", 100, 562.5)
         item_text, item_rect = AllUI.animate_text_center("Item (I)", "WHITE",300, 562.5)
 

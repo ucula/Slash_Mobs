@@ -67,7 +67,9 @@ class Configs:
                  "DOOM": "final_prog2/assets/doom.png",
                  "BLUE": "final_prog2/assets/blue_attack.png",
                  "PURPLE": "final_prog2/assets/purple_attack.png", 
-                 "VAMPIRE1": "final_prog2/assets/vampire1_attack.png"}
+                 "VAMPIRE1": "final_prog2/assets/vampire1_attack.png",
+                 "MINOTAUR1": "final_prog2/assets/minotaur1_attack.png",
+                 "MINOTAUR2": "final_prog2/assets/minotaur2_attack.png"}
     
     __EFFECTS_OFFSET = {'GOBLIN': (105, 150),
                     'DARK': (50, 80),
@@ -80,7 +82,9 @@ class Configs:
                     'DOOM': (-100, -220),
                     'P_FIRE': (130, 200),
                     'P_THUNDER': (140, 50),
-                    'P_INSTINCT': (130, 230)
+                    'P_INSTINCT': (130, 230),
+                    'MINOTAUR1': (230, 90),
+                    'MINOTAUR2': (230, 90),
                     }
 
     __MONS = {'SLIME': "final_prog2/assets/slime.png",

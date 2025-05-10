@@ -279,6 +279,24 @@ class Monster_TMP:
             for i in range(3):
                 self.effects.append(sprite_sheet2.get_effects((0, 0), i, 90, 90, 2, Configs.get('BLACK')))
 
+    def create_haste(self):
+        pass
+
+    def create_slash(self):
+        sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
+        sprite_sheet1 = SpriteSheet(sprite_sheet_image1)
+        sprite_sheet_image2 = pg.image.load(Configs.monster(self.name)).convert_alpha()
+        sprite_sheet2 = SpriteSheet(sprite_sheet_image2)
+
+        if len(self.effects) <= 0:
+            for i in range(5):
+                self.effects.append(sprite_sheet1.get_effects((0, 0), i, 128, 128, 1, Configs.get('BLACK')))
+            for i in range(3):
+                self.effects.append(sprite_sheet2.get_effects((0, 0), i, 128, 128, 1, Configs.get('BLACK')))
+
+    def create_evil(self):
+        pass
+
     # Skill series          
     def hunter_instinct(self, a):
         self.create_aura()
@@ -348,7 +366,7 @@ class Monster_TMP:
     
     def haste(self, a):
         if not self.already_save:
-            self.save()
+            self.save(haste=True)
             self.already_save = True
         self.is_damage = False
         dmg = 0
@@ -357,6 +375,30 @@ class Monster_TMP:
         self.skill_chances['HASTE'] = 0
 
         if not self.draw_effects(eff='HASTE', lim=50):
+            self.effects.clear()
+            return False
+        return True
+    
+    def evil_sword(self, player):
+        if not player.run_lock:
+            print("lock")
+            player.run_lock = True
+
+        self.is_damage = False
+        dmg = 0
+        self.atk_tmp = dmg
+        self.skill_chances['EVIL SWORD'] = 0
+        if not self.draw_effects(eff='EVIL', lim=50):
+            self.effects.clear()
+            return False
+        return True
+    
+    def slash(self, player):
+        self.create_slash()
+        self.is_damage = True
+        dmg = self.damage//(self.health/10)
+        self.atk_tmp = dmg
+        if not self.draw_skill_attack(player, lim=50):
             self.effects.clear()
             return False
         return True
@@ -380,14 +422,20 @@ class Monster_TMP:
         distance = math.hypot(a, b)
         return distance 
 
-    def save(self):
+    def save(self, haste=False, evil=False):
         self.save_stats['State'] = None
-        self.save_stats['Haste_rate'] = self.skill_chances['HASTE']
+        if haste:
+            self.save_stats['Haste_rate'] = self.skill_chances['HASTE']
+        if evil:
+            self.save_stats['Evil_rate'] = self.skill_chances['EVIL SWORD']
         self.save_stats['Chances'] = self.skill_chances    
 
-    def return_stats(self):
+    def return_stats(self, haste=False, evil=False):
         self.state = self.save_stats['State']
-        self.skill_chances['HASTE'] = self.save_stats['Haste_rate']
+        if haste:
+            self.skill_chances['HASTE'] = self.save_stats['Haste_rate']
+        if evil:
+            self.skill_chances['EVIL SWORD'] = self.save_stats['Evil_rate']
         self.skill_chances = self.save_stats['Chances']
         self.already_save = False
 
@@ -498,11 +546,15 @@ class Minotaur1(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'GRAVITY': self.gravity}
+                       'GRAVITY': self.gravity,
+                       'SLASH': self.slash,
+                       'EVIL SWORD': self.evil_sword}
     
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 0.5,
                             'RUN': 0,
-                            'HASTE': 0.9}
+                            'GRAVITY': 0,
+                            'SLASH': 0.5,
+                            'EVIL SWORD': 1}
     
 class Minotaur2(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR2", health=200, damage=15, level=8, evasion=0.2,
@@ -510,11 +562,15 @@ class Minotaur2(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       "HASTE": self.haste}
+                       'SLASH': self.slash,
+                       'HASTE': self.haste,
+                       'EVIL SWORD': self.evil_sword}
         
         self.skill_chances = {'ATTACK': 0.1,
                             'RUN': 0,
-                            'HASTE': 0.9}
+                            'SLASH': 0.4,
+                            'HASTE': 0.9,
+                            'EVIL SWORD': 1}
 
 class Minotaur3(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=100, damage=10, level=8, evasion=0.4,
@@ -522,11 +578,17 @@ class Minotaur3(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'GRAVITY': self.gravity}
+                       'GRAVITY': self.gravity,
+                       'FIRE': self.fire,
+                       'THUNDER': self.thunder,
+                       'EVIL SWORD': self.evil_sword}
         
         self.skill_chances = {'ATTACK': 0,
                             'RUN': 0,
-                            'GRAVITY': 0.4}
+                            'GRAVITY': 0.4,
+                            'FIRE': 0.3,
+                            'THUNDER': 0.3,
+                            'EVIL SWORD': 1}
 
 class Vampire1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE1", health=200, damage=30, level=10, evasion=0.4,

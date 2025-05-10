@@ -20,7 +20,7 @@ class Game:
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
-                           "SNOW": [0, 1, 0],
+                           "SNOW": [0, 0, 1],
                            "CAVE": [0, 1, 0]}
         self.__mobs = None
 
@@ -44,8 +44,8 @@ class Game:
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
-        # self.__scene = "SNOW"
-        self.__scene = "CAVE"
+        self.__scene = "SNOW"
+        # self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -105,6 +105,7 @@ class Game:
         self.__player.direction = 'DOWN'
         self.__player.steal_count = 0
         self.__already_save = False
+        self.__player.run_lock = False
         self.__player.return_stats(evade=True, damage=True)
    
     # Delays
@@ -466,7 +467,7 @@ class Game:
                 self.__mobs.action_count += 1
                 self.__time_lock = False
                 if self.__mobs.turn_count >= 4:
-                    self.__mobs.return_stats()
+                    self.__mobs.return_stats(haste=True)
                     self.__mobs.turn_count = 0
             else:
                 self.__mobs.action_count = 0
@@ -571,12 +572,16 @@ class Game:
                     
             elif self.__mstate == "ATTACKING":
                 self.m_action()
+                print(self.__player.run_lock)
 
             elif self.__mstate == "CALCULATING":
                 self.m_calculate_stage()
+                # print(self.__player.run_lock)
 
             elif self.__mstate == "CHANGE_TURN":
+                # print(self.__player.run_lock)
                 self.m_change_turn()
+                print(self.__player.run_lock)
 
         # Show healh bar for player in combat
         if self.__health:
@@ -664,7 +669,7 @@ class Game:
                     if e.key == pg.K_z:
                         self.__pselect = "ATTACK"
                         self.__pstate = "ATTACKING"
-                    elif e.key == pg.K_r:
+                    elif e.key == pg.K_r and not self.__player.run_lock:
                         self.__pselect = "RUN"
                         self.__pstate = "ATTACKING"
                     elif e.key == pg.K_d:
