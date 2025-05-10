@@ -135,7 +135,8 @@ class Player:
     def fire(self, mobs):
         self.create_fire()
         self.is_damage = True
-        dmg = self.max_health*0.1
+        range = random.randint(0, round(self.level*2))
+        dmg = self.damage + range
         self.atk_tmp = dmg
         if not self.draw_effects('P_FIRE', lim=50, target=mobs):
             return False

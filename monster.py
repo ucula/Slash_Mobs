@@ -362,13 +362,13 @@ class Goblin(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
-        # self.attack_rate = 0.7 # 0.7
-        # self.run_rate = 0.1 # 0.1
-        # self.hunter_instinct_rate = 0.3 # 0.3
+        self.attack_rate = 0.7 # 0.7
+        self.run_rate = 0.1 # 0.1
+        self.hunter_instinct_rate = 0.3 # 0.3
 
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.hunter_instinct_rate = 0.3
+        # self.attack_rate = 0
+        # self.run_rate = 0
+        # self.hunter_instinct_rate = 0.3
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
         
@@ -379,29 +379,34 @@ class Dark_Goblin(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
-        # self.attack_rate = 0.4 # 0.4
-        # self.run_rate = 0 # 0
-        # self.hunter_instinct_rate = 0.6 # 0.6 
+        self.attack_rate = 0.4 # 0.4
+        self.run_rate = 0 # 0
+        self.hunter_instinct_rate = 0.6 # 0.6 
 
-        self.attack_rate = 0
-        self.run_rate = 0
-        self.hunter_instinct_rate = 0.3
+        # self.attack_rate = 0
+        # self.run_rate = 0
+        # self.hunter_instinct_rate = 0.3
 
         self.skill_chances = [self.attack_rate, self.run_rate, self.hunter_instinct_rate]
     
     def hunter_instinct(self, a):
-        self.ui.draw_skill_display(f"{self.name}'s damage increased by 2x!")
+        self.create_aura()
+        self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
-        self.s_damage = False
-        self.damage *= 2
-        self.damage = round(self.damage)
+        self.is_damage = False
+        if not self.already_boost:
+            self.damage *= 2
+            self.damage = round(self.damage)
+            self.already_boost = True
+        print(self.damage)
         self.atk_tmp = dmg
-        if not self.draw_effects('AURA', lim=150, player=False):
+        if not self.draw_effects('AURA', lim=150):
+            self.already_boost = False
             return False
         return True
 
 class Scorpion(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=55, damage=10, level=4, evasion=0.3,
+    def __init__(self, screen, x_off, y_off, x, y, name="SCORPION", health=55, damage=10, level=4, evasion=0.1,
                  steps=3, size=1, pixel=64, exp=25, coin=15):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -543,7 +548,7 @@ class Vampire1(Monster_TMP):
     
     def crunch(self, player):
         self.create_crunch()
-        self.s_damage = True
+        self.is_damage = True
         dmg = self.damage//(self.health/10)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=75):
