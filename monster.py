@@ -348,7 +348,7 @@ class Monster_TMP:
         self.is_damage = True
         dmg = player.coin*0.3
         self.atk_tmp = dmg
-        if not self.draw_effects(eff='GRAVITY', lim=50, target=player):
+        if not self.draw_effects(eff='GRAVITY', lim=20, target=player):
             self.effects.clear()
             return False
         return True
@@ -457,7 +457,7 @@ class Slime(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee}
         
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 1,
                             'RUN': 0}
 
 class Goblin(Monster_TMP):
@@ -467,9 +467,9 @@ class Goblin(Monster_TMP):
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
-        self.skill_chances = {'ATTACK': 0.1,
-                            'RUN': 0,
-                            'INSTINCT': 0.9}
+        self.skill_chances = {'ATTACK': 0.7,
+                            'RUN': 0.1,
+                            'INSTINCT': 0.2}
         
 class Dark_Goblin(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="DARK", health=30, damage=2, level=3, evasion=0.3,
@@ -479,9 +479,9 @@ class Dark_Goblin(Monster_TMP):
                        'RUN': self.draw_monster_flee,
                        'INSTINCT': self.hunter_instinct}
 
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 0.4,
                             'RUN': 0,
-                            'INSTINCT': 0.9}
+                            'INSTINCT': 0.5}
     
     def hunter_instinct(self, a):
         self.create_aura()
@@ -521,10 +521,10 @@ class Blue_worm(Monster_TMP):
                        'CRUNCH': self.crunch
                        }
 
-        self.skill_chances = {'ATTACK': 0,
-                            'RUN': 0,
-                            'FIRE': 0.5,
-                            'CRUNCH': 0.5}
+        self.skill_chances = {'ATTACK': 0.5,
+                            'RUN': 0.01,
+                            'FIRE': 0.2,
+                            'CRUNCH': 0.2}
     
     def fire(self, player):
         self.create_fire()
@@ -546,10 +546,10 @@ class Purple_worm(Monster_TMP):
                        'CRUNCH': self.crunch
                        }
         
-        self.skill_chances = {'ATTACK': 0,
-                            'RUN': 0,
-                            'THUNDER': 0.5,
-                            'CRUNCH': 0.5}
+        self.skill_chances = {'ATTACK': 0.5,
+                            'RUN': 0.01,
+                            'THUNDER': 0.2,
+                            'CRUNCH': 0.2}
 
 class Minotaur1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=8, evasion=0.2,
@@ -561,10 +561,10 @@ class Minotaur1(Monster_TMP):
                        'SLASH': self.slash,
                        'EVIL SWORD': self.evil_sword}
     
-        self.skill_chances = {'ATTACK': 0.5,
+        self.skill_chances = {'ATTACK': 0.3,
                             'RUN': 0,
-                            'GRAVITY': 0,
-                            'SLASH': 0.5,
+                            'GRAVITY': 0.3,
+                            'SLASH': 0.3,
                             'EVIL SWORD': 1}
     
 class Minotaur2(Monster_TMP):
@@ -577,10 +577,10 @@ class Minotaur2(Monster_TMP):
                        'HASTE': self.haste,
                        'EVIL SWORD': self.evil_sword}
         
-        self.skill_chances = {'ATTACK': 0.1,
+        self.skill_chances = {'ATTACK': 0.5,
                             'RUN': 0,
-                            'SLASH': 0,
-                            'HASTE': 0.9,
+                            'SLASH': 0.3,
+                            'HASTE': 0.2,
                             'EVIL SWORD': 1}
 
 class Minotaur3(Monster_TMP):
@@ -594,11 +594,11 @@ class Minotaur3(Monster_TMP):
                        'THUNDER': self.thunder,
                        'EVIL SWORD': self.evil_sword}
         
-        self.skill_chances = {'ATTACK': 0,
+        self.skill_chances = {'ATTACK': 0.25,
                             'RUN': 0,
-                            'GRAVITY': 0.4,
-                            'FIRE': 0.3,
-                            'THUNDER': 0.3,
+                            'GRAVITY': 0.25,
+                            'FIRE': 0.25,
+                            'THUNDER': 0.25,
                             'EVIL SWORD': 1}
 
 class Vampire1(Monster_TMP):

@@ -20,7 +20,7 @@ class Game:
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0.4, 0.3, 0.4],
                            "DESERT": [0.4, 0.3, 0.3],
-                           "SNOW": [0, 1, 0],
+                           "SNOW": [0.3, 0.4, 0.3],
                            "CAVE": [0, 1, 0]}
         self.__mobs = None
 
@@ -587,6 +587,7 @@ class Game:
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
         
+        # print(self.__mobs.skill_chances)
     def manage_item(self, item=None, name=None):
         if name is None:
             name = item.name
