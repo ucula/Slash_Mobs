@@ -117,6 +117,7 @@ class Game:
         self.__already_save = False
         self.__player.unlock()
         self.__player.return_stats(evade=True, damage=True)
+        self.__player.up_stats()
    
     # Delays
     def delay(self, limit):

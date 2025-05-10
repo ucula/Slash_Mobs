@@ -14,13 +14,15 @@ class Player:
         # Base stats
         self.max_health = 1000
         self.health = self.max_health
-        self.level = 20
+        self.level = 1
         self.exp = 0
-        self.exp_threshold = 30
+        self.exp_threshold = 1
         self.coin = 1000
-        self.damage = 1000
+        self.damage = 7
         self.evasion = 0.2
         self.weapon = None
+        self.dmg_up = 3
+        self.health_up = 5
         
         # Steal skill
         self.skill1_unlock = False
@@ -53,8 +55,9 @@ class Player:
         
         self.save_stats = {}
         self.is_damage = False
-        self._is_heal = True
+        self.is_heal = True
         self.already_boost = False
+        self.count_level_up = 0
 
         # for exchanging
         self.tmp = None
@@ -129,10 +132,10 @@ class Player:
     Save some stats that is meant to be reversed at the end of battle 
     Ex. Intinct boosts damage. Damage has to be reversed back to its original value before the start of the combat 
     """
-    def save(self):
-        self.save_stats["Evasion"] = self.evasion
+    def save(self, level=None):
         self.save_stats["Damage"] = self.damage
-                           
+        self.save_stats["Evasion"] = self.evasion
+                   
     def return_stats(self, evade=False, damage=False):
         if damage and evade:
             if self.damage != self.save_stats["Damage"]:
@@ -153,7 +156,7 @@ class Player:
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 0
-        self.damage = 1000
+        self.damage = 7
         self.evasion = 0.2
         self.skill1_unlock = False
         self.skill2_unlock = False
@@ -174,17 +177,24 @@ class Player:
     Increase player's leve/stats and increase exp threshold
     """
     def level_up(self):
+        print(self.count_level_up)
         if self.exp >= self.exp_threshold:
             remain = self.exp - self.exp_threshold
             self.level += 1
-            self.damage += 3
             self.exp_threshold += self.level*1.5
-            self.exp = remain
-            self.max_health += 5
-            self.health = self.max_health
+            self.exp = remain       
+            self.count_level_up += 1
             self.check_unlock_skill()
+            if self.exp >= self.exp_threshold:
+                self.level_up()
             return True
         return False
+
+    def up_stats(self):
+        self.damage += self.dmg_up*self.count_level_up
+        self.health += self.health_up*self.count_level_up
+        self.health = self.max_health
+        self.count_level_up = 0
 
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
@@ -231,13 +241,26 @@ class Player:
                 self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 128, 2.5, Configs.get('BLACK')))
     
     def create_heal(self):
-        pass
+        sprite_sheet_image = pg.image.load(Configs.effects("HEAL")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for j in range(4):
+                for i in range(4):
+                    self.effects.append(sprite_sheet.get_effects2((0, 0), i, 128, 128, 3, Configs.get('BLACK'), j))
 
     def create_greed(self):
-        pass
+        sprite_sheet_image = pg.image.load(Configs.effects("GREED")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for i in range(18):
+                self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 64, 2, Configs.get('BLACK'), 2))
 
     def create_bomb(self):
-        pass
+        sprite_sheet_image = pg.image.load(Configs.effects("BOMB")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for i in range(12):
+                self.effects.append(sprite_sheet.get_effects((0, 0), i, 128, 128, 2.5, Configs.get('BLACK')))
 
     """
     :Skill series:
@@ -290,7 +313,7 @@ class Player:
         return True
     
     def heal(self, mobs=None, index=None):
-        self.create_aura()
+        self.create_heal()
         dmg = list(self.items.values())[index].heal
         self.is_damage = False
         self.is_heal = True
@@ -299,7 +322,7 @@ class Player:
             self.damage = round(self.damage)
             self.already_boost = True
         self.atk_tmp = dmg
-        if not self.draw_effects('P_INSTINCT', lim=150):
+        if not self.draw_effects('HEAL', lim=50):
             self.already_boost = False
             return False
         return True 
@@ -328,24 +351,24 @@ class Player:
         return True 
 
     def greed(self, mobs=None):
-        self.create_aura()
+        self.create_greed()
         self.ui.draw_skill_display("Mob drops are now x2!")
         dmg = 0
         self.is_heal = False
         self.is_damage = False
         self.double = True
         self.atk_tmp = dmg
-        if not self.draw_effects('P_INSTINCT', lim=150):
+        if not self.draw_effects('GREED', lim=50, target=mobs):
             return False
         return True 
 
     def bomb(self, mobs=None):
-        self.create_fire()
+        self.create_bomb()
         dmg = 50
         self.is_heal = False
         self.is_damage = True
         self.atk_tmp = dmg
-        if not self.draw_effects('P_FIRE', lim=100, target=mobs):
+        if not self.draw_effects('BOMB', lim=50, target=mobs):
             return False
         return True 
 
@@ -538,8 +561,10 @@ class Player:
             return False
         
         if target is None:
+            x = Configs.effect_offset(eff)[0]
+            y = Configs.effect_offset(eff)[1]
             self.screen.blit(self.effects[self.frame2], 
-                            (self.x-8, self.y+15))
+                            (self.x+x, self.y+y))
             
         elif target is not None:
             x = Configs.effect_offset(eff)[0]

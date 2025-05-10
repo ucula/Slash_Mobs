@@ -174,8 +174,8 @@ class AllUI:
     
     def draw_heal(self, player):
         font = pg.font.SysFont(None, 48)
-        AllUI.animate_text_midtop(self.__screen, f"{player.atk_tmp:.0f}", 'BLACK', player.x+19, player.y-20, font)
-        AllUI.animate_text_midtop(self.__screen, f"{player.atk_tmp:.0f}", 'GREEN', player.x+23, player.y-20, font)
+        AllUI.animate_text_center(self.__screen, f"{player.atk_tmp:.0f}", 'BLACK', player.x+35, player.y-10, font)
+        AllUI.animate_text_center(self.__screen, f"{player.atk_tmp:.0f}", 'GREEN', player.x+39, player.y-10, font)
 
     """
     Draw summarization of battle (exp and money droped or whether player level up or not)

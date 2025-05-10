@@ -72,7 +72,10 @@ class Configs:
                  "MINOTAUR2": "final_prog2/assets/effects/minotaur2_attack.png",
                  'EVIL': "final_prog2/assets/effects/evil.png",
                  'HASTE': "final_prog2/assets/effects/haste.png",
-                 'CURSE': "final_prog2/assets/effects/curse.png"}
+                 'CURSE': "final_prog2/assets/effects/curse.png",
+                 'HEAL': "final_prog2/assets/effects/heal.png",
+                 'BOMB': "final_prog2/assets/effects/bomb.png",
+                 'GREED': "final_prog2/assets/effects/greed.png"}
     
     __EFFECTS_OFFSET = {'AURA_GOBLIN': (105, 150),
                     'AURA_DARK': (50, 80),
@@ -85,13 +88,17 @@ class Configs:
                     'DOOM': (-100, -220),
                     'P_FIRE': (130, 200),
                     'P_THUNDER': (140, 50),
-                    'P_INSTINCT': (130, 230),
+                    'P_INSTINCT': (-6, 10),
                     'MINOTAUR1': (230, 90),
                     'MINOTAUR2': (230, 90),
                     'EVIL': (-100, -100),
                     'HASTE': (0,0),
-                    'CURSE': (-37,-37)
+                    'CURSE': (-37,-37),
+                    'HEAL': (-160, -200),
+                    'BOMB': (70, 70),
+                    'GREED': (170, 270)
                     }
+
 
     __MONS = {'SLIME': "final_prog2/assets/mobs/slime.png",
               'GOBLIN': "final_prog2/assets/mobs/goblin.png",
