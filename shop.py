@@ -6,7 +6,6 @@ from spritesheet import SpriteSheet
 
 class Shop:
     def __init__(self, screen):
-        self.__font = pg.font.Font(None, 30)
         self.__screen = screen
         self.icon_names = ["sword", "knife", "hammer", "potion", "hpotion", "xpotion", "drum", "greed", "bomb"]
 

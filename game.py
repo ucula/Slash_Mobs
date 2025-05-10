@@ -3,6 +3,7 @@ import monster
 from ui import AllUI
 from config import Configs
 from shop import Shop
+from item import Item_TMP
 import pygame as pg
 import random
 
@@ -18,7 +19,7 @@ class Game:
                            "CAVE": [0.4, 0.3, 0.3]}
 
         self.__player = Player(self.__screen, name="Ucula")
-
+        self.__item = Item_TMP
         self.__ui = AllUI(self.__screen)
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
@@ -44,9 +45,9 @@ class Game:
         # self.__scene = "HALL"
         # self.__scene = "SHOP"
         # self.__scene = "PLAIN"
-        # self.__scene = "DESERT"
+        self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        self.__scene = "CAVE"
+        # self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
@@ -55,12 +56,6 @@ class Game:
         self.__help = True
 
         # for Shop
-        self.potion_count = 0
-        self.hipotion_count = 0
-        self.xpotion_count = 0
-        self.battledrum_count = 0
-        self.greedbag_count = 0
-        self.bomb_count = 0
         self.__just_buy = False
 
         # for check combat status
@@ -71,7 +66,7 @@ class Game:
         self.__open_item = False
 
         # For item menu
-        self.inde = 0
+        self.__index = 0
 
         # for player
         self.__player_turn = False
@@ -89,7 +84,15 @@ class Game:
         self.__evade = None
         self.__already_place_mob = False
         self.__is_skill_animating = False
-        
+    
+    def manage_item(self, item=None, name=None):
+        if name is None:
+            name = item.name
+
+        for item in list(self.__player.items.keys()):
+            if name == item:
+                self.__player.items[name].count += 1
+
     # Reset Combat
     def reset(self):
         self.__combat = False
@@ -553,7 +556,8 @@ class Game:
                 if not self.__open_item:
                     self.__ui.draw_gui_combat(self.__player)
                 else:
-                    self.__ui.draw_item_menu()
+                    self.__ui.draw_item_menu(self.__player)
+                    self.__ui.draw_selector(self.__index)
 
             elif self.__pstate == "ATTACKING":
                 self.p_action()
@@ -595,25 +599,7 @@ class Game:
         # Show healh bar for player in combat
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
-        
-        # print(self.__mobs.skill_chances)
-    def manage_item(self, item=None, name=None):
-        if name is None:
-            name = item.name
 
-        if name == "Potion":
-            self.potion_count += 1
-        elif name == "Hi_Potion":
-            self.hipotion_count += 1
-        elif name == "X-Potion":
-            self.xpotion_count += 1
-        elif name == "Drum":
-            self.battledrum_count += 1
-        elif name == "Loot bag":
-            self.greedbag_count += 1
-        elif name == "Bomb":
-            self.bomb_count += 1
-    
     def open_shop(self):
         self.__shop = True
         self.__enable_walk = False
@@ -707,14 +693,23 @@ class Game:
                     elif self.__open_item:
                         if e.key == pg.K_i:
                             self.__open_item = False
-                        elif e.key == pg.K_w:
-                            self.index += 1
-                        elif e.key == pg.K_s:
-                            self.index -= 1
-                        elif e.key == pg.K_a:
-                            self.index += 2
-                        elif e.key == pg.K_d:
-                            self.index -= 2
+                        elif e.key == pg.K_RIGHT:
+                            self.__index += 1
+                            if self.__index > 5:
+                                self.__index = 0
+                        elif e.key == pg.K_LEFT:
+                            self.__index -= 1 
+                            if self.__index < 0:
+                                self.__index = 5
+
+                        elif e.key == pg.K_SPACE:
+                            viable, item = self.__item.use(self.__player, self.__index)
+                            if viable:
+                                if item.type == "heal":
+                                    self.__pselect = "HEAL"
+                                else:
+                                    self.__pselect = "MISC"
+                                self.__pstate = "ATTACKING"
                         
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:

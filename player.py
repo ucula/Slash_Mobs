@@ -1,6 +1,7 @@
 from ui import AllUI
 from config import Configs
 from spritesheet import SpriteSheet
+import item
 import pygame as pg
 import random
 
@@ -13,10 +14,10 @@ class Player:
         # Base stats
         self.max_health = 1000
         self.health = self.max_health
-        self.level = 1
+        self.level = 10
         self.exp = 0
         self.exp_threshold = 30
-        self.coin = 0
+        self.coin = 1000
         self.damage = 70000
         self.evasion = 0.2
         self.weapon = None
@@ -42,7 +43,10 @@ class Player:
         # Player's starter skill set
         self.attacks = {"ATTACK": self.attack,
                         "RUN": self.run,
-                        "DEFEND": self.defend}
+                        "DEFEND": self.defend,
+                        "HEAL": self.heal,
+                        "MISC": self.misc}
+        
         self.save_stats = {}
         self.is_damage = False
         self.already_boost = False
@@ -82,6 +86,14 @@ class Player:
                        "SNOW": self.check_lim_snow,
                        "CAVE": self.check_lim_cave}
         self.create_walk()
+        self.check_unlock_skill()
+
+        self.items = {'Potion': item.Potion(),
+                      'H-potion': item.Hi_Potion(),
+                      "X-potion": item.X_Potion(),
+                      "Battle drum": item.Battle_drum(),
+                      "Bag of greed": item.Greed_bag(),
+                      "Bomb": item.Bomb()}
 
     """
     :Status series:
@@ -90,16 +102,16 @@ class Player:
     """
     def check_unlock_skill(self):
         # Quick unlock change all == to >=
-        if self.level == 5:
+        if self.level >= 5:
             self.skill1_unlock = True
             self.attacks["STEAL"] = self.steal
-        if self.level == 10:
+        if self.level >= 10:
             self.skill2_unlock = True
             self.attacks["FIRE"] = self.fire
-        if self.level == 15:
+        if self.level >= 15:
             self.skill3_unlock = True
             self.attacks["THUNDER"] = self.thunder
-        if self.level == 20:
+        if self.level >= 20:
             self.skill4_unlock = True
             self.attacks["INSTINCT"] = self.hunter_instinct
 
@@ -208,6 +220,9 @@ class Player:
             for i in range(10):
                 self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 128, 2.5, Configs.get('BLACK')))
     
+    def create_heal(self):
+        pass
+
     """
     :Skill series:
 
@@ -251,6 +266,16 @@ class Player:
         animating = self.attack()
         if not animating:
             self.tmp = random.choices(list(self.steal_chances.keys()), list(self.steal_chances.values()))[0]
+            return False
+        return True
+    
+    def heal(self):
+        if 1 != 2:
+            return False
+        return True
+    
+    def misc(self):
+        if 1 != 2:
             return False
         return True
     

@@ -1,47 +1,53 @@
 class Item_TMP:
-    # Items = []
     def __init__(self, price, name, type):
         self.price = price
         self.name = name
-
+        self.count = 1
         self.type = type
-        self.save = ()
-    
+        self.heal = 0
+
     @staticmethod
     def draw_item(screen, image, rect):
         screen.blit(image, rect)
+
+    def use(self, player, index):
+        item = list(player.items.values())[index]
+        if self.count < 1:
+            return False, None 
+        self.count -= 1
+        return True, item
     
 class Potion(Item_TMP):
-    def __init__(self, price=2, name="Potion", type="item"):
+    def __init__(self, price=2, name="Potion", type="heal"):
         super().__init__(price, name, type)
         self.heal = 10
 
 class Hi_Potion(Item_TMP):
-    def __init__(self, price=10, name="Hi-Potion", type="item"):
+    def __init__(self, price=10, name="Hi-Potion", type="heal"):
         super().__init__(price, name, type)
         self.heal = 100
 
 class X_Potion(Item_TMP):
-    def __init__(self, price=25, name="X-Potion", type="item"):
+    def __init__(self, price=25, name="X-Potion", type="heal"):
         super().__init__(price, name, type)
         self.heal = 500
 
 class Battle_drum(Item_TMP):
-    def __init__(self, price=4, name="Drum", type="item"):
+    def __init__(self, price=4, name="Battle drum", type="misc"):
         super().__init__(price, name, type)
 
     def up_stats(self, player=None):
         player.damage *= 2
 
 class Bomb(Item_TMP):
-    def __init__(self, price=8, name="Bomb", type="item"):
+    def __init__(self, price=8, name="Bomb", type="misc"):
         super().__init__(price, name, type)
     
     def damage(self, monster=None):
         monster.health -= monster.health*0.5
 
 class Greed_bag(Item_TMP):
-    def __init__(self, price=8, name="Loot bag", type="item"):
+    def __init__(self, price=8, name="Bag of greed", type="misc"):
         super().__init__(price, name, type)
 
 class Sword(Item_TMP):

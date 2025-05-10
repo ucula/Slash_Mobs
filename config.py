@@ -131,7 +131,7 @@ class Configs:
                 "SKILL_DISPLAY": ("BLACK", "WHITE", 0, 0, 800, 50, 3, 5),
                 "SHOP": ('BLACK', 'CREAMY', 100, 100, 600, 400, 3, 5),
                 "COIN_BOX": ('BLACK', 'CREAMY', 600, 0, 800, 60, 3, 5),
-                "ITEM_MENU": ('WHITE', 'BLACK', )}
+                "ITEM_TIP": ('BLACK', 'CREAMY', 197, 372, 400, 75, 3, 5)}
     
     __ITEM = {"sword": "final_prog2/assets/items/longsword.png",
               "knife": "final_prog2/assets/items/knife.png",

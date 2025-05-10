@@ -117,7 +117,8 @@ class AllUI:
     """
     :Combat series:
     """
-    def draw_item_menu(self):
+    def draw_item_menu(self, player):
+        settings = Configs.ui_pos("ITEM_TIP")
         pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), self.box_pos)
         posx = 200
@@ -127,9 +128,29 @@ class AllUI:
         for i in range(4):
             pg.draw.rect(self.__screen, Configs.get('WHITE'), (posx*i, 525, self.box_width, self.box_height), self.box_border)
 
+        for j in range(2):
+            for i in range(3):
+                y = 487.5
+                name = list(player.items.keys())[i+3*j]
+                count = player.items[name].count
+                AllUI.animate_text_center(self.__screen, f"{name} ({count})", "WHITE", 100+i*200, y+j*74.5)
+        AllUI.animate_text_center(self.__screen, "Go back (I)", "WHITE", 700 , 487.5)
+        AllUI.animate_text_center(self.__screen, "Select (Space)", "WHITE", 700 , 562.5)
+        AllUI.create_box(self.__screen, settings)
+        AllUI.animate_text_center(self.__screen, "Move with (LEFT) (RIGHT)", "BLACK", 397 , 409.5)
+
     def draw_selector(self, index):
-        # if index
-        pass
+        posx = 200
+        posy = 450
+        if index in (3, 4, 5):
+            posy = 525
+        if index == 3:
+            index = 0
+        elif index == 4:
+            index = 1
+        elif index == 5:
+            index = 2
+        pg.draw.rect(self.__screen, Configs.get('RED'), (posx*index, posy, self.box_width, self.box_height), self.box_border)
 
     # Draw damage above player and mob's head after damage calculation
     def draw_damage(self, turn, player, monster, evade=None):
