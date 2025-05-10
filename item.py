@@ -8,8 +8,8 @@ class Item_TMP:
         self.save = ()
     
     @staticmethod
-    def draw_item(screen, image, x, y):
-        screen.blit(image, (x, y))
+    def draw_item(screen, image, rect):
+        screen.blit(image, rect)
     
 class Potion(Item_TMP):
     def __init__(self, price=2, name="Potion", type="item"):

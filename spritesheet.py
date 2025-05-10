@@ -30,11 +30,7 @@ class SpriteSheet:
         image.set_colorkey(color)
         return image
     
-    def get_item(self, cords: tuple, frame, width, height, scale, color, row=0):
-        image = pg.Surface((width, height)).convert_alpha()
-        image.blit(self.sheet, cords, (width*row, (frame * height), width, height))
-
+    def get_item(self, image, width, height, scale):
         image = pg.transform.scale(image, (width * scale, height * scale))
-        image.set_colorkey(color)
         return image
     

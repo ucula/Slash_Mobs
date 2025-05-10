@@ -8,6 +8,7 @@ class Shop:
     def __init__(self, screen):
         self.__font = pg.font.Font(None, 30)
         self.__screen = screen
+        self.icon_names = ["sword", "knife", "hammer", "potion", "hpotion", "xpotion", "drum", "greed", "bomb"]
 
         self.potion = item.Potion()
         self.hi_potion = item.Hi_Potion()
@@ -45,53 +46,29 @@ class Shop:
         settings = Configs.ui_pos("COIN_BOX")
         ui.AllUI.create_box(self.__screen, settings)
         ui.AllUI.animate_text_center(self.__screen, f"Coin: {player.coin:.0f}", "BLACK", 700, 30)
+
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.longsword.name} {self.longsword.price}$ (1)", "BLACK", 105, 116.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.knife.name} {self.knife.price}$ (2)", "BLACK", 305, 116.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.hammer.name} {self.hammer.price}$ (3)", "BLACK", 505, 116.5)
+
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.potion.name} {self.potion.price}$ (4)", "BLACK", 105, 249.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.hi_potion.name} {self.hi_potion.price}$ (5)", "BLACK", 305, 249.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.x_potion.name} {self.x_potion.price}$ (6)", "BLACK", 505, 249.5)
+
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.battle_drum.name} {self.battle_drum.price}$ (7)", "BLACK", 105, 382.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.greed.name} {self.greed.price}$ (8)", "BLACK", 305, 382.5)
         ui.AllUI.animate_text_topleft(self.__screen, f"{self.bomb.name} {self.bomb.price}$ (9)", "BLACK", 505, 382.5)
-    
-    def sword_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-        item.Item_TMP.draw_item()
 
-    def knife_icon(self):
-        image = pg.image.load(Configs.item("knife")).convert_alpha()
-        image = SpriteSheet(image)
+        self.icons()
+        
 
-    def hammer_icon(self):
-        image = pg.image.load(Configs.item("hammer")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def potion_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def hpotion_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def xpotion_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def drum_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def greed_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
-    def bomb_icon(self):
-        image = pg.image.load(Configs.item("sword")).convert_alpha()
-        image = SpriteSheet(image)
-
+    def icons(self):
+        for j in range(3):
+            for i in range(3):
+                image = pg.image.load(Configs.item(self.icon_names[i+3*j])).convert_alpha()
+                image = SpriteSheet(image).get_item(image, 32, 32, 2)
+                image_rect = image.get_rect(center=(200+i*200, 180+j*133))
+                item.Item_TMP.draw_item(self.__screen, image, image_rect)
 
     def buy(self, player, select=None):
         if select == 49:
