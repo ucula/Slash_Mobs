@@ -81,8 +81,10 @@ class AllUI:
             self.curtain = 0
             return True
         
-    # Normal scene series 
-    # Help box at top left of sccreen
+    """
+    :Normal scene series: 
+    """
+    # Help box at top left of screen
     def draw_help(self, shop=False):
         settings = Configs.ui_pos("HELP")
         AllUI.create_box(self.__screen, settings)    
@@ -90,7 +92,7 @@ class AllUI:
             AllUI.animate_text_topleft(self.__screen,message=f"Press \"E\" to open shop", color='BLACK', x=10, y=30)
         AllUI.animate_text_topleft(self.__screen, message=f"Press \"I\" to open status", color='BLACK', x=10, y=10)
 
-    # Status window for mnormal scene
+    # Status window for normal scene
     def draw_status_window(self, player):
         x1 = 200
         x2 = 400
@@ -112,7 +114,9 @@ class AllUI:
         elif player.weapon is not None:
             AllUI.animate_text_topleft(self.__screen, message=f"Weapon: {player.weapon.name}", color="BLACK", x=c1, y=c2+(7*offset))
 
-    # Combat series
+    """
+    :Combat series:
+    """
     # Draw damage above player and mob's head after damage calculation
     def draw_damage(self, turn, player, monster, evade=None):
         font = pg.font.SysFont(None, 48)
@@ -133,7 +137,9 @@ class AllUI:
                 AllUI.animate_text_center(self.__screen, f"{monster.atk_tmp:.0f}", 'BLACK', player.x+35, player.y-10, font)
                 AllUI.animate_text_center(self.__screen, f"{monster.atk_tmp:.0f}", 'RED', player.x+39, player.y-10, font)
 
-    # Draw summarization of battle (exp and money droped or whether player level up or not)
+    """
+    Draw summarization of battle (exp and money droped or whether player level up or not)
+    """
     def draw_summary(self, drops, player, up):
         pg.draw.rect(self.__screen, Configs.get('BLACK'), (0, 0, 800, 120), 5)
         pg.draw.rect(self.__screen, Configs.get('WHITE'), (3, 3, 794, 114))
@@ -149,7 +155,9 @@ class AllUI:
         AllUI.create_box(self.__screen, settings)
         AllUI.animate_text_center(self.__screen, f"Health: {player.health:.0f}/{player.max_health:.0f}", "RED", 700, 412.5)     
 
-    # For displaying what skill is being used by mob or how does that skill affect player or the mob itself
+    """
+    For displaying what skill is being used by mob or how does that skill affect player or the mob itself
+    """
     def draw_skill_display(self, message=None):
         settings = Configs.ui_pos("SKILL_DISPLAY")
         AllUI.create_box(self.__screen, settings)
@@ -198,6 +206,7 @@ class AllUI:
 
         else:
             y = [487.5, 562.5]
+
         # Cursed
             AllUI.animate_text_center(self.__screen, "CURSED", "RED", 100, 562.5)
             step = 200

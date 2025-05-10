@@ -66,7 +66,7 @@ class Longsword(Item_TMP):
         player.health = round(player.health, 0)
 
 class Hammer(Item_TMP):
-    def __init__(self, price=50, name="Hammmer", type="weapon"):
+    def __init__(self, price=50, name="Hammer", type="weapon"):
         super().__init__(price, name, type)
     
     def up_stats(self, player=None):

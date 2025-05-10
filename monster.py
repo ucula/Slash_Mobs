@@ -13,7 +13,6 @@ class Monster_TMP:
 
     def __init__(self, screen, x_off=0, y_off=0, x=0, y=0, name="", health=0, damage=0, level=0, evasion=0,
                 steps=0, size=0, pixel=0, exp=0, coin=0):
-        
         self.screen = screen
         # Mob's coords in every scenarios ex. combat, normal
         self.x = x

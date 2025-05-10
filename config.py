@@ -128,7 +128,9 @@ class Configs:
     __UI_POS = {"HELP": ('BLACK', 'CREAMY', 0, 0, 250, 60, 3, 5),
                 "HEALTH": ('WHITE', 'BLACK', 600, 375, 200, 75, 3, 5),
                 "STATUS": ('BLACK', 'CREAMY', 200, 200, 400, 300, 3, 5),
-                "SKILL_DISPLAY": ("BLACK", "WHITE", 0, 0, 800, 50, 3, 5)}
+                "SKILL_DISPLAY": ("BLACK", "WHITE", 0, 0, 800, 50, 3, 5),
+                "SHOP": ('BLACK', 'CREAMY', 100, 100, 600, 400, 3, 5),
+                "COIN_BOX": ('BLACK', 'CREAMY', 600, 0, 800, 60, 3, 5)}
     
     __ITEM = {"sword": "final_prog2/assets/longsword.png",
               "knife": "final_prog2/assets/knife.png",

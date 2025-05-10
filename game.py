@@ -41,11 +41,11 @@ class Game:
         self.__before = None
 
         # self.__scene = "HALL"
-        # self.__scene = "SHOP"
+        self.__scene = "SHOP"
         # self.__scene = "PLAIN"
         # self.__scene = "DESERT"
         # self.__scene = "SNOW"
-        self.__scene = "CAVE"
+        # self.__scene = "CAVE"
 
         self.__enter_scene = False
         self.__enable_walk = True
