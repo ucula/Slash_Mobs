@@ -11,24 +11,26 @@ class Player:
         self.name = name
         self.max_health = 500 
         self.health = self.max_health
-        self.level = 1
+        self.level = 5
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 0
+        self.damage = 1000
         self.evasion = 0.2
         self.weapon = None
-        self.skill1_status = False
-        self.skill2_status = False
-        self.skill3_status = False
-        self.skill4_status = False
+        self.skill1_unlock = False
+        self.steal_count = 0
+        self.skill2_unlock = False
+        self.skill3_unlock = False
+        self.skill4_unlock = False
         self.steal_chances = {"Potion": 0.6,
-                             "Hi-Potion": 0.1,
-                             "Loot bag": 0.3}
+                             "Hi-Potion": 0.5,
+                             "Loot bag": 0.5}
         self.attacks = {"ATTACK": self.draw_attack,
                         "RUN": self.draw_walk_out,
                         "DEFEND": self.defend}
-        self.save_stats = {"Evasion": None}
+        self.save_stats = None
+        self.tmp = None
         # spawnpoint
         self.x = 366
         self.y = 460
@@ -56,6 +58,7 @@ class Player:
                        "SNOW": self.check_lim_snow,
                        "CAVE": self.check_lim_cave}
         self.create_walk()
+        self.check_unlock_skill()
 
     def defend(self):
         self.save_stats["Evasion"] = self.evasion
@@ -108,11 +111,11 @@ class Player:
     def reset_stats(self):
         self.max_health = 20
         self.health = self.max_health
-        self.level = 1
-        self.exp = 0
+        self.level = 4
+        self.exp = 29
         self.exp_threshold = 30
         self.coin = 0
-        self.damage = 10
+        self.damage = 1000
         self.evasion = 0.2
         self.skill1_status = False
         self.skill2_status = False
@@ -130,9 +133,28 @@ class Player:
             self.exp = remain
             self.max_health += 5
             self.health = self.max_health
+            self.check_unlock_skill()
             return True
         return False
 
+    def steal(self):
+        animating = self.draw_attack()
+        if not animating:
+            self.tmp = random.choices(list(self.steal_chances.keys()), list(self.steal_chances.values()))[0]
+            return False
+        return True
+
+    def check_unlock_skill(self):
+        if self.level >= 5:
+            self.skill1_unlock = True
+            self.attacks["STEAL"] = self.steal
+        if self.level >= 10:
+            self.skill2_unlock = True
+        if self.level >= 15:
+            self.skill3_unlock = True
+        if self.level >= 20:
+            self.skill4_unlock = True
+        
     def roll_evasion(self):
         return random.choices([False, True], [1-self.evasion,self.evasion])[0]
 
@@ -256,16 +278,19 @@ class Player:
                     for i in range(self.animation_steps):
                         self.walk_animations[move[j]].append(sprite_sheet.get_walk((0, 0), i, 24, 24, self.size, Configs.get('MAGENTA'), j))
 
-    def draw_walk(self):
-        current_time = pg.time.get_ticks()
-        if current_time - self.last_up >= self.cool_down:
-            self.frame += 1
-            self.last_up = current_time
-            if self.frame >= len(self.walk_animations[self.direction]):
-                self.frame = 0
+    def draw_walk(self, direction=None):
+        if direction is not None:
+            self.screen.blit(self.walk_animations[direction][self.frame], (self.x, self.y))  
+        else:
+            current_time = pg.time.get_ticks()
+            if current_time - self.last_up >= self.cool_down:
+                self.frame += 1
+                self.last_up = current_time
+                if self.frame >= len(self.walk_animations[self.direction]):
+                    self.frame = 0
 
-        self.screen.blit(self.walk_animations[self.direction][self.frame], (self.x, self.y))  
-    
+            self.screen.blit(self.walk_animations[self.direction][self.frame], (self.x, self.y))  
+        
     def draw_walk_in_combat(self):
         current_time = pg.time.get_ticks()
         if current_time - self.last_up >= self.cool_down:
@@ -279,5 +304,8 @@ class Player:
     def draw_idle_in_combat(self):
         self.screen.blit(self.walk_animations["LEFT"][0], (self.x, self.y)) 
     
-    def draw_idle(self):
-        self.screen.blit(self.walk_animations[self.direction][0], (self.x, self.y)) 
+    def draw_idle(self, direction=None):
+        if direction is not None:
+            self.screen.blit(self.walk_animations[direction][0], (self.x, self.y)) 
+        else:
+            self.screen.blit(self.walk_animations[self.direction][0], (self.x, self.y)) 

@@ -19,9 +19,9 @@ class Game:
         self.__shopee = Shop(self.__screen)
         self.__hostile_areas = ["PLAIN", "DESERT", "SNOW", "CAVE"]
         self.__mob_rate = {"PLAIN": [0, 0.3, 0],
-                           "DESERT": [0, 1, 0],
+                           "DESERT": [1, 0, 0],
                            "SNOW": [0, 1, 0],
-                           "CAVE": [0.4, 0, 0]}
+                           "CAVE": [0, 0, 1]}
         self.__mobs = None
 
         # for main loop
@@ -102,6 +102,7 @@ class Game:
         self.__scene_manager = "CHANGING"
         self.__help = True
         self.__player.direction = 'DOWN'
+        self.__player.steal_count = 0
    
     # Delays
     def delay(self, limit):
@@ -336,6 +337,7 @@ class Game:
         if not self.__is_skill_animating:
             self.__mobs.draw_monster()
             self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
+
     # Non-combat
     def normal_scene(self):
         self.__player.save()
@@ -428,9 +430,16 @@ class Game:
 
     def p_calculate_stage(self):
         self.__move_combat = False
-        self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
-        if not self.delay(self.__turn_delay):
-            self.__pstate = "CHANGE_TURN"
+        if self.__pselect == "STEAL":
+            item = self.__player.tmp
+            self.__ui.draw_skill_display(f"Stole {item}!")             
+            if not self.delay(1500):
+                self.manage_item(name=item)
+                self.__pstate = "CHANGE_TURN"
+        elif self.__pselect != "STEAL":
+            self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
+            if not self.delay(self.__turn_delay):
+                self.__pstate = "CHANGE_TURN"
 
     def m_calculate_stage(self):
         if self.__mobs.a_damage or self.__mobs.s_damage:
@@ -445,7 +454,7 @@ class Game:
         self.__player_turn = False
         self.__mob_turn = True
         self.__time_lock = False
-        if not self.__evade and self.__pselect != "DEFEND":
+        if not self.__evade and self.__pselect != "DEFEND" and self.__pselect != "STEAL":
             self.__mobs.health -= self.__player.damage
         self.__pstate = "IDLE"
         if self.__mobs.health <= 0:
@@ -509,7 +518,7 @@ class Game:
         # Player's turn
         if self.__player_turn:
             if self.__pstate == "IDLE":
-                self.__ui.draw_gui_combat()
+                self.__ui.draw_gui_combat(self.__player)
 
             elif self.__pstate == "ATTACKING":
                 self.p_action()
@@ -548,19 +557,21 @@ class Game:
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
         
-    def manage_item(self, item):
-        tmp = item.name
-        if tmp == "Potion":
+    def manage_item(self, item=None, name=None):
+        if name is None:
+            name = item.name
+
+        if name == "Potion":
             self.potion_count += 1
-        elif tmp == "Hi_Potion":
+        elif name == "Hi_Potion":
             self.hipotion_count += 1
-        elif tmp == "X-Potion":
+        elif name == "X-Potion":
             self.xpotion_count += 1
-        elif tmp == "Drum":
+        elif name == "Drum":
             self.battledrum_count += 1
-        elif tmp == "Loot bag":
+        elif name == "Loot bag":
             self.greedbag_count += 1
-        elif tmp == "Bomb":
+        elif name == "Bomb":
             self.bomb_count += 1
     
     def open_shop(self):
@@ -627,13 +638,19 @@ class Game:
                 if e.type == pg.KEYDOWN:
                     if e.key == pg.K_z:
                         self.__pselect = "ATTACK"
+                        self.__pstate = "ATTACKING"
                     elif e.key == pg.K_r:
                         self.__pselect = "RUN"
+                        self.__pstate = "ATTACKING"
                     elif e.key == pg.K_d:
                         self.__pselect = "DEFEND"
                         self.__revert_stat = True
-                    self.__pstate = "ATTACKING"
-            
+                        self.__pstate = "ATTACKING"
+                    elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_x:
+                        self.__pselect = "STEAL"
+                        self.__player.steal_count += 1
+                        self.__pstate = "ATTACKING"
+                        
             if self.__pstate == "SUMMARY" :
                 if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
                     self.__pstate = "ENDING"

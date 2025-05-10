@@ -132,7 +132,7 @@ class AllUI:
         rect = text.get_rect(center=(420, 25))
         self.__screen.blit(text, rect)
 
-    def draw_gui_combat(self):
+    def draw_gui_combat(self, player):
         pg.draw.polygon(self.__screen, Configs.get('GREEN'), self.player_arrow)
         pg.draw.rect(self.__screen, Configs.get('BLACK'), self.box_pos)
         posx = 200
@@ -148,9 +148,20 @@ class AllUI:
         item_text, item_rect = AllUI.animate_text_center("Item (I)", "WHITE",300, 562.5)
 
         skill1_text, skill1_rect = AllUI.animate_text_center("Locked", "WHITE", 500, 487.5)
+        if player.skill1_unlock:
+            skill1_text, skill1_rect = AllUI.animate_text_center(f"Steal (X) ({player.steal_count}/2)", "WHITE", 500, 487.5)
+
         skill2_text, skill2_rect = AllUI.animate_text_center("Locked", "WHITE", 500, 562.5)
+        if player.skill2_unlock:
+            skill2_text, skill2_rect = AllUI.animate_text_center("Fire (C)", "WHITE", 500, 562.5)
+
         skill3_text, skill3_rect = AllUI.animate_text_center("Locked", "WHITE", 700, 487.5)
+        if player.skill3_unlock:
+            skill3_text, skill3_rect = AllUI.animate_text_center("Thunder (V)", "WHITE", 700, 487.5)
+
         skill4_text, skill4_rect = AllUI.animate_text_center("Locked", "WHITE", 700, 562.5)
+        if player.skill4_unlock:
+            skill4_text, skill4_rect = AllUI.animate_text_center("Instinct (B)", "WHITE", 700, 562.5)
 
         self.__screen.blit(atk_text, atk_rect)
         self.__screen.blit(run_text, run_rect)
@@ -193,6 +204,3 @@ class AllUI:
         self.__screen.blit(exp_text, exp_rect)
         self.__screen.blit(coin_text, coin_rect)
         self.__screen.blit(weapon_text, weapon_rect)
-
-        player.draw_walk_down()
-        self.__screen.blit(player.animation_down[player.frame], (x1, y2+125))

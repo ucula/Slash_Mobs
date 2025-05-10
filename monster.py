@@ -171,7 +171,7 @@ class Monster_TMP:
             if self.frame >= len(self.animation):
                 self.frame = 0
         for i in range(self.animation_steps):
-            self.animation.append(sprite_sheet.get_monster((0, 0), i, self.pixel, self.pixel, self.size, Configs.get('BLACK')))
+            self.animation.append(sprite_sheet.get_monster((0, 0), i, self.pixel, self.pixel, self.size, Configs.get('TRANSPARENT')))
     
     def draw_mob_info(self):
         pg.draw.rect(self.screen, Configs.get('BLACK'), (250, 180, self.prep_size, self.prep_size), width=5, border_radius=10)
@@ -255,7 +255,7 @@ class Monster_TMP:
     def create_crunch(self):
         sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
         sprite_sheet1 = SpriteSheet(sprite_sheet_image1)
-        sprite_sheet_image2 = pg.image.load(Configs.effects(self.name)).convert_alpha()
+        sprite_sheet_image2 = pg.image.load(Configs.monster(self.name)).convert_alpha()
         sprite_sheet2 = SpriteSheet(sprite_sheet_image2)
 
         if len(self.effects) <= 0:
@@ -309,7 +309,7 @@ class Monster_TMP:
         self.s_damage = True
         dmg = player.health - 1
         self.atk_tmp = dmg
-        if not self.draw_effects(eff='DOOM', lim=50, target=player):
+        if not self.draw_effects(eff='DOOM', lim=25, target=player):
             return False
         return True
     
@@ -440,15 +440,17 @@ class Purple_worm(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       'THUNDER': self.thunder}
+                       'THUNDER': self.thunder,
+                       'CRUNCH': self.crunch}
         # self.attack_rate = 0.5 #0.5
         # self.run_rate = 0.1 #0.1
         # self.thunder_rate = 0.4
 
         self.attack_rate = 0
         self.run_rate = 0
-        self.thunder_rate = 0.4
-        self.skill_chances = [self.attack_rate, self.run_rate, self.thunder_rate]
+        self.thunder_rate = 0
+        self.crunch_rate = 0.4
+        self.skill_chances = [self.attack_rate, self.run_rate, self.thunder_rate, self.crunch_rate]
 
 class Minotaur1(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR1", health=100, damage=10, level=8, evasion=0.2,
@@ -505,7 +507,9 @@ class Vampire1(Monster_TMP):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
                        'RUN': self.draw_monster_flee,
-                       "DOOM": self.doom}
+                       'DOOM': self.doom,
+                       'FIRE': self.fire,
+                       'CRUNCH': self.crunch}
         
         # self.attack_rate = 0.79#  0.7 
         # self.run_rate = 0.05 # 0.05 
@@ -513,9 +517,34 @@ class Vampire1(Monster_TMP):
 
         self.attack_rate = 0
         self.run_rate = 0
-        self.doom_rate = 0.01
+        self.doom_rate = 0
+        self.fire_rate = 0
+        self.crunch_rate = 0.1
 
-        self.skill_chances = [self.attack_rate, self.run_rate, self.doom_rate]
+        self.skill_chances = [self.attack_rate, self.run_rate, self.doom_rate, self.fire_rate, self.crunch_rate]
+    
+    def create_crunch(self):
+        sprite_sheet_image1 = pg.image.load(Configs.effects(self.name)).convert_alpha()
+        sprite_sheet1 = SpriteSheet(sprite_sheet_image1)
+        sprite_sheet_image2 = pg.image.load(Configs.monster(self.name)).convert_alpha()
+        sprite_sheet2 = SpriteSheet(sprite_sheet_image2)
+
+        if len(self.effects) <= 0:
+            for i in range(3):
+                self.effects.append(sprite_sheet2.get_effects((0, 0), i, 128, 128, 1, Configs.get('TRANSPARENT')))
+            for i in range(5):
+                self.effects.append(sprite_sheet1.get_effects((0, 0), i, 128, 128, 1, Configs.get('TRANSPARENT')))
+            for i in range(3):
+                self.effects.append(sprite_sheet2.get_effects((0, 0), i, 128, 128, 1, Configs.get('TRANSPARENT')))
+    
+    def crunch(self, player):
+        self.create_crunch()
+        self.s_damage = True
+        dmg = self.damage//(self.health/10)
+        self.atk_tmp = dmg
+        if not self.draw_skill_attack(player, lim=75):
+            return False
+        return True
 
 class Vampire2(Monster_TMP):
     def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=10, evasion=0.4,

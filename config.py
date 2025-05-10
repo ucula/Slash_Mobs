@@ -13,6 +13,7 @@ class Configs:
         'GREEN': (0, 255, 0),
         'RED': (255, 0, 0),
         'CREAMY': (242, 217, 174),
+        'TRANSPARENT': (1, 2, 3),
         'MOB_x': 100,
         'MOB_y': 160
         }
@@ -71,7 +72,8 @@ class Configs:
     __EFFECTS_OFFSET = {'GOBLIN': (105, 150),
                     'DARK': (50, 80),
                     'BLUE': (230, 120),
-                    'PURPLE': (0, 0),
+                    'PURPLE': (230, 120),
+                    'VAMPIRE1': (200, 100),
                     'FIRE': (-60, -130),
                     'THUNDER': (-47, -240),
                     'GRAVITY': (-60, -120),
