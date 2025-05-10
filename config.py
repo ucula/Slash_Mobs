@@ -69,7 +69,8 @@ class Configs:
                  "PURPLE": "final_prog2/assets/purple_attack.png", 
                  "VAMPIRE1": "final_prog2/assets/vampire1_attack.png",
                  "MINOTAUR1": "final_prog2/assets/minotaur1_attack.png",
-                 "MINOTAUR2": "final_prog2/assets/minotaur2_attack.png"}
+                 "MINOTAUR2": "final_prog2/assets/minotaur2_attack.png",
+                 'EVIL': "final_prog2/assets/evil.png"}
     
     __EFFECTS_OFFSET = {'GOBLIN': (105, 150),
                     'DARK': (50, 80),
@@ -85,6 +86,7 @@ class Configs:
                     'P_INSTINCT': (130, 230),
                     'MINOTAUR1': (230, 90),
                     'MINOTAUR2': (230, 90),
+                    'EVIL': (-100, -100)
                     }
 
     __MONS = {'SLIME': "final_prog2/assets/slime.png",

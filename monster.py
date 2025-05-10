@@ -295,7 +295,12 @@ class Monster_TMP:
                 self.effects.append(sprite_sheet2.get_effects((0, 0), i, 128, 128, 1, Configs.get('BLACK')))
 
     def create_evil(self):
-        pass
+        sprite_sheet_image = pg.image.load(Configs.effects("EVIL")).convert_alpha()
+        sprite_sheet = SpriteSheet(sprite_sheet_image)
+        if len(self.effects) <= 0:
+            for j in range(5):
+                for i in range(6):
+                    self.effects.append(sprite_sheet.get_effects((0, 0), i, 256, 256, 1, Configs.get('BLACK'), j))
 
     # Skill series          
     def hunter_instinct(self, a):
@@ -380,6 +385,7 @@ class Monster_TMP:
         return True
     
     def evil_sword(self, player):
+        self.create_evil()
         if not player.run_lock:
             print("lock")
             player.run_lock = True
@@ -388,7 +394,7 @@ class Monster_TMP:
         dmg = 0
         self.atk_tmp = dmg
         self.skill_chances['EVIL SWORD'] = 0
-        if not self.draw_effects(eff='EVIL', lim=50):
+        if not self.draw_effects(eff='EVIL', lim=0, target=player):
             self.effects.clear()
             return False
         return True
