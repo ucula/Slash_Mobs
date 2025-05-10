@@ -9,13 +9,13 @@ class Player:
         self.screen = screen
         self.ui = AllUI(screen)
         self.name = name
-        self.max_health = 500 
+        self.max_health = 500
         self.health = self.max_health
         self.level = 20
         self.exp = 0
         self.exp_threshold = 30
         self.coin = 1000
-        self.damage = 1000
+        self.damage = 10
         self.evasion = 0.2
         self.weapon = None
         self.skill1_unlock = False
@@ -31,8 +31,7 @@ class Player:
                         "DEFEND": self.defend}
         self.save_stats = {}
         self.tmp = None
-        self.s_damage = False
-        self.a_damage = False
+        self.is_damage = False
         self.atk_tmp = 0
         self.already_boost = False
 
@@ -86,13 +85,13 @@ class Player:
             # offsetx = Configs.effect_offset(self.name)[0]
             # offsety = Configs.effect_offset(self.name)[1]
             self.screen.blit(self.effects[self.frame2], 
-                            (self.x, self.y))
+                            (self.x-8, self.y+15))
             
         elif target is not None:
-            offsetx = Configs.effect_offset(eff)[0]
-            offsety = Configs.effect_offset(eff)[1]
+            x = Configs.effect_offset(eff)[0]
+            y = Configs.effect_offset(eff)[1]
             self.screen.blit(self.effects[self.frame2], 
-                            (offsetx, offsety))
+                            (x, y))
         return True
     
     def create_aura(self):
@@ -119,44 +118,40 @@ class Player:
                 self.effects.append(sprite_sheet.get_effects((0, 0), i, 64, 128, 2.5, Configs.get('BLACK')))
 
     def hunter_instinct(self, a):
-        self
         self.create_aura()
         self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
-        self.s_damage = False
-        self.a_damage = False
+        self.is_damage = False
         if not self.already_boost:
             self.damage *= 1.5
             self.damage = round(self.damage)
             self.already_boost = True
-        print(self.damage)
         self.atk_tmp = dmg
-        if not self.draw_effects('AURA', lim=150):
+        if not self.draw_effects('P_INSTINCT', lim=150):
             self.already_boost = False
             return False
         return True
     
     def fire(self, mobs):
         self.create_fire()
-        self.s_damage = True
-        self.a_damage = False
+        self.is_damage = True
         dmg = self.max_health*0.1
         self.atk_tmp = dmg
-        if not self.draw_effects('FIRE', lim=50, target=mobs):
+        if not self.draw_effects('P_FIRE', lim=50, target=mobs):
             return False
         return True
 
     def thunder(self, mobs):
         self.create_thunder()
-        self.s_damage = True
-        self.a_damage = False
+        self.is_damage = True
         dmg = self.max_health*0.1
         self.atk_tmp = dmg
-        if not self.draw_effects('THUNDER', lim=50, target=mobs):
+        if not self.draw_effects('P_THUNDER', lim=50, target=mobs):
             return False
         return True
     
     def defend(self, a):
+        self.is_damage = False
         self.evasion = 1
 
     def save(self):
@@ -187,8 +182,7 @@ class Player:
     
     def draw_attack(self, a=None):
         self.atk_tmp = self.damage
-        self.s_damage = False
-        self.a_damage = True
+        self.is_damage = True
         if self.p_pos is None:
             self.p_pos = self.x
             self.pstate = "forward"
@@ -237,8 +231,7 @@ class Player:
         return False
 
     def steal(self, a=None):
-        self.s_damage = False
-        self.a_damage = False
+        self.is_damage = False
         animating = self.draw_attack()
         if not animating:
             self.tmp = random.choices(list(self.steal_chances.keys()), list(self.steal_chances.values()))[0]

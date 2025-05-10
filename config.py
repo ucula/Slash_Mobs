@@ -78,8 +78,8 @@ class Configs:
                     'THUNDER': (-47, -240),
                     'GRAVITY': (-60, -120),
                     'DOOM': (-100, -220),
-                    'P_FIRE': (130, 230),
-                    'P_THUNDER': (130, 230),
+                    'P_FIRE': (130, 200),
+                    'P_THUNDER': (140, 50),
                     'P_INSTINCT': (130, 230)
                     }
 

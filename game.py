@@ -42,8 +42,8 @@ class Game:
 
         # self.__scene = "HALL"
         # self.__scene = "SHOP"
-        self.__scene = "PLAIN"
-        # self.__scene = "DESERT"
+        # self.__scene = "PLAIN"
+        self.__scene = "DESERT"
         # self.__scene = "SNOW"
         # self.__scene = "CAVE"
 
@@ -105,6 +105,7 @@ class Game:
         self.__player.direction = 'DOWN'
         self.__player.steal_count = 0
         self.__already_save = False
+        self.__player.return_stats(evade=True, damage=True)
    
     # Delays
     def delay(self, limit):
@@ -440,24 +441,25 @@ class Game:
                 self.__pstate = "CHANGE_TURN"
 
         elif self.__pselect != "STEAL":
-            if self.__player.a_damage or self.__player.s_damage:
+            if self.__player.is_damage:
                 self.__ui.draw_damage("player", self.__player, self.__mobs, self.__evade)
 
             if not self.delay(self.__turn_delay):
-                if not self.__evade and (self.__player.a_damage or self.__player.s_damage):
+                if not self.__evade and self.__player.is_damage:
                     self.__mobs.health -= self.__player.atk_tmp
                 self.__pstate = "CHANGE_TURN"
 
     def m_calculate_stage(self):
-        if self.__mobs.a_damage or self.__mobs.s_damage:
+        if self.__mobs.is_damage:
             self.__ui.draw_damage("mob", self.__player, self.__mobs, self.__evade)
             
         if not self.delay(self.__turn_delay):
-            if not self.__evade and (self.__mobs.a_damage or self.__mobs.s_damage):
+            if not self.__evade and self.__mobs.is_damage:
                 self.__player.health -= self.__mobs.atk_tmp
             self.__mstate = "CHANGE_TURN"
     
     def p_change_turn(self):
+        self.__player.is_damage = False
         self.__player_turn = False
         self.__mob_turn = True
         self.__time_lock = False
@@ -475,8 +477,7 @@ class Game:
             self.__up = self.__player.level_up()
     
     def m_change_turn(self):
-        self.__mobs.a_damage = False
-        self.__mobs.s_damage = False
+        self.__mobs.is_damage = False
         self.__mstate = "IDLE"
         self.__mob_select = None
         self.__time_lock = False
@@ -508,14 +509,15 @@ class Game:
     
     # 3.Combat scene
     def combat_scene(self):
+        if not self.__already_save:
+            print(self.__player.save_stats)
+            self.__player.save()
+            self.__already_save = True
         self.start_point(combat=1)
         bg = self.__ui.draw_bg(self.__scene)
         self.__screen.blit(bg, (0, 0))
         if self.__mobs is not None:
             self.create_mob_incombat()
-        if not self.__already_save:
-            self.__player.save()
-            self.__already_save = True
         # Enter animation
         self.enter_stage()
 
@@ -566,7 +568,6 @@ class Game:
         # Show healh bar for player in combat
         if self.__health:
             self.__ui.draw_health_bar(self.__player)
-        print(self.__player.damage)
         
     def manage_item(self, item=None, name=None):
         if name is None:

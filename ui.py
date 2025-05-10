@@ -88,8 +88,8 @@ class AllUI:
                 text1 = font.render(f"MISS", True, Configs.get("BLACK"))
                 text2 = font.render(f"MISS", True, Configs.get("RED"))
             else:
-                text1 = font.render(f"{player.damage:.0f}", True, Configs.get("BLACK"))
-                text2 = font.render(f"{player.damage:.0f}", True, Configs.get("RED"))
+                text1 = font.render(f"{player.atk_tmp:.0f}", True, Configs.get("BLACK"))
+                text2 = font.render(f"{player.atk_tmp:.0f}", True, Configs.get("RED"))
             rect1 = text1.get_rect(midtop=(x, y))
             rect2 = text2.get_rect(midtop=(x+4, y))
         elif turn == "mob":

@@ -33,12 +33,11 @@ class Monster_TMP:
         self.coin = coin
 
         # Check attack (could be made better)
-        self.s_damage = False
-        self.a_damage = False
+        self.is_damage = False
         self.atk_tmp = 0
         self.bool_tmp = False
         self.already_boost = False
-        
+
         # Display info
         self.ui = AllUI(screen)
         self.font = pg.font.Font(None, 30)
@@ -64,7 +63,7 @@ class Monster_TMP:
     # Drawing series
     def draw_monster_attack(self, player):
         self.atk_tmp = self.damage
-        self.a_damage = True
+        self.is_damage = True
         if self.m_pos is None:
             self.m_pos = self.x
             self.mstate = "forward"
@@ -270,7 +269,7 @@ class Monster_TMP:
         self.create_aura()
         self.ui.draw_skill_display(f"{self.name}'s damage increased by 1.5x!")
         dmg = 0
-        self.s_damage = False
+        self.is_damage = False
         if not self.already_boost:
             self.damage *= 1.5
             self.damage = round(self.damage)
@@ -284,7 +283,7 @@ class Monster_TMP:
             
     def fire(self, player):
         self.create_fire()
-        self.s_damage = True
+        self.is_damage = True
         dmg = player.max_health*0.1
         self.atk_tmp = dmg
         if not self.draw_effects('FIRE', lim=50, target=player):
@@ -293,7 +292,7 @@ class Monster_TMP:
 
     def thunder(self, player):
         self.create_thunder()
-        self.s_damage = True
+        self.is_damage = True
         dmg = player.max_health*0.1
         self.atk_tmp = dmg
         if not self.draw_effects('THUNDER', lim=50, target=player):
@@ -302,7 +301,7 @@ class Monster_TMP:
 
     def gravity(self, player):
         self.create_gravity()
-        self.s_damage = True
+        self.is_damage = True
         dmg = player.coin*0.3
         self.atk_tmp = dmg
         if not self.draw_effects(eff='GRAVITY', lim=50, target=player):
@@ -311,7 +310,7 @@ class Monster_TMP:
     
     def doom(self, player):
         self.create_doom()
-        self.s_damage = True
+        self.is_damage = True
         dmg = player.health - 1
         self.atk_tmp = dmg
         if not self.draw_effects(eff='DOOM', lim=25, target=player):
@@ -320,7 +319,7 @@ class Monster_TMP:
     
     def crunch(self, player):
         self.create_crunch()
-        self.s_damage = True
+        self.is_damage = True
         dmg = self.damage//(self.health/10)
         self.atk_tmp = dmg
         if not self.draw_skill_attack(player, lim=50):
