@@ -9,6 +9,8 @@
 1. Clone or Download the project
 2. You **MUST** have pygame library installed on your IDE
 3. Run the **[game.py](game.py)** file.
+4. If you cannot run the file, try 
+
 ## Necessary file to run the program.
 ### Libraries:
 - pygame
