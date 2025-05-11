@@ -142,7 +142,7 @@ class Configs:
     
     __ITEM = {"sword": "Slash_Mobs/assets/items/longsword.png",
               "knife": "Slash_Mobs/assets/items/knife.png",
-              "hammer": "Slash_Mobsnal_prog2/assets/items/hammer.png",
+              "hammer": "Slash_Mobs/assets/items/hammer.png",
               "potion": "Slash_Mobs/assets/items/potion.png",
               "hpotion": "Slash_Mobs/assets/items/hpotion.png",
               "xpotion": "Slash_Mobs/assets/items/xpotion.png",
