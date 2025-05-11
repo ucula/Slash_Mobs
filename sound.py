@@ -16,13 +16,19 @@ class Sound:
         self.play = False
         self.transition = False
     
-    def load_music(self, key):
-        pg.mixer.music.load(self.__music[key])
-        pg.mixer.music.play()
+    def load_music(self, scene):
+        pg.mixer.music.load(self.__music[scene])
         pg.mixer.music.play(-1)
-        pg.mixer.music.set_volume(0.2)
 
     def load_sound(self, key):
         pg.mixer.music.load(self.__sound[key])
         pg.mixer.music.play()
-        pg.mixer.music.set_volume(0.1)
+
+    def set_volumue(self, volume=None, scene=None):
+        if scene is not None:
+            if scene == "HALL" or scene == "SHOP":
+                pg.mixer.music.set_volume(1)
+        elif volume is not None:
+            pg.mixer.music.set_volume(volume)
+        else:
+            pg.mixer.music.set_volume(0.2)

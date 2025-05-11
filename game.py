@@ -5,6 +5,7 @@ from config import Configs
 from shop import Shop
 from item import Item_TMP
 from sound import Sound
+import csv
 import pygame as pg
 import random
 
@@ -78,6 +79,7 @@ class Game:
         self.__health = False
         self.__revert_stat = False
         self.__already_save = False
+        self.__player_count = 0
 
         # for monster
         self.__mob_turn = False
@@ -120,6 +122,7 @@ class Game:
         self.__player.return_stats(evade=True, damage=True)
         self.__player.up_stats()
         self.__sound.transition = False
+        self.__player_count = 0
    
     # Delays
     def delay(self, limit):
@@ -506,6 +509,11 @@ class Game:
         self.__pstate = "IDLE"
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
+            self.__player.check_monster_turn(self.__mobs, self.__player_count)
+            self.__player.add_mob_turn()
+            print(self.__player.turn_lst)
+
+            self.__player.enemies_killed += 1
             if self.__player.double:
                 self.__mob_drops = (2*self.__mobs.coin, 2*self.__mobs.exp)
             else:
@@ -528,7 +536,15 @@ class Game:
         if self.__revert_stat:
             self.__player.return_stats(evade=True)
             self.__revert_stat = False
+        
+        """
+        4th stats
+        """
         if self.__player.health <= 0:
+            if self.__player.first_dead is None:
+                self.__player.first_dead = self.__mobs.name
+                self.__player.add_first_dead()
+
             self.reset()
             self.__player.half_stats()
             self.__pstate = None
@@ -562,6 +578,12 @@ class Game:
             self.create_mob_incombat()
         # Enter animation
         self.enter_stage()
+        """
+        3rd stats
+        """
+        if self.__player.first_encounter is None:
+            self.__player.first_encounter = self.__mobs.name
+            self.__player.add_first_mob()
 
         # Some certain skills require player to move
         if self.__move_combat:
@@ -629,7 +651,13 @@ class Game:
         for e in event:
             if (e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE) or e.type == pg.QUIT:
                 self.__running = False
-            
+                """
+                5th stats
+                """
+                print(self.__player.enemies_killed)
+                self.__player.add_all_kills()
+
+
             # Status window
             if self.__scene_manager == "NORMAL" and self.__enable_walk and not self.__shop:
                 if e.type == pg.KEYDOWN and e.key == pg.K_q:
@@ -659,6 +687,10 @@ class Game:
                             if self.__player.weapon is not None:
                                 self.__player.weapon.return_stats(self.__player)
                             self.__player.weapon = item
+                            if self.__player.first_buy is None:
+                                self.__player.first_buy = item.name
+                                self.__player.add_first_weapon()
+                            print(self.__player.first_buy)
                             self.__just_buy = True
                             self.close_shop()
 
@@ -681,6 +713,7 @@ class Game:
                     if not self.__open_item:
                         if e.key == pg.K_z:
                             self.__pselect = "ATTACK"
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                         elif e.key == pg.K_x and not self.__player.run_lock and not self.__player.all_lock:
                             self.__pselect = "RUN"
@@ -688,19 +721,24 @@ class Game:
                         elif e.key == pg.K_c and not self.__player.all_lock:
                             self.__pselect = "DEFEND"
                             self.__revert_stat = True
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                         elif self.__player.skill1_unlock and self.__player.steal_count < 2 and e.key == pg.K_a and not self.__player.all_lock:
                             self.__pselect = "STEAL"
                             self.__player.steal_count += 1
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                         elif self.__player.skill2_unlock and e.key == pg.K_s and not self.__player.all_lock:
                             self.__pselect = "FIRE"
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                         elif self.__player.skill3_unlock and e.key == pg.K_d and not self.__player.all_lock:
                             self.__pselect = "THUNDER"
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                         elif self.__player.skill4_unlock and e.key == pg.K_f and not self.__player.all_lock:
                             self.__pselect = "INSTINCT"
+                            self.__player_count += 1
                             self.__pstate = "ATTACKING"
                             self.__revert_stat = True
                         elif e.key == pg.K_v:
@@ -719,6 +757,7 @@ class Game:
                                 self.__index = 5
 
                         elif e.key == pg.K_SPACE:
+                            self.__player_count += 1
                             viable, item = self.__item.use(self.__player, self.__index)
                             if viable:
                                 if item.type == "heal":
@@ -742,6 +781,7 @@ class Game:
                 self.__sound.play = False
                 if not self.__sound.transition:
                     self.__sound.load_sound('TRANSITION')
+                    self.__sound.set_volumue()
                     self.__sound.transition = True
                 done = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
                 if done and self.__combat:
@@ -758,6 +798,7 @@ class Game:
                 self.normal_scene()
                 if not self.__sound.play:
                     self.__sound.load_music(self.__scene)
+                    self.__sound.set_volumue(scene=self.__scene)
                     self.__sound.play = True  
             
             # Combat scene
@@ -773,3 +814,4 @@ class Game:
 if __name__ == '__main__':
     g1 = Game()
     g1.run()
+

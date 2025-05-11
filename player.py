@@ -4,6 +4,7 @@ from spritesheet import SpriteSheet
 import item
 import pygame as pg
 import random
+import csv
 
 class Player:
     def __init__(self, screen, name: str):
@@ -12,17 +13,37 @@ class Player:
         self.name = name
 
         # Base stats
-        self.max_health = 20
+        self.max_health = 2 # 20
         self.health = self.max_health
         self.level = 1
         self.exp = 0
-        self.exp_threshold = 5
-        self.coin = 10
-        self.damage = 7
+        self.exp_threshold = 10
+        self.coin = 50000
+        self.damage = 7000 # 7
         self.evasion = 0.2
         self.weapon = None
         self.dmg_up = 3
         self.health_up = 5
+
+        # stats
+        self.slime_turn = None
+        self.goblin_turn = None
+        self.dark_turn = None
+        self.scorpion_turn = None
+        self.blue_turn = None
+        self.purple_turn = None
+        self.mino1 = None
+        self.mino2 = None
+        self.mino3 = None
+        self.vamp1 = None
+        self.vamp2 = None
+        self.vamp3 = None
+        self.turn_lst = []
+
+        self.first_buy = None
+        self.first_encounter = None
+        self.first_dead = None
+        self.enemies_killed = 0
         
         # Steal skill
         self.skill1_unlock = False
@@ -104,6 +125,63 @@ class Player:
                       "Bag of greed": item.Greed_bag(),
                       "Bomb": item.Bomb()}
 
+    # Stats
+    def check_monster_turn(self, mob, turn):
+        if mob.name == "SLIME" and self.slime_turn is None:
+            self.slime_turn = int(turn)
+        elif mob.name == "GOBLIN" and self.goblin_turn is None:
+            self.goblin_turn = int(turn)
+        elif mob.name == "DARK" and self.dark_turn is None:
+            self.dark_turn = int(turn)
+        elif mob.name == "SCORPION" and self.scorpion_turn is None:
+            self.scorpion_turn = int(turn)
+        elif mob.name == "BLUE" and self.blue_turn is None:
+            self.blue_turn = int(turn)
+        elif mob.name == "PURPLE" and self.purple_turn is None:
+            self.purple_turn = int(turn)
+        elif mob.name == "MINOTAUR1" and self.mino1 is None:
+            self.mino1 = int(turn)
+        elif mob.name == "MINOTAUR2" and self.mino2 is None:
+            self.mino2 = int(turn)
+        elif mob.name == "MINOTAUR3" and self.mino3 is None:
+            self.mino3 = int(turn)
+        elif mob.name == "VAMPIRE1" and self.vamp1 is None:
+            self.vamp1 = int(turn)
+        elif mob.name == "VAMPIRE2" and self.vamp2 is None:
+            self.vamp2 = int(turn)
+        elif mob.name == "VAMPIRE3" and self.vamp3 is None:
+            self.vamp3 = int(turn)
+        
+        self.turn_lst = [self.slime_turn, self.goblin_turn, self.dark_turn, self.scorpion_turn, self.blue_turn,
+                         self.purple_turn, self.mino1, self.mino2, self.mino3, self.vamp1, self.vamp2, self.vamp3]
+
+                                 
+    def add_mob_turn(self):
+        if all(x is not None for x in self.turn_lst):
+            with open('final_prog2/turns_took.csv', mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows([self.turn_lst])
+    
+    def add_first_weapon(self):
+        with open('final_prog2/first_weapon.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([str(self.first_buy)])
+
+    def add_first_mob(self):
+        with open('final_prog2/first_mob.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([str(self.first_encounter)])
+
+    def add_first_dead(self):
+        with open('final_prog2/first_dead.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([str(self.first_dead)])
+
+    def add_all_kills(self):
+        with open('final_prog2/all_kills.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([self.enemies_killed])
+
     """
     :Status series:
 
@@ -170,7 +248,7 @@ class Player:
         if self.exp >= self.exp_threshold:
             remain = self.exp - self.exp_threshold
             self.level += 1
-            self.exp_threshold += self.level*1.5
+            self.exp_threshold += self.level*1.6
             self.exp = remain       
             self.count_level_up += 1
             self.check_unlock_skill()
@@ -181,7 +259,7 @@ class Player:
 
     def up_stats(self):
         self.damage += self.dmg_up*self.count_level_up
-        self.health += self.health_up*self.count_level_up
+        self.max_health += self.health_up*self.count_level_up
         self.health = self.max_health
         self.count_level_up = 0
 
