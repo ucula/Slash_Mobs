@@ -1,4 +1,5 @@
-**Slash mobs** is a game about you fightning against monsters, getting coins, leveling up and buying new weapons to train better and easier. 
+# SLASH MOBS!
+**Slash mobs** is a game about you fightning against monsters, getting coins, leveling up unlocking more skills and buying new weapons to train better and easier. 
 
 ### Overview
 
@@ -13,5 +14,7 @@ In the battle, various skills/magics can be used (some of them requires level up
 This game is inspired by an RPG Final fantasy franchise. The difference here is that there is no story. The game focuses on the combat mechanics, having skills and varieties of items/monsters as much as possible, also the game has different damage calculation system for each skills and items, creating advantages/disadvantages for certain circumstances.
 
 **[UML for project](UML.pdf)**
+
+**[Video showcase](https://youtu.be/W3PbRkPn4SU)**
 
 **[Github Link](https://github.com/ucula/final_prog2)**
