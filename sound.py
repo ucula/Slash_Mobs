@@ -4,15 +4,15 @@ class Sound:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.__music = {"HALL": "final_prog2/music/hall.mp3",
-                        "PLAIN": "final_prog2/music/plain.wav",
-                        "DESERT": "final_prog2/music/desert.wav",
-                        "SNOW": "final_prog2/music/snow.wav",
-                        "CAVE": "final_prog2/music/cave.wav",
-                        "SHOP": "final_prog2/music/hall.mp3",
-                        "COMBAT": "final_prog2/music/combat.mp3"
+        self.__music = {"HALL": "Slash_Mobs/music/hall.mp3",
+                        "PLAIN": "Slash_Mobs/music/plain.wav",
+                        "DESERT": "Slash_Mobs/music/desert.wav",
+                        "SNOW": "Slash_Mobs/music/snow.wav",
+                        "CAVE": "Slash_Mobs/music/cave.wav",
+                        "SHOP": "Slash_Mobs/music/hall.mp3",
+                        "COMBAT": "Slash_Mobs/music/combat.mp3"
         }
-        self.__sound = {"TRANSITION": "final_prog2/sound/transition.wav"}
+        self.__sound = {"TRANSITION": "Slash_Mobs/sound/transition.wav"}
         self.play = False
         self.transition = False
     
