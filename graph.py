@@ -73,7 +73,7 @@ class App(ttk.Frame):
 
     def load_data_base(self):
         for key, value in self.__filename.items():
-            self.__data_base[key] = pd.DataFrame(pd.read_csv('final_prog2/' + value))
+            self.__data_base[key] = pd.DataFrame(pd.read_csv(value))
     
     def show_turn_took(self):
         self.fig_graph.clf()

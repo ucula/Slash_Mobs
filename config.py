@@ -60,22 +60,22 @@ class Configs:
                         'PURPLE': (225, 275)
                         }
     
-    __EFFECTS = {"AURA": "Slash_Mobs/assets/effects/aura.png",
-                 "FIRE": "Slash_Mobs/assets/effects/fire.png",
-                 "THUNDER": "Slash_Mobs/assets/effects/thunder.png",
-                 "GRAVITY": "Slash_Mobs/assets/effects/gravity.png",
-                 "DOOM": "Slash_Mobs/assets/effects/doom.png",
-                 "BLUE": "Slash_Mobs/assets/effects/blue_attack.png",
-                 "PURPLE": "Slash_Mobs/assets/effects/purple_attack.png", 
-                 "VAMPIRE1": "Slash_Mobs/assets/effects/vampire1_attack.png",
-                 "MINOTAUR1": "Slash_Mobs/assets/effects/minotaur1_attack.png",
-                 "MINOTAUR2": "Slash_Mobs/assets/effects/minotaur2_attack.png",
-                 'EVIL': "Slash_Mobs/assets/effects/evil.png",
-                 'HASTE': "Slash_Mobs/assets/effects/haste.png",
-                 'CURSE': "Slash_Mobs/assets/effects/curse.png",
-                 'HEAL': "Slash_Mobs/assets/effects/heal.png",
-                 'BOMB': "Slash_Mobs/assets/effects/bomb.png",
-                 'GREED': "Slash_Mobs/assets/effects/greed.png"}
+    __EFFECTS = {"AURA": "assets/effects/aura.png",
+                 "FIRE": "assets/effects/fire.png",
+                 "THUNDER": "assets/effects/thunder.png",
+                 "GRAVITY": "assets/effects/gravity.png",
+                 "DOOM": "assets/effects/doom.png",
+                 "BLUE": "assets/effects/blue_attack.png",
+                 "PURPLE": "assets/effects/purple_attack.png", 
+                 "VAMPIRE1": "assets/effects/vampire1_attack.png",
+                 "MINOTAUR1": "assets/effects/minotaur1_attack.png",
+                 "MINOTAUR2": "assets/effects/minotaur2_attack.png",
+                 'EVIL': "assets/effects/evil.png",
+                 'HASTE': "assets/effects/haste.png",
+                 'CURSE': "assets/effects/curse.png",
+                 'HEAL': "assets/effects/heal.png",
+                 'BOMB': "assets/effects/bomb.png",
+                 'GREED': "assets/effects/greed.png"}
     
     __EFFECTS_OFFSET = {'AURA_GOBLIN': (105, 150),
                     'AURA_DARK': (50, 80),
@@ -100,35 +100,35 @@ class Configs:
                     }
 
 
-    __MONS = {'SLIME': "Slash_Mobs/assets/mobs/slime.png",
-              'GOBLIN': "Slash_Mobs/assets/mobs/goblin.png",
-              'DARK': "Slash_Mobs/assets/mobs/dark.png",
-              'VAMPIRE1': "Slash_Mobs/assets/mobs/vampire1.png",
-              'VAMPIRE2': "Slash_Mobs/assets/mobs/vampire2.png",
-              'VAMPIRE3': "Slash_Mobs/assets/mobs/vampire3.png",
-              'MINOTAUR1': "Slash_Mobs/assets/mobs/minotaur1.png",
-              'MINOTAUR2': "Slash_Mobs/assets/mobs/minotaur2.png",
-              'MINOTAUR3': "Slash_Mobs/assets/mobs/minotaur3.png",
-              'SCORPION': "Slash_Mobs/assets/mobs/scorpion.png",
-              'BLUE': "Slash_Mobs/assets/mobs/blue.png",
-              'PURPLE': "Slash_Mobs/assets/mobs/purple.png" 
+    __MONS = {'SLIME': "assets/mobs/slime.png",
+              'GOBLIN': "assets/mobs/goblin.png",
+              'DARK': "assets/mobs/dark.png",
+              'VAMPIRE1': "assets/mobs/vampire1.png",
+              'VAMPIRE2': "assets/mobs/vampire2.png",
+              'VAMPIRE3': "assets/mobs/vampire3.png",
+              'MINOTAUR1': "assets/mobs/minotaur1.png",
+              'MINOTAUR2': "assets/mobs/minotaur2.png",
+              'MINOTAUR3': "assets/mobs/minotaur3.png",
+              'SCORPION': "assets/mobs/scorpion.png",
+              'BLUE': "assets/mobs/blue.png",
+              'PURPLE': "assets/mobs/purple.png" 
               }
               
     __BG = {
-        'HALL': "Slash_Mobs/assets/bg/hall.jpg",
-        'PLAIN': "Slash_Mobs/assets/bg/plain.jpg",
-        'SHOP': "Slash_Mobs/assets/bg/shop.jpg",
-        'DESERT': "Slash_Mobs/assets/bg/desert.jpg",
-        'SNOW': "Slash_Mobs/assets/bg/snow.jpg",
-        'CAVE': "Slash_Mobs/assets/bg/cave.jpg"
+        'HALL': "assets/bg/hall.jpg",
+        'PLAIN': "assets/bg/plain.jpg",
+        'SHOP': "assets/bg/shop.jpg",
+        'DESERT': "assets/bg/desert.jpg",
+        'SNOW': "assets/bg/snow.jpg",
+        'CAVE': "assets/bg/cave.jpg"
     }
 
     __PLAYER = {
-        'IDLE': "Slash_Mobs/assets/player/char.png",  
-        'LEFT': "Slash_Mobs/assets/player/char.png",
-        'RIGHT': "Slash_Mobs/assets/player/char2.png",
-        'UP': "Slash_Mobs/assets/player/char.png",
-        'DOWN': "Slash_Mobs/assets/player/char.png"
+        'IDLE': "assets/player/char.png",  
+        'LEFT': "assets/player/char.png",
+        'RIGHT': "assets/player/char2.png",
+        'UP': "assets/player/char.png",
+        'DOWN': "assets/player/char.png"
     }
     
     # (border_color, bg_color, initial, terminal, width, height, offset, border)
