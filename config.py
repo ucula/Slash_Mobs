@@ -1,7 +1,7 @@
 class Configs:
     __CONFIGS = {
         'FPS': 60,
-        'SPEED': 6,
+        'SPEED': 4,
         'WIN_SIZE_W': 800,
         'WIN_SIZE_H': 600,
         'WHITE': (255, 255, 255),
