@@ -131,28 +131,28 @@ class Player:
             self.add_mob_turn(mob.name)
                                 
     def add_mob_turn(self, name):
-        with open('final_prog2/turns_took.csv', mode='a', newline='') as file:
+        with open('Slash_Mobs/turns_took.csv', mode='a', newline='') as file:
             message = [name, self.turns[name]]
             writer = csv.writer(file)
             writer.writerows([message])
     
     def add_first_weapon(self):
-        with open('final_prog2/first_weapon.csv', mode='a', newline='') as file:
+        with open('Slash_Mobs/first_weapon.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([str(self.first_buy)])
 
     def add_first_mob(self):
-        with open('final_prog2/first_mob.csv', mode='a', newline='') as file:
+        with open('Slash_Mobs/first_mob.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([str(self.first_encounter)])
 
     def add_first_dead(self):
-        with open('final_prog2/first_dead.csv', mode='a', newline='') as file:
+        with open('Slash_Mobs/first_dead.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([str(self.first_dead)])
 
     def add_all_kills(self):
-        with open('final_prog2/all_kills.csv', mode='a', newline='') as file:
+        with open('Slash_Mobs/all_kills.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([self.enemies_killed])
 
