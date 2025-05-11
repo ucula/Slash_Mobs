@@ -9,14 +9,7 @@ class AllUI:
 
         self.start_time = 0
         self.time_lock = False
-        self.display_delay = 1000
-
-        self.pstate = "forward"
-        self.mstate = "forward"
-        self.p_pos = None
-        self.m_pos = None
         self.speed = 20
-        self.start_pos = None
 
         self.player_arrow = [(575, 300), (590, 270), (560, 270)]
         self.box_y = 450

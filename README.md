@@ -2,6 +2,7 @@
 # Table of Contents
 - [HOW TO INSTALL?](#how-to-install)
     - [NECESSARY FILE TO RUN THE PROGRAM](#necessary-file-to-run-the-program)
+- A lsit of files and a brief description of cclasses it contains
 - [HOW TO PLAY?](#how-to-play)
 - [HOW TO INSTALL PYGAME](#how-to-install-pygame)
 # How to install?
@@ -11,6 +12,7 @@
 ## Necessary file to run the program.
 ### Libraries:
 - pygame
+
 
 # How to play?
 - Walk around by using WASD.

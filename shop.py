@@ -20,7 +20,6 @@ class Shop:
         self.knife = item.Knife()
 
         self.select = None
-        self.check = None
 
     """
     Create a shop interface that can be interacted with keyboard

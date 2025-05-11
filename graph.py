@@ -32,7 +32,6 @@ class App(ttk.Frame):
         self.rowconfigure(2, weight=1)
         self.columnconfigure(0, weight=1)
         self.create_widgets()
-        self.data = None
 
         self.__data_base = {}
         self.load_data_base()
@@ -86,13 +85,9 @@ class App(ttk.Frame):
         columns = ["Name", "Turns"]
         data = [[p, f"{int(gb["Turns"].mean()[p]):.1f}"] for p in df.Name.unique()]
 
-        # Hide the axes
         self.ax_graph.set_axis_off()
 
-        # Create the table
         table = self.ax_graph.table(cellText=data, colLabels=columns, loc='center', cellLoc='right')
-
-        # Adjust the table's layout
         table.auto_set_font_size(False)
         table.set_fontsize(10)
         table.scale(1, 1.5)
@@ -137,19 +132,15 @@ class App(ttk.Frame):
         self.ax_graph.set_xlabel("Number of Enemies Killed")
         self.ax_graph.set_ylabel("Frequency")
 
-        # Define kill bins and labels
         bins = [0, 5, 10, 15, 20, 25, float('inf')]
         labels = ['0–4', '5–9', '10–14', '15–19', '20–24', '25+']
 
-        # Categorize kills into bins
         df['Kill Range'] = pd.cut(df['Kills'], bins=bins, labels=labels, right=False)
         counts = df['Kill Range'].value_counts().reindex(labels, fill_value=0)
 
-        # Plot bars manually with same width
         x = list(range(len(labels)))
         self.ax_graph.bar(x, counts, color='skyblue', edgecolor='black')
 
-        # Set fixed-width x labels
         self.ax_graph.set_xticks(x)
         self.ax_graph.set_xticklabels(labels)
         self.ax_graph.grid(axis='y', linestyle='--', alpha=0.7)
@@ -161,17 +152,28 @@ class App(ttk.Frame):
         self.ax_graph = self.fig_graph.add_subplot(111)
         df = self.__data_base['first']
         
-        # Count frequency of each first monster
         mob_counts = df['Mob'].value_counts().sort_values(ascending=False)
 
-        # Plot pie chart
-        self.ax_graph.pie(
+        wedges, texts, autotexts = self.ax_graph.pie(
             mob_counts,
-            labels=mob_counts.index,
             autopct='%1.1f%%',
             startangle=90,
-            colors=plt.cm.Paired.colors
+            pctdistance=1.1, 
+            textprops=dict(color="black"),
+            wedgeprops=dict(edgecolor='black'),
         )
+
+        for autotext in autotexts:
+            autotext.set_fontsize(10)
+
+        self.ax_graph.legend(
+            wedges, 
+            mob_counts.index, 
+            title="Monster", 
+            loc="center left", 
+            bbox_to_anchor=(1, 0.5)
+        )
+
         self.ax_graph.set_title("First Monster Encountered by Players")
         self.fig_canvas.draw()
 

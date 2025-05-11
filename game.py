@@ -96,7 +96,6 @@ class Game:
         for item in list(self.__player.items.keys()):
             if name == item:
                 self.__player.items[name].count += 1
-                print(self.__player.items[name].count)
 
     # Reset Combat
     def reset(self):
@@ -510,7 +509,6 @@ class Game:
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
             self.__player.check_monster_turn(self.__mobs, self.__player_count)
-            print(self.__player.turns)
 
             self.__player.enemies_killed += 1
             if self.__player.double:
@@ -653,7 +651,7 @@ class Game:
                 """
                 5th stats
                 """
-                print(self.__player.enemies_killed)
+                # print(self.__player.enemies_killed)
                 self.__player.add_all_kills()
 
 
@@ -689,7 +687,7 @@ class Game:
                             if self.__player.first_buy is None:
                                 self.__player.first_buy = item.name
                                 self.__player.add_first_weapon()
-                            print(self.__player.first_buy)
+                            # print(self.__player.first_buy)
                             self.__just_buy = True
                             self.close_shop()
 
@@ -813,4 +811,3 @@ class Game:
 if __name__ == '__main__':
     g1 = Game()
     g1.run()
-

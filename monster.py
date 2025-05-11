@@ -54,7 +54,6 @@ class Monster_TMP:
 
         # Display info
         self.ui = AllUI(screen)
-        self.font = pg.font.Font(None, 30)
         self.prep_size = 0
         self.text_offset = 25
         self.encounter_dist = 25
@@ -598,7 +597,7 @@ class Minotaur2(Monster_TMP):
                             'EVIL SWORD': 1}
 
 class Minotaur3(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=90, damage=10, level=16, evasion=0.3,
+    def __init__(self, screen, x_off, y_off, x, y, name="MINOTAUR3", health=90, damage=10, level=16, evasion=0.2,
                  steps=5, size=1, pixel=128, exp=30, coin=40):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -658,7 +657,7 @@ class Vampire1(Monster_TMP):
         return True
 
 class Vampire2(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=230, damage=30, level=26, evasion=0.4,
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE2", health=200, damage=30, level=26, evasion=0.4,
                  steps=5, size=1, pixel=128, exp=120, coin=50):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,
@@ -677,7 +676,7 @@ class Vampire2(Monster_TMP):
                             }     
 
 class Vampire3(Monster_TMP):
-    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=200, damage=5, level=30, evasion=0.7,
+    def __init__(self, screen, x_off, y_off, x, y, name="VAMPIRE3", health=100, damage=5, level=30, evasion=0.5,
                  steps=5, size=1, pixel=128, exp=100, coin=100):
         super().__init__(screen, x_off, y_off, x, y, name, health, damage, level, evasion, steps, size, pixel, exp, coin)
         self.skill = {'ATTACK': self.draw_monster_attack,

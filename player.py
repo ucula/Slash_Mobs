@@ -13,17 +13,17 @@ class Player:
         self.name = name
 
         # Base stats
-        self.max_health = 2 # 20
+        self.max_health = 20
         self.health = self.max_health
         self.level = 1
         self.exp = 0
-        self.exp_threshold = 10
-        self.coin = 50000
-        self.damage = 7000 # 7
+        self.exp_threshold = 25
+        self.coin = 40
+        self.damage = 6
         self.evasion = 0.2
         self.weapon = None
-        self.dmg_up = 3
-        self.health_up = 5
+        self.dmg_up = 2
+        self.health_up = 2
 
         # stats
         self.turns = {"SLIME": None,
@@ -48,9 +48,9 @@ class Player:
         self.skill1_unlock = False
         self.steal_count = 0
         # Steal chances 
-        self.steal_chances = {"Potion": 0, #0.5
+        self.steal_chances = {"Potion": 0.5, #0.5
                              "Hi-Potion": 0.2, #0.2
-                             "Bag of greed": 0} # 0.3
+                             "Bag of greed": 0.3} # 0.3
         # Fire (% damage)
         self.skill2_unlock = False
         # Thunder (% damage)
@@ -163,16 +163,16 @@ class Player:
     """
     def check_unlock_skill(self):
         # Quick unlock change all == to >=
-        if self.level >= 5:
+        if self.level >= 3:
             self.skill1_unlock = True
             self.attacks["STEAL"] = self.steal
-        if self.level >= 10:
+        if self.level >= 6:
             self.skill2_unlock = True
             self.attacks["FIRE"] = self.fire
-        if self.level >= 15:
+        if self.level >= 9:
             self.skill3_unlock = True
             self.attacks["THUNDER"] = self.thunder
-        if self.level >= 20:
+        if self.level >= 12:
             self.skill4_unlock = True
             self.attacks["INSTINCT"] = self.hunter_instinct
     
@@ -218,7 +218,7 @@ class Player:
     Increase player's leve/stats and increase exp threshold
     """
     def level_up(self):
-        print(self.count_level_up)
+        # print(self.count_level_up)
         if self.exp >= self.exp_threshold:
             remain = self.exp - self.exp_threshold
             self.level += 1
