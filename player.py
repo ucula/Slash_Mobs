@@ -26,19 +26,18 @@ class Player:
         self.health_up = 5
 
         # stats
-        self.slime_turn = None
-        self.goblin_turn = None
-        self.dark_turn = None
-        self.scorpion_turn = None
-        self.blue_turn = None
-        self.purple_turn = None
-        self.mino1 = None
-        self.mino2 = None
-        self.mino3 = None
-        self.vamp1 = None
-        self.vamp2 = None
-        self.vamp3 = None
-        self.turn_lst = []
+        self.turns = {"SLIME": None,
+                      "GOBLIN": None,
+                      "DARK": None,
+                      "SCORPION": None,
+                      "BLUE": None,
+                      "PURPLE": None,
+                      "MINOTAUR1": None,
+                      "MINOTAUR2": None,
+                      "MINOTAUR3": None,
+                      "VAMPIRE1": None,
+                      "VAMPIRE2": None,
+                      "VAMPIRE3": None,}
 
         self.first_buy = None
         self.first_encounter = None
@@ -127,40 +126,15 @@ class Player:
 
     # Stats
     def check_monster_turn(self, mob, turn):
-        if mob.name == "SLIME" and self.slime_turn is None:
-            self.slime_turn = int(turn)
-        elif mob.name == "GOBLIN" and self.goblin_turn is None:
-            self.goblin_turn = int(turn)
-        elif mob.name == "DARK" and self.dark_turn is None:
-            self.dark_turn = int(turn)
-        elif mob.name == "SCORPION" and self.scorpion_turn is None:
-            self.scorpion_turn = int(turn)
-        elif mob.name == "BLUE" and self.blue_turn is None:
-            self.blue_turn = int(turn)
-        elif mob.name == "PURPLE" and self.purple_turn is None:
-            self.purple_turn = int(turn)
-        elif mob.name == "MINOTAUR1" and self.mino1 is None:
-            self.mino1 = int(turn)
-        elif mob.name == "MINOTAUR2" and self.mino2 is None:
-            self.mino2 = int(turn)
-        elif mob.name == "MINOTAUR3" and self.mino3 is None:
-            self.mino3 = int(turn)
-        elif mob.name == "VAMPIRE1" and self.vamp1 is None:
-            self.vamp1 = int(turn)
-        elif mob.name == "VAMPIRE2" and self.vamp2 is None:
-            self.vamp2 = int(turn)
-        elif mob.name == "VAMPIRE3" and self.vamp3 is None:
-            self.vamp3 = int(turn)
-        
-        self.turn_lst = [self.slime_turn, self.goblin_turn, self.dark_turn, self.scorpion_turn, self.blue_turn,
-                         self.purple_turn, self.mino1, self.mino2, self.mino3, self.vamp1, self.vamp2, self.vamp3]
-
-                                 
-    def add_mob_turn(self):
-        if all(x is not None for x in self.turn_lst):
-            with open('final_prog2/turns_took.csv', mode='a', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerows([self.turn_lst])
+        if self.turns[mob.name] is None:
+            self.turns[mob.name] = turn
+            self.add_mob_turn(mob.name)
+                                
+    def add_mob_turn(self, name):
+        with open('final_prog2/turns_took.csv', mode='a', newline='') as file:
+            message = [name, self.turns[name]]
+            writer = csv.writer(file)
+            writer.writerows([message])
     
     def add_first_weapon(self):
         with open('final_prog2/first_weapon.csv', mode='a', newline='') as file:

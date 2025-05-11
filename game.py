@@ -510,8 +510,7 @@ class Game:
         if self.__mobs.health <= 0:
             self.__pstate = "SUMMARY"
             self.__player.check_monster_turn(self.__mobs, self.__player_count)
-            self.__player.add_mob_turn()
-            print(self.__player.turn_lst)
+            print(self.__player.turns)
 
             self.__player.enemies_killed += 1
             if self.__player.double:
