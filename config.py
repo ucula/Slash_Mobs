@@ -140,15 +140,15 @@ class Configs:
                 "COIN_BOX": ('BLACK', 'CREAMY', 600, 0, 800, 60, 3, 5),
                 "ITEM_TIP": ('BLACK', 'CREAMY', 197, 372, 400, 75, 3, 5)}
     
-    __ITEM = {"sword": "Slash_Mobs/assets/items/longsword.png",
-              "knife": "Slash_Mobs/assets/items/knife.png",
-              "hammer": "Slash_Mobs/assets/items/hammer.png",
-              "potion": "Slash_Mobs/assets/items/potion.png",
-              "hpotion": "Slash_Mobs/assets/items/hpotion.png",
-              "xpotion": "Slash_Mobs/assets/items/xpotion.png",
-              "drum": "Slash_Mobs/assets/items/drum.png",
-              "greed": "Slash_Mobs/assets/items/greed.png",
-              "bomb": "Slash_Mobs/assets/items/bomb.png"
+    __ITEM = {"sword": "assets/items/longsword.png",
+              "knife": "assets/items/knife.png",
+              "hammer": "assets/items/hammer.png",
+              "potion": "assets/items/potion.png",
+              "hpotion": "assets/items/hpotion.png",
+              "xpotion": "assets/items/xpotion.png",
+              "drum": "assets/items/drum.png",
+              "greed": "assets/items/greed.png",
+              "bomb": "assets/items/bomb.png"
               }
 
     @classmethod

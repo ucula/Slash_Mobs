@@ -73,7 +73,7 @@ class App(ttk.Frame):
 
     def load_data_base(self):
         for key, value in self.__filename.items():
-            self.__data_base[key] = pd.DataFrame(pd.read_csv(value))
+            self.__data_base[key] = pd.DataFrame(pd.read_csv("database/"+ value))
     
     def show_turn_took(self):
         self.fig_graph.clf()
@@ -158,13 +158,13 @@ class App(ttk.Frame):
             mob_counts,
             autopct='%1.1f%%',
             startangle=90,
-            pctdistance=1.1, 
+            pctdistance=1.2, 
             textprops=dict(color="black"),
             wedgeprops=dict(edgecolor='black'),
         )
 
         for autotext in autotexts:
-            autotext.set_fontsize(10)
+            autotext.set_fontsize(7)
 
         self.ax_graph.legend(
             wedges, 

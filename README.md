@@ -22,7 +22,7 @@
         - [MyApp](#class-myapp)
 - [HOW TO PLAY?](#how-to-play)
 - [HOW TO INSTALL PYGAME](#how-to-install-pygame)
-- [Known Bugs] ()
+- [Known Bugs](#known-bugs)
 # How to install?
 1. Clone or Download the project
 2. You **MUST** have pygame library installed
@@ -108,6 +108,6 @@ print(pygame.__verion__)
 5. If the following method did not work, try ```https://www.pygame.org/wiki/GettingStarted```
 
 # Known Bugs
-- When MINOTAUR2 use **HASTE**, if the player spam Attack (Z) the Haste effecct will no longer be applied to it, and MINOTAUR2 will lose it's ability to use Haste in that fight
+- When MINOTAUR2 uses **HASTE**, if the player spam Attack (Z) the Haste effecct will no longer be applied to it, and MINOTAUR2 will lose it's ability to use Haste in that fight
 
 - When you enter Cave scene if you hold **W** key, the player will walk to the right of border which is not intentional by me.
