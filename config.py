@@ -132,7 +132,7 @@ class Configs:
     }
     
     # (border_color, bg_color, initial, terminal, width, height, offset, border)
-    __UI_POS = {"HELP": ('BLACK', 'CREAMY', 0, 0, 250, 60, 3, 5),
+    __UI_POS = {"HELP": ('BLACK', 'CREAMY', 0, 0, 260, 60, 3, 5),
                 "HEALTH": ('WHITE', 'BLACK', 600, 375, 200, 75, 3, 5),
                 "STATUS": ('BLACK', 'CREAMY', 200, 200, 400, 300, 3, 5),
                 "SKILL_DISPLAY": ("BLACK", "WHITE", 0, 0, 800, 50, 3, 5),

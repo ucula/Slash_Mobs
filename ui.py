@@ -173,14 +173,11 @@ class AllUI:
     def draw_selector(self, index):
         posx = 200
         posy = 450
+        
         if index in (3, 4, 5):
             posy = 525
-        if index == 3:
-            index = 0
-        elif index == 4:
-            index = 1
-        elif index == 5:
-            index = 2
+        if index >= 3:
+            index -= 3
         pg.draw.rect(self.__screen, Configs.get('RED'), (posx*index, posy, self.box_width, self.box_height), self.box_border)
 
     # Draw damage above player and mob's head after damage calculation

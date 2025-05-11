@@ -4,6 +4,7 @@ from ui import AllUI
 from config import Configs
 from shop import Shop
 from item import Item_TMP
+from sound import Sound
 import pygame as pg
 import random
 
@@ -17,7 +18,8 @@ class Game:
                            "DESERT": [0.4, 0.3, 0.3],
                            "SNOW": [0.3, 0.4, 0.3],
                            "CAVE": [0.4, 0.3, 0.3]}
-     
+
+        self.__sound = Sound()
         self.__player = Player(self.__screen, name="Ucula")
         self.__item = Item_TMP()
         self.__ui = AllUI(self.__screen)
@@ -86,7 +88,6 @@ class Game:
         self.__is_skill_animating = False
     
     def manage_item(self, item=None, name=None):
-        print("use")
         if name is None:
             name = item.name
 
@@ -118,6 +119,7 @@ class Game:
         self.__player.unlock()
         self.__player.return_stats(evade=True, damage=True)
         self.__player.up_stats()
+        self.__sound.transition = False
    
     # Delays
     def delay(self, limit):
@@ -161,64 +163,70 @@ class Game:
     def check_scene_change(self, scene):
         if scene == "HALL":
             if self.__player.y > 600: 
+                # self.__sound.play = False
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "PLAIN"
+                self.__sound.transition = False
                 return True
-            
         elif scene == "PLAIN":
             if self.__player.y < 100:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "HALL"
+                self.__sound.transition = False
                 return True    
             elif self.__player.x > 750:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "SHOP"
+                self.__sound.transition = False
                 return True
             elif self.__player.x < 0:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "DESERT"
+                self.__sound.transition = False
                 return True
-            
         elif scene == "SHOP":
             if self.__player.y > 600:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "PLAIN"
+                self.__sound.transition = False
                 return True
-            
         elif scene == "DESERT":
             if self.__player.x > 750:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "PLAIN"
+                self.__sound.transition = False
                 return True
             elif self.__player.x < 0:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "SNOW"
+                self.__sound.transition = False
                 return True
-            
         elif scene == "SNOW":
             if self.__player.x > 750:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "DESERT"
+                self.__sound.transition = False
                 return True
             elif self.__player.y < 100:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "CAVE"
+                self.__sound.transition = False
                 return True
-        
         elif scene == "CAVE":
             if self.__player.y > 580:
                 self.__mobs = None
                 self.__before = scene
                 self.__scene = "SNOW"
+                self.__sound.transition = False
                 return True
 
     # Done
@@ -357,7 +365,7 @@ class Game:
             self.__screen.blit(self.__mobs.animation[self.__mobs.frame], (self.__mobs.x, self.__mobs.y))
 
     # Non-combat
-    def normal_scene(self):
+    def normal_scene(self):  
         self.__player.save()
         # BG
         bg = self.__ui.draw_bg(self.__scene)
@@ -665,6 +673,7 @@ class Game:
                     self.__engage_ready = False
                     self.__help = False
                     self.__scene_manager = "CHANGING"
+                    self.__sound.transition = False
 
             # Player skill checker
             if self.__player_turn and self.__pstate == "IDLE":
@@ -730,21 +739,33 @@ class Game:
             self.user_event()
             # Changing cutscene
             if self.__scene_manager == "CHANGING":
+                self.__sound.play = False
+                if not self.__sound.transition:
+                    self.__sound.load_sound('TRANSITION')
+                    self.__sound.transition = True
                 done = self.__ui.draw_screen_transition(Configs.get('WIN_SIZE_W')+100)
                 if done and self.__combat:
                     self.__scene_manager = "COMBAT"
+                    self.__sound.play = False
                     self.__before = None
 
                 elif done and not self.__combat:
                     self.__scene_manager = "NORMAL"
+                    self.__sound.play = False
 
             # Normal scene
             if self.__scene_manager == "NORMAL":
                 self.normal_scene()
+                if not self.__sound.play:
+                    self.__sound.load_music(self.__scene)
+                    self.__sound.play = True  
             
             # Combat scene
             if self.__scene_manager == "COMBAT":       
-                self.combat_scene()        
+                self.combat_scene()  
+                if not self.__sound.play:
+                    self.__sound.load_music('COMBAT')
+                    self.__sound.play = True        
 
             pg.display.update()
         pg.quit
